@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2016 ACSONE SA/NV
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+<data noupdate="1">
+
+    <record model="statechart" id="purchase_order_statechart_demo">
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="yaml">
+statechart:
+  name: Purchase Order statechart
+  root state:
+    name: root
+    initial: draft
+    transitions:
+      - event: do_nothing
+      - event: button_draft
+        guard: False
+    states:
+      - name: draft
+        transitions:
+          - event: button_confirm
+            target: confirmed
+            action: |
+              # TODO this is not a very nice way
+              #      to invoke the origin method
+              o.button_confirm.origin(o)
+      - name: confirmed
+        transitions:
+          - event: button_cancel
+            target: draft
+            action: |
+              o.button_cancel.origin(o)
+              o.button_draft.origin(o)
+          - target: approved
+            # this is an eventless transition
+            guard: o.amount_total &lt; 1000
+            action: |
+              o.button_approve.origin(o)
+          - event: button_approve
+            target: approved
+            action: |
+              o.button_approve.origin(o)
+      - name: approved
+        </field>
+    </record>
+
+</data>
+</odoo>

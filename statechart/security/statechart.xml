@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2016 ACSONE SA/NV
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+<data>
+
+    <record model="ir.model.access" id="statechart_access_all">
+        <field name="name">statechart access all</field>
+        <field name="model_id" ref="model_statechart"/>
+        <!--field name="group_id" ref="base.group_user"/-->
+        <field name="perm_read" eval="1"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <record model="ir.model.access" id="statechart_access_manager">
+        <field name="name">statechart access manager</field>
+        <field name="model_id" ref="model_statechart"/>
+        <field name="group_id" ref="base.group_erp_manager"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
+</data>
+</odoo>

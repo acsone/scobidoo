@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2016 ACSONE SA/NV
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+<data>
+
+    <menuitem id="menu_statechart_root" name="Statecharts" parent="base.menu_custom" groups="base.group_no_one"/>
+
+    <record model="ir.ui.view" id="statechart_form_view">
+        <field name="name">statechart.form (in statechart)</field>
+        <field name="model">statechart</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <!-- TODO -->
+                </header>
+                <sheet>
+                    <!-- TODO -->
+                    <group>
+                        <field name="model_id"/>
+                        <field name="yaml"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter"></div>
+            </form>
+        </field>
+    </record>
+
+    <!-- TODO
+    <record model="ir.ui.view" id="statechart_search_view">
+        <field name="name">statechart.search (in statechart)</field>
+        <field name="model">statechart</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+    -->
+
+    <record model="ir.ui.view" id="statechart_tree_view">
+        <field name="name">statechart.tree (in statechart)</field>
+        <field name="model">statechart</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="statechart_act_window">
+        <field name="name">Statechart</field> <!-- TODO -->
+        <field name="res_model">statechart</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record model="ir.ui.menu" id="statechart_menu">
+        <field name="name">Statechart</field>
+        <field name="parent_id" ref="menu_statechart_root"/>
+        <field name="action" ref="statechart_act_window"/>
+        <field name="sequence" eval="16"/> <!-- TODO -->
+    </record>
+
+</data>
+</odoo>

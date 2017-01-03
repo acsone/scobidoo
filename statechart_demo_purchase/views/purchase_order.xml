@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2016 ACSONE SA/NV
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+<data>
+
+    <!-- TODO 
+    <record model="ir.ui.view" id="purchase_order_form_view">
+        <field name="name">purchase.order.form (in statechart_demo_purchase)</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="TODO othermodule.form_view"/>
+        <field name="arch" type="xml">
+        </field>
+    </record>
+         -->
+
+    <!-- TODO 
+    <record model="ir.ui.view" id="purchase_order_search_view">
+        <field name="name">purchase.order.search (in statechart_demo_purchase)</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="TODO othermodule.search_view"/>
+        <field name="arch" type="xml">
+        </field>
+    </record>
+                 -->
+
+    <!-- TODO 
+    <record model="ir.ui.view" id="purchase_order_tree_view">
+        <field name="name">purchase.order.tree (in statechart_demo_purchase)</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="TODO othermodule.tree_view"/>
+        <field name="arch" type="xml">
+        </field>
+    </record>
+         -->
+
+
+</data>
+</odoo>
