@@ -9,6 +9,7 @@ from openerp.tests import common
 
 # AccountingTestCase runs after register_hook
 from openerp.addons.account.tests.account_test_classes import AccountingTestCase
+from openerp.addons.statechart.exceptions import NoTransitionError
 
 
 class TestPOStatechart(AccountingTestCase):
@@ -57,8 +58,8 @@ class TestPOStatechart(AccountingTestCase):
         self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
         self.assertEqual(self.po.state, 'to approve')
         # button_draft does nothing (it has guard=False)
-        self.po.button_draft()
-        self.assertEqual(self.po.state, 'to approve')
+        with self.assertRaises(NoTransitionError):
+            self.po.button_draft()
         # cancel resets to draft too
         self.po.button_cancel()
         self.assertEqual(self.po.sc_state, '["draft", "root"]')
@@ -74,5 +75,5 @@ class TestPOStatechart(AccountingTestCase):
     def test_no_write(self):
         self.po.button_confirm()
         self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
-        self.po.write({'name': 'new ref'})
-        self.assertNotEqual(self.po.name, 'new ref')
+        with self.assertRaises(NoTransitionError):
+            self.po.write({'name': 'new ref'})

@@ -8,6 +8,7 @@ from openerp import api, fields, models, _, SUPERUSER_ID
 from openerp.exceptions import UserError
 
 from .interpreter import Interpreter, Event
+from ..exceptions import NoTransitionError
 
 
 _logger = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ def _interpreter_for(rec):
                 rec.sc_state = new_sc_state
         finally:
             del _interpreters[rec]
-    
+
 
 class StatechartMixin(models.AbstractModel):
 
@@ -73,7 +74,10 @@ class StatechartMixin(models.AbstractModel):
                 if not interpreter.executing:
                     steps = interpreter.execute()
                     _logger.debug("<= %s", steps)
-                    # TODO UserError if nothing done (unhandled event)
+                    if not any([step.transitions for step in steps]):
+                        raise NoTransitionError(_("Event %s not allowed in state "
+                                                  "%s (no transition).") %
+                                                (event, rec.sc_state))
                 # TODO return value
 
     @classmethod
