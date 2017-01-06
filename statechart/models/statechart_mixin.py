@@ -38,7 +38,9 @@ def _interpreter_for(rec):
         _interpreters[rec] = interpreter
         try:
             yield interpreter
-            rec.sc_state = interpreter.save_configuration()
+            new_sc_state = interpreter.save_configuration()
+            if new_sc_state != rec.sc_state:
+                rec.sc_state = new_sc_state
         finally:
             del _interpreters[rec]
     
