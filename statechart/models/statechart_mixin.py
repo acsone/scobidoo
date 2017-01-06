@@ -65,7 +65,7 @@ class StatechartMixin(models.AbstractModel):
     def _sc_exec_event(self, event_name, *args, **kwargs):
         for rec in self:
             with _interpreter_for(rec) as interpreter:
-                event = Event(event_name, *args, **kwargs)
+                event = Event(event_name, args=args, **kwargs)
                 interpreter.queue(event)
                 _logger.debug("=> queueing event %s for %s", event_name, rec)
                 if not interpreter.executing:

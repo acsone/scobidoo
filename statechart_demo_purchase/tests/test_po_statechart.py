@@ -50,11 +50,11 @@ class TestPOStatechart(AccountingTestCase):
         self.assertEqual(self.po.state, 'draft')
         # confirm does the normal Odoo stuff
         self.po.button_confirm()
-        self.assertEqual(self.po.sc_state, '["confirmed", "root"]')
+        self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
         self.assertEqual(self.po.state, 'to approve')
         # do_nothing does nothing ;)
         self.po.do_nothing()
-        self.assertEqual(self.po.sc_state, '["confirmed", "root"]')
+        self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
         self.assertEqual(self.po.state, 'to approve')
         # button_draft does nothing (it has guard=False)
         self.po.button_draft()
@@ -68,5 +68,11 @@ class TestPOStatechart(AccountingTestCase):
         # small amount => automatic approval through eventless transition
         self.po.order_line[0].product_qty = 1
         self.po.button_confirm()
-        self.assertEqual(self.po.sc_state, '["approved", "root"]')
+        self.assertEqual(self.po.sc_state, '["approved", "not draft", "root"]')
         self.assertEqual(self.po.state, 'purchase')
+
+    def test_no_write(self):
+        self.po.button_confirm()
+        self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
+        self.po.write({'name': 'new ref'})
+        self.assertNotEqual(self.po.name, 'new ref')

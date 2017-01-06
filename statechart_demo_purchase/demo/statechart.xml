@@ -26,23 +26,35 @@ statechart:
               # TODO this is not a very nice way
               #      to invoke the origin method
               o.button_confirm.origin(o)
-      - name: confirmed
+          - event: write
+            action: |
+              o.write.origin(o, event.args[0])
+      - name: not draft
         transitions:
-          - event: button_cancel
-            target: draft
+          - event: write
+            guard: |
+              # allow to write state and sc_state only
+              not (set(event.args[0].keys()) - set(['state', 'sc_state']))
             action: |
-              o.button_cancel.origin(o)
-              o.button_draft.origin(o)
-          - target: approved
-            # this is an eventless transition
-            guard: o.amount_total &lt; 1000
-            action: |
-              o.button_approve.origin(o)
-          - event: button_approve
-            target: approved
-            action: |
-              o.button_approve.origin(o)
-      - name: approved
+              o.write.origin(o, event.args[0])
+        states:
+          - name: confirmed
+            transitions:
+              - event: button_cancel
+                target: draft
+                action: |
+                  o.button_cancel.origin(o)
+                  o.button_draft.origin(o)
+              - target: approved
+                # this is an eventless transition
+                guard: o.amount_total &lt; 1000
+                action: |
+                  o.button_approve.origin(o)
+              - event: button_approve
+                target: approved
+                action: |
+                  o.button_approve.origin(o)
+          - name: approved
         </field>
     </record>
 
