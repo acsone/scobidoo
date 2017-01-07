@@ -5,15 +5,34 @@
 <odoo>
 <data>
 
-    <!-- TODO 
     <record model="ir.ui.view" id="purchase_order_form_view">
         <field name="name">purchase.order.form (in statechart_demo_purchase)</field>
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="TODO othermodule.form_view"/>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
+          <button name="button_confirm" position="attributes">
+            <attribute name="attrs">
+              {'invisible': [('sc_button_confirm_allowed', '=', False)]}
+            </attribute>
+            <attribute name="states"/>
+            <attribute name="groups"/>
+          </button>
+          <button name="button_approve" position="attributes">
+            <attribute name="attrs">
+              {'invisible': [('sc_button_approve_allowed', '=', False)]}
+            </attribute>
+            <attribute name="states"/>
+            <attribute name="groups"/>
+          </button>
+          <button name="button_cancel" position="attributes">
+            <attribute name="attrs">
+              {'invisible': [('sc_button_cancel_allowed', '=', False)]}
+            </attribute>
+            <attribute name="states"/>
+            <attribute name="groups"/>
+          </button>
         </field>
     </record>
-         -->
 
     <!-- TODO 
     <record model="ir.ui.view" id="purchase_order_search_view">

@@ -41,7 +41,7 @@ class Statechart(models.Model):
     @api.multi
     def get_statechart(self):
         self.ensure_one()
-        _logger.debug("loading statechart model for %s", self)
+        _logger.debug("loading statechart model for %s", self.display_name)
         with io.StringIO(self.yaml) as f:
             try:
                 return sismic_io.import_from_yaml(f)

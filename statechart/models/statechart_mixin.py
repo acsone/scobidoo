@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from contextlib import contextmanager
 import logging
+from lxml import etree
 
 from openerp import api, fields, models, _, SUPERUSER_ID
 from openerp.exceptions import UserError
@@ -14,7 +15,7 @@ from ..exceptions import NoTransitionError
 _logger = logging.getLogger(__name__)
 
 
-# TODO this is a quick hack 
+# TODO this is a quick hack
 #      better idea is to bind the interpreter
 #      to a custom field type, or to use
 #      the Odoo ORM cache
@@ -36,6 +37,8 @@ def _interpreter_for(rec):
             statechart, initial_context=action_context)
         if rec.sc_state:
             interpreter.restore_configuration(rec.sc_state)
+        else:
+            interpreter.execute_once()
         _interpreters[rec] = interpreter
         try:
             yield interpreter
@@ -44,6 +47,12 @@ def _interpreter_for(rec):
                 rec.sc_state = new_sc_state
         finally:
             del _interpreters[rec]
+
+
+def _sc_make_event_allowed_field_name(event_name):
+    # TODO event names must be valid python identifiers
+    #      (that must be tested somewhere long before reaching this point)
+    return 'sc_' + event_name + '_allowed'
 
 
 class StatechartMixin(models.AbstractModel):
@@ -101,6 +110,33 @@ class StatechartMixin(models.AbstractModel):
                     (event_name, m, cls))
 
     @api.model
+    def _sc_make_event_allowed_field(self, event_name):
+        field_name = _sc_make_event_allowed_field_name(event_name)
+        field = fields.Boolean(compute='_compute_sc_event_allowed')
+        _logger.debug("adding field %s", field_name)
+        self._add_field(field_name, field)
+
+    @api.multi
+    @api.depends('sc_state')
+    def _compute_sc_event_allowed(self):
+        # TODO depends() is partial (it does not know the dependencies of guards):
+        #      make sure that works in all practical situations
+        Statechart = self.env['statechart']
+        statechart = Statechart.statechart_for_model(self._model._name)
+        if not statechart:
+            return
+        event_names = statechart.events_for()
+        for rec in self:
+            with _interpreter_for(rec) as interpreter:
+                allowed_event_names = set(statechart.events_for(
+                    interpreter.configuration))
+                for event_name in event_names:
+                    field_name = _sc_make_event_allowed_field_name(event_name)
+                    # TODO: evaluate guards
+                    allowed = event_name in allowed_event_names
+                    setattr(rec, field_name, allowed)
+
+    @api.model
     def _sc_patch(self):
         Statechart = self.env['statechart']
         statechart = Statechart.statechart_for_model(self._model._name)
@@ -110,6 +146,12 @@ class StatechartMixin(models.AbstractModel):
         _logger.debug("events: %s", event_names)
         for event_name in event_names:
             self._sc_make_event_method(event_name)
+            self._sc_make_event_allowed_field(event_name)
+        # in v9 this method does everything needed for the and
+        # additional non-stored computed fields we have added,
+        # does nothing on existing fields
+        # (it has been invoked in registry.setup_models before)
+        self._setup_fields(False)
 
     # TODO convert to @api.model_cr in v10
     def _register_hook(self, cr):
@@ -117,3 +159,40 @@ class StatechartMixin(models.AbstractModel):
         _logger.debug("StatechartMixin register hook for model %s",
                       self._model)
         self._sc_patch(cr, SUPERUSER_ID)
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form',
+                        context=None, toolbar=False, submenu=False):
+        # Override fields_view_get to automatically add
+        # the sc_<event>_allowed fields to form view. This is necessary
+        # because the views are loaded before _register_hook so our
+        # runtime-added fields are not present at that time.
+        # This is also a shortcut for the developper who does
+        # not need to add them manually in the views.
+        # TODO we could go further and automatically make buttons
+        #      that trigger events visible or not; this is a bit
+        #      more (too much?) magical
+        result = super(StatechartMixin,self).fields_view_get(
+            view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+        if view_type != 'form':
+            return result
+        Statechart = self.env['statechart']
+        statechart = Statechart.statechart_for_model(self._model._name)
+        if not statechart:
+            return result
+        fields = result['fields']
+        doc = etree.XML(result['arch'])
+        form = doc.xpath('/form')[0]
+        for event_name in statechart.events_for():
+            field_name = _sc_make_event_allowed_field_name(event_name)
+            if field_name not in fields:
+                fields[field_name] = {
+                    'string': field_name,
+                    'type': 'boolean',
+                }
+                form.append(etree.Element("field", {
+                    "name": field_name,
+                    "invisible": "1",
+                }))
+        result['arch'] = etree.tostring(doc)
+        return result

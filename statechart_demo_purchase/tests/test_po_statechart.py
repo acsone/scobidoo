@@ -46,6 +46,11 @@ class TestPOStatechart(AccountingTestCase):
     def test_1(self):
         self.assertEqual(self.po.sc_state, False)
         self.assertEqual(self.po.state, 'draft')
+        self.assertTrue(self.po.sc_do_nothing_allowed)
+        self.assertTrue(self.po.sc_button_confirm_allowed)
+        self.assertFalse(self.po.sc_button_approve_allowed)
+        self.assertFalse(self.po.sc_button_cancel_allowed)
+        self.assertTrue(self.po.sc_button_draft_allowed)  # TODO should be false
         self.po.do_nothing()
         self.assertEqual(self.po.sc_state, '["draft", "root"]')
         self.assertEqual(self.po.state, 'draft')
@@ -57,6 +62,7 @@ class TestPOStatechart(AccountingTestCase):
         self.po.do_nothing()
         self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
         self.assertEqual(self.po.state, 'to approve')
+        self.assertTrue(self.po.sc_button_approve_allowed)
         # button_draft does nothing (it has guard=False)
         with self.assertRaises(NoTransitionError):
             self.po.button_draft()
@@ -68,9 +74,11 @@ class TestPOStatechart(AccountingTestCase):
     def test_automatic_transition(self):
         # small amount => automatic approval through eventless transition
         self.po.order_line[0].product_qty = 1
+        self.assertFalse(self.po.sc_button_approve_allowed)
         self.po.button_confirm()
         self.assertEqual(self.po.sc_state, '["approved", "not draft", "root"]')
         self.assertEqual(self.po.state, 'purchase')
+        self.assertFalse(self.po.sc_button_approve_allowed)
 
     def test_no_write(self):
         self.po.button_confirm()
