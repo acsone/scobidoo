@@ -79,14 +79,15 @@ class StatechartMixin(models.AbstractModel):
             with _interpreter_for(rec) as interpreter:
                 event = Event(event_name, args=args, **kwargs)
                 interpreter.queue(event)
-                _logger.debug("=> queueing event %s for %s", event_name, rec)
+                _logger.debug("=> queueing event %s for %s", event, rec)
                 if not interpreter.executing:
                     steps = interpreter.execute()
                     _logger.debug("<= %s", steps)
-                    if not any([step.transitions for step in steps]):
-                        raise NoTransitionError(_("Event %s not allowed in state "
-                                                  "%s (no transition).") %
-                                                (event, rec.sc_state))
+                    if not all([step.transitions for step in steps]):
+                        # at least one step had no transition => error
+                        raise NoTransitionError(
+                            _("Event not allowed.\n\nOriginal event: %s\nSteps: %s") %
+                            (event, steps,))
                 # TODO return value
 
     @classmethod
