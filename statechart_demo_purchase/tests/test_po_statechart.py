@@ -50,7 +50,7 @@ class TestPOStatechart(AccountingTestCase):
         self.assertTrue(self.po.sc_button_confirm_allowed)
         self.assertFalse(self.po.sc_button_approve_allowed)
         self.assertFalse(self.po.sc_button_cancel_allowed)
-        self.assertTrue(self.po.sc_button_draft_allowed)  # TODO should be false
+        self.assertFalse(self.po.sc_button_draft_allowed)
         self.po.do_nothing()
         self.assertEqual(self.po.sc_state, '["draft", "root"]')
         self.assertEqual(self.po.state, 'draft')

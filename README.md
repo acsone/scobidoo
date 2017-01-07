@@ -13,9 +13,6 @@ Roadmap
 -------
 
 * handle return values
-* sc_<event>_allowed fields must take guards in to account;
-  if guard expressions depend on the event => return True
-  and let it fail at runtime
 * can we do without the StatechartMixin abstract class? for now it's
   here because it's easier to add the register_hook, but more importantly
   to add the sc_state; maybe it's possible to have a custom field type

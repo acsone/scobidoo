@@ -129,12 +129,9 @@ class StatechartMixin(models.AbstractModel):
         event_names = statechart.events_for()
         for rec in self:
             with _interpreter_for(rec) as interpreter:
-                allowed_event_names = set(statechart.events_for(
-                    interpreter.configuration))
                 for event_name in event_names:
                     field_name = _sc_make_event_allowed_field_name(event_name)
-                    # TODO: evaluate guards
-                    allowed = event_name in allowed_event_names
+                    allowed = (interpreter.is_event_allowed(event_name) is not False)
                     setattr(rec, field_name, allowed)
 
     @api.model
