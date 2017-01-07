@@ -37,3 +37,4 @@ class Interpreter(SismicInterpreter):
         # TODO memory, something else?
         config = json.loads(config)
         self._configuration = set(config)
+        self._initialized = True
