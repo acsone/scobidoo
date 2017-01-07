@@ -58,6 +58,7 @@ class TestPOStatechart(AccountingTestCase):
         self.po.button_confirm()
         self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
         self.assertEqual(self.po.state, 'to approve')
+        self.assertEqual(self.po.notes, 'Congrats for exiting the draft state')
         # do_nothing does nothing ;)
         self.po.do_nothing()
         self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
@@ -78,6 +79,7 @@ class TestPOStatechart(AccountingTestCase):
         self.po.button_confirm()
         self.assertEqual(self.po.sc_state, '["approved", "not draft", "root"]')
         self.assertEqual(self.po.state, 'purchase')
+        self.assertEqual(self.po.notes, 'Congrats for entering the approved state')
         self.assertFalse(self.po.sc_button_approve_allowed)
 
     def test_no_write(self):
