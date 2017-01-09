@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright 2016 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 import json
 
 from sismic.interpreter import Interpreter as SismicInterpreter
@@ -40,7 +41,7 @@ class Interpreter(SismicInterpreter):
         self._initialized = True
 
     def is_event_allowed(self, event_name):
-        # type: (str) -> List[model.Transition]
+        # type: (str) -> Union[None, bool]
         """
         Return True if there is at least one transition for the event,
         False if there is no transition for the event,
