@@ -38,7 +38,20 @@ class TestPOStatechart(AccountingTestCase):
                     'product_qty': 5.0,
                     'product_uom': self.product_id_1.uom_po_id.id,
                     'price_unit': 500.0,
-                    'date_planned': fields.Date.today(), 
+                    'date_planned': fields.Date.today(),
+                }),
+            ],
+        })
+        self.po2 = self.PurchaseOrder.create({
+            'partner_id': self.partner_id.id,
+            'order_line': [
+                (0, 0, {
+                    'name': self.product_id_1.name,
+                    'product_id': self.product_id_1.id,
+                    'product_qty': 5.0,
+                    'product_uom': self.product_id_1.uom_po_id.id,
+                    'price_unit': 500.0,
+                    'date_planned': fields.Date.today(),
                 }),
             ],
         })
@@ -87,3 +100,9 @@ class TestPOStatechart(AccountingTestCase):
         self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
         with self.assertRaises(NoTransitionError):
             self.po.write({'name': 'new ref'})
+
+    def test_two_interpreters(self):
+        self.po.button_confirm()
+        self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
+        self.po2.button_confirm()
+        self.assertEqual(self.po2.sc_state, '["confirmed", "not draft", "root"]')

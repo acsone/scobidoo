@@ -15,40 +15,6 @@ from ..exceptions import NoTransitionError
 _logger = logging.getLogger(__name__)
 
 
-# TODO this is a quick hack
-#      better idea is to bind the interpreter
-#      to a custom field type, or to use
-#      the Odoo ORM cache
-
-_interpreters = {}  # record: interpreter
-
-@contextmanager
-def _interpreter_for(rec):
-    if rec in _interpreters:
-        yield _interpreters[rec]
-    else:
-        Statechart = rec.env['statechart']
-        statechart = Statechart.statechart_for_model(rec._model._name)
-        action_context = {
-            'o': rec,
-            # TODO: more action context
-        }
-        interpreter = Interpreter(
-            statechart, initial_context=action_context)
-        if rec.sc_state:
-            interpreter.restore_configuration(rec.sc_state)
-        else:
-            interpreter.execute_once()
-        _interpreters[rec] = interpreter
-        try:
-            yield interpreter
-            new_sc_state = interpreter.save_configuration()
-            if new_sc_state != rec.sc_state:
-                rec.sc_state = new_sc_state
-        finally:
-            del _interpreters[rec]
-
-
 def _sc_make_event_allowed_field_name(event_name):
     # TODO event names must be valid python identifiers
     #      (that must be tested somewhere long before reaching this point)
@@ -75,19 +41,23 @@ class StatechartMixin(models.AbstractModel):
             rec.sc_display_state = rec.sc_state
 
     def _sc_exec_event(self, event_name, *args, **kwargs):
+        Statechart = self.env['statechart']
         for rec in self:
-            with _interpreter_for(rec) as interpreter:
-                event = Event(event_name, args=args, **kwargs)
-                interpreter.queue(event)
-                _logger.debug("=> queueing event %s for %s", event, rec)
-                if not interpreter.executing:
-                    steps = interpreter.execute()
-                    _logger.debug("<= %s", steps)
-                    if not all([step.transitions for step in steps]):
-                        # at least one step had no transition => error
-                        raise NoTransitionError(
-                            _("Event not allowed.\n\nOriginal event: %s\nSteps: %s") %
-                            (event, steps,))
+            interpreter = Statechart.interpreter_for(rec)
+            event = Event(event_name, args=args, **kwargs)
+            interpreter.queue(event)
+            _logger.debug("=> queueing event %s for %s", event, rec)
+            if not interpreter.executing:
+                steps = interpreter.execute()
+                _logger.debug("<= %s", steps)
+                if not all([step.transitions for step in steps]):
+                    # at least one step had no transition => error
+                    raise NoTransitionError(
+                        _("Event not allowed.\n\nOriginal event: %s\nSteps: %s") %
+                        (event, steps,))
+                new_sc_state = interpreter.save_configuration()
+                if new_sc_state != rec.sc_state:
+                    rec.sc_state = new_sc_state
                 # TODO return value
 
     @classmethod
@@ -128,11 +98,11 @@ class StatechartMixin(models.AbstractModel):
             return
         event_names = statechart.events_for()
         for rec in self:
-            with _interpreter_for(rec) as interpreter:
-                for event_name in event_names:
-                    field_name = _sc_make_event_allowed_field_name(event_name)
-                    allowed = (interpreter.is_event_allowed(event_name) is not False)
-                    setattr(rec, field_name, allowed)
+            interpreter = Statechart.interpreter_for(rec)
+            for event_name in event_names:
+                field_name = _sc_make_event_allowed_field_name(event_name)
+                allowed = (interpreter.is_event_allowed(event_name) is not False)
+                setattr(rec, field_name, allowed)
 
     @api.model
     def _sc_patch(self):
