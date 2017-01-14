@@ -11,7 +11,7 @@ from lxml import etree
 from openerp import api, fields, models, _, SUPERUSER_ID
 from openerp.exceptions import UserError
 
-from .interpreter import Interpreter, Event
+from .event import Event
 from ..exceptions import NoTransitionError
 
 
@@ -31,7 +31,9 @@ class StatechartMixin(models.AbstractModel):
 
     # TODO if we want this to be configurable through the Odoo UI
     #      this mixin probably must go away and the register_hook
-    #      must run for all models that have a statechart
+    #      must run for all models that have a statechart;
+    #      this is much easier to do in Odoo 10+ by inheriting
+    #      BaseModel though.
 
     sc_state = fields.Char()
     sc_display_state = fields.Char(
@@ -60,9 +62,12 @@ class StatechartMixin(models.AbstractModel):
                         (event, steps,))
                 config = interpreter.save_configuration()
                 new_sc_state = json.dumps(config)
+                # TODO converting to json to determine if sc_state
+                #      has changed is not optimal
                 if new_sc_state != rec.sc_state:
                     rec.sc_state = new_sc_state
-                # TODO return value
+                if len(self) == 1 and event._return:
+                    return event._return
 
     @classmethod
     def _sc_make_event_method(cls, event_name):
@@ -119,9 +124,9 @@ class StatechartMixin(models.AbstractModel):
         for event_name in event_names:
             self._sc_make_event_method(event_name)
             self._sc_make_event_allowed_field(event_name)
-        # in v9 this method does everything needed for the and
+        # in v9 this method does everything needed for the
         # additional non-stored computed fields we have added,
-        # does nothing on existing fields
+        # and does nothing on existing fields
         # (it has been invoked in registry.setup_models before)
         self._setup_fields(False)
 

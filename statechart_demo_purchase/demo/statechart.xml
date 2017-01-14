@@ -19,6 +19,10 @@ statechart:
       - event: button_draft
         # we can disable a standard Odoo method by adding a guard
         guard: False
+      - event: compute_something
+        # a transition that returns a value
+        action: |
+          event._return = 'something'
     states:
       - name: draft
         on exit: |

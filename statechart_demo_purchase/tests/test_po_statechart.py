@@ -113,3 +113,7 @@ class TestPOStatechart(AccountingTestCase):
         self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
         self.po2.button_confirm()
         self.assertScState(self.po2.sc_state, ["confirmed", "not draft", "root"])
+
+    def test_return(self):
+        res = self.po.compute_something()
+        self.assertEqual(res, 'something')
