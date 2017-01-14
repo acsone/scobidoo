@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 # Copyright 2016 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from contextlib import contextmanager
+import json
 import logging
+
 from lxml import etree
 
 from openerp import api, fields, models, _, SUPERUSER_ID
@@ -55,7 +58,8 @@ class StatechartMixin(models.AbstractModel):
                     raise NoTransitionError(
                         _("Event not allowed.\n\nOriginal event: %s\nSteps: %s") %
                         (event, steps,))
-                new_sc_state = interpreter.save_configuration()
+                config = interpreter.save_configuration()
+                new_sc_state = json.dumps(config)
                 if new_sc_state != rec.sc_state:
                     rec.sc_state = new_sc_state
                 # TODO return value

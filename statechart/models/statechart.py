@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # Copyright 2016 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 import io
+import json
 import logging
 
 from openerp import api, fields, models, _
@@ -64,7 +66,8 @@ class Statechart(models.Model):
         interpreter = Interpreter(
             statechart, initial_context=initial_context)
         if record.sc_state:
-            interpreter.restore_configuration(record.sc_state)
+            config = json.loads(record.sc_state)
+            interpreter.restore_configuration(config)
         else:
             interpreter.execute_once()
         return interpreter

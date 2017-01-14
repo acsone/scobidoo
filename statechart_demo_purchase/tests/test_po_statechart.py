@@ -2,7 +2,7 @@
 # Copyright 2016 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-#from datetime import datetime
+import json
 
 from openerp import fields
 from openerp.tests import common
@@ -13,6 +13,13 @@ from openerp.addons.statechart.exceptions import NoTransitionError
 
 
 class TestPOStatechart(AccountingTestCase):
+
+    def assertScState(self, sc_state, expected_config):
+        if not expected_config:
+            self.assertFalse(sc_state)
+        else:
+            config = json.loads(sc_state)
+            self.assertEqual(set(config['configuration']), set(expected_config))
 
     def setUp(self):
         super(TestPOStatechart, self).setUp()
@@ -57,7 +64,7 @@ class TestPOStatechart(AccountingTestCase):
         })
 
     def test_1(self):
-        self.assertEqual(self.po.sc_state, False)
+        self.assertScState(self.po.sc_state, False)
         self.assertEqual(self.po.state, 'draft')
         self.assertTrue(self.po.sc_do_nothing_allowed)
         self.assertTrue(self.po.sc_button_confirm_allowed)
@@ -65,16 +72,16 @@ class TestPOStatechart(AccountingTestCase):
         self.assertFalse(self.po.sc_button_cancel_allowed)
         self.assertFalse(self.po.sc_button_draft_allowed)
         self.po.do_nothing()
-        self.assertEqual(self.po.sc_state, '["draft", "root"]')
+        self.assertScState(self.po.sc_state, ["draft", "root"])
         self.assertEqual(self.po.state, 'draft')
         # confirm does the normal Odoo stuff
         self.po.button_confirm()
-        self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
+        self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
         self.assertEqual(self.po.state, 'to approve')
         self.assertEqual(self.po.notes, 'Congrats for exiting the draft state')
         # do_nothing does nothing ;)
         self.po.do_nothing()
-        self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
+        self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
         self.assertEqual(self.po.state, 'to approve')
         self.assertTrue(self.po.sc_button_approve_allowed)
         # button_draft does nothing (it has guard=False)
@@ -82,7 +89,7 @@ class TestPOStatechart(AccountingTestCase):
             self.po.button_draft()
         # cancel resets to draft too
         self.po.button_cancel()
-        self.assertEqual(self.po.sc_state, '["draft", "root"]')
+        self.assertScState(self.po.sc_state, ["draft", "root"])
         self.assertEqual(self.po.state, 'draft')
 
     def test_automatic_transition(self):
@@ -90,19 +97,19 @@ class TestPOStatechart(AccountingTestCase):
         self.po.order_line[0].product_qty = 1
         self.assertFalse(self.po.sc_button_approve_allowed)
         self.po.button_confirm()
-        self.assertEqual(self.po.sc_state, '["approved", "not draft", "root"]')
+        self.assertScState(self.po.sc_state, ["approved", "not draft", "root"])
         self.assertEqual(self.po.state, 'purchase')
         self.assertEqual(self.po.notes, 'Congrats for entering the approved state')
         self.assertFalse(self.po.sc_button_approve_allowed)
 
     def test_no_write(self):
         self.po.button_confirm()
-        self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
+        self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
         with self.assertRaises(NoTransitionError):
             self.po.write({'name': 'new ref'})
 
     def test_two_interpreters(self):
         self.po.button_confirm()
-        self.assertEqual(self.po.sc_state, '["confirmed", "not draft", "root"]')
+        self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
         self.po2.button_confirm()
-        self.assertEqual(self.po2.sc_state, '["confirmed", "not draft", "root"]')
+        self.assertScState(self.po2.sc_state, ["confirmed", "not draft", "root"])

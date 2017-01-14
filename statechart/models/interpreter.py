@@ -2,8 +2,6 @@
 # Copyright 2016 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import json
-
 from sismic.interpreter import Interpreter as SismicInterpreter
 from sismic.model import Event
 
@@ -29,15 +27,21 @@ class Interpreter(SismicInterpreter):
             self._in_execute_once = False
 
     def save_configuration(self):
+        """Return the interpreter configuration.
+
+        The result must be considered opaque, and can be used with
+        `restore_configuration`. It is guaranteed to be json serializable.
+        Note the evaluator context is not included in this configuration
+        and must be saved independently if necessary.
+        """
         # TODO memory, something else?
-        # TODO: the sorted is here to ease tests asserts only
-        config = sorted(list(self._configuration))
-        return json.dumps(config)
+        return dict(
+            configuration=list(self._configuration)
+        )
 
     def restore_configuration(self, config):
         # TODO memory, something else?
-        config = json.loads(config)
-        self._configuration = set(config)
+        self._configuration = set(config['configuration'])
         self._initialized = True
 
     def is_event_allowed(self, event_name):
