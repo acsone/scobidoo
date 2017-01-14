@@ -64,6 +64,10 @@ statechart:
                 action: |
                   o.button_approve.origin(o)
               - event: button_approve
+                # example guard that checks group membership
+                guard: |
+                  o.env.user.id == 1 or \
+                    o.env.user.has_group('purchase.purchase_manager')
                 target: approved
                 action: |
                   o.button_approve.origin(o)
