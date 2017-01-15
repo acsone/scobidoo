@@ -17,6 +17,7 @@ Roadmap
   to add the sc_state; maybe it's possible to have a custom field type
   to hold sc_state and the asociated interpreter state, simimlar to alfodoo's cmisfield
 * make statechart.yaml a computed field (possibly bidirectional) so the statechart
-  can be created (and extended) with standard Odoo records
+  can be created (and extended) with standard Odoo records;
+  potential difficulty is to preserve xmlids.
 * have a Odoo UI to create statechart records
 * and many important implementation details TODO's in the code
