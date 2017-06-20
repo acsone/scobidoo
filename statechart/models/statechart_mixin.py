@@ -12,6 +12,7 @@ from openerp import api, fields, models, _, SUPERUSER_ID
 from openerp.exceptions import UserError
 
 from .event import Event
+from .interpreter import Interpreter
 from ..exceptions import NoTransitionError
 
 
@@ -24,6 +25,10 @@ def _sc_make_event_allowed_field_name(event_name):
     return 'sc_' + event_name + '_allowed'
 
 
+class InterpreterField(fields.Field):
+    type = 'sc_interpreter'
+
+
 class StatechartMixin(models.AbstractModel):
 
     _name = 'statechart.mixin'
@@ -34,10 +39,35 @@ class StatechartMixin(models.AbstractModel):
     #      must run for all models that have a statechart;
     #      this is much easier to do in Odoo 10+ by inheriting
     #      BaseModel though.
+    #
+    #      That said, if we get rid of this mixin, we must find
+    #      a better way to cache interpreters; this is currently
+    #      implemented with the sc_interpreter special field.
 
     sc_state = fields.Char()
+    sc_interpreter = InterpreterField(
+        compute='_compute_sc_interpreter')
     sc_display_state = fields.Char(
         compute='_compute_sc_display_state')
+
+    @api.depends('sc_state')
+    def _compute_sc_interpreter(self):
+        self.ensure_one()
+        _logger.debug("initializing interpreter for %s", self)
+        statechart_model = self.env['statechart']
+        statechart = statechart_model.statechart_for_model(self._model._name)
+        initial_context = {
+            'o': self,
+            # TODO: more action context
+        }
+        interpreter = Interpreter(
+            statechart, initial_context=initial_context)
+        if self.sc_state:
+            config = json.loads(self.sc_state)
+            interpreter.restore_configuration(config)
+        else:
+            interpreter.execute_once()
+        self.sc_interpreter = interpreter
 
     @api.depends('sc_state')
     def _compute_sc_display_state(self):
@@ -45,10 +75,10 @@ class StatechartMixin(models.AbstractModel):
         for rec in self:
             rec.sc_display_state = rec.sc_state
 
+    @api.multi
     def _sc_exec_event(self, event_name, *args, **kwargs):
-        Statechart = self.env['statechart']
         for rec in self:
-            interpreter = Statechart.interpreter_for(rec)
+            interpreter = rec.sc_interpreter
             event = Event(event_name, args=args, **kwargs)
             interpreter.queue(event)
             _logger.debug("=> queueing event %s for %s", event, rec)
@@ -107,7 +137,7 @@ class StatechartMixin(models.AbstractModel):
             return
         event_names = statechart.events_for()
         for rec in self:
-            interpreter = Statechart.interpreter_for(rec)
+            interpreter = rec.sc_interpreter
             for event_name in event_names:
                 field_name = _sc_make_event_allowed_field_name(event_name)
                 allowed = (interpreter.is_event_allowed(event_name) is not False)
