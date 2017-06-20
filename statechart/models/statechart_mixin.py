@@ -2,7 +2,6 @@
 # Copyright 2016 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from contextlib import contextmanager
 import json
 import logging
 
@@ -179,8 +178,9 @@ class StatechartMixin(models.AbstractModel):
         # TODO we could go further and automatically make buttons
         #      that trigger events visible or not; this is a bit
         #      more (too much?) magical
-        result = super(StatechartMixin,self).fields_view_get(
-            view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+        result = super(StatechartMixin, self).fields_view_get(
+            view_id=view_id, view_type=view_type,
+            toolbar=toolbar, submenu=submenu)
         if view_type != 'form':
             return result
         Statechart = self.env['statechart']
