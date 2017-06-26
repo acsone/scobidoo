@@ -23,6 +23,11 @@ statechart:
         # a transition that returns a value
         action: |
           event._return = 'something'
+      - event: unlink
+        # unlink test
+        action: |
+          o.state = 'cancel'
+          o.unlink.origin(o)
     states:
       - name: draft
         on exit: |

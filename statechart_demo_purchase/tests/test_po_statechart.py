@@ -117,3 +117,9 @@ class TestPOStatechart(AccountingTestCase):
     def test_return(self):
         res = self.po.compute_something()
         self.assertEqual(res, 'something')
+
+    def test_unlink(self):
+        po_id = self.po.id
+        print "********", self.po.state, self.po.sc_state
+        self.po.unlink()
+        self.assertFalse(self.PurchaseOrder.search([('id', '=', po_id)]))

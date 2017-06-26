@@ -8,7 +8,7 @@ import logging
 from lxml import etree
 
 from openerp import api, fields, models, _, SUPERUSER_ID
-from openerp.exceptions import UserError
+from openerp.exceptions import UserError, MissingError
 
 from .event import Event
 from .interpreter import Interpreter
@@ -91,10 +91,14 @@ class StatechartMixin(models.AbstractModel):
                         (event, steps,))
                 config = interpreter.save_configuration()
                 new_sc_state = json.dumps(config)
-                # TODO converting to json to determine if sc_state
-                #      has changed is not optimal
-                if new_sc_state != rec.sc_state:
-                    rec.sc_state = new_sc_state
+                try:
+                    # TODO converting to json to determine if sc_state
+                    #      has changed is not optimal
+                    if new_sc_state != rec.sc_state:
+                        rec.sc_state = new_sc_state
+                except MissingError:
+                    # object has been deleted so don't attempt to set its state
+                    pass
                 if len(self) == 1 and event._return:
                     return event._return
 
