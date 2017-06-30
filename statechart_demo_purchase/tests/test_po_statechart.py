@@ -120,6 +120,5 @@ class TestPOStatechart(AccountingTestCase):
 
     def test_unlink(self):
         po_id = self.po.id
-        print "********", self.po.state, self.po.sc_state
         self.po.unlink()
         self.assertFalse(self.PurchaseOrder.search([('id', '=', po_id)]))
