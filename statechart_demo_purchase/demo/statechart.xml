@@ -2,8 +2,7 @@
 <!-- Copyright 2016 ACSONE SA/NV
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 
-<odoo>
-<data noupdate="1">
+<odoo noupdate="1">
 
     <record model="statechart" id="purchase_order_statechart_demo">
         <field name="model_id" ref="purchase.model_purchase_order"/>
@@ -82,5 +81,4 @@ statechart:
         </field>
     </record>
 
-</data>
 </odoo>

@@ -3,7 +3,6 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 
 <odoo>
-<data>
 
     <record model="ir.model.access" id="statechart_access_all">
         <field name="name">statechart access all</field>
@@ -25,5 +24,4 @@
         <field name="perm_unlink" eval="1"/>
     </record>
 
-</data>
 </odoo>

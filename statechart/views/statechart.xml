@@ -3,7 +3,6 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 
 <odoo>
-<data>
 
     <menuitem id="menu_statechart_root" name="Statecharts" parent="base.menu_custom" groups="base.group_no_one"/>
 
@@ -64,5 +63,4 @@
         <field name="sequence" eval="16"/> <!-- TODO -->
     </record>
 
-</data>
 </odoo>
