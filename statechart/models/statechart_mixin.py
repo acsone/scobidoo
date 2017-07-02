@@ -51,22 +51,22 @@ class StatechartMixin(models.AbstractModel):
 
     @api.depends('sc_state')
     def _compute_sc_interpreter(self):
-        self.ensure_one()
-        _logger.debug("initializing interpreter for %s", self)
         statechart_model = self.env['statechart']
         statechart = statechart_model.statechart_for_model(self._model._name)
-        initial_context = {
-            'o': self,
-            # TODO: more action context
-        }
-        interpreter = Interpreter(
-            statechart, initial_context=initial_context)
-        if self.sc_state:
-            config = json.loads(self.sc_state)
-            interpreter.restore_configuration(config)
-        else:
-            interpreter.execute_once()
-        self.sc_interpreter = interpreter
+        for rec in self:
+            _logger.debug("initializing interpreter for %s", rec)
+            initial_context = {
+                'o': rec,
+                # TODO: more action context
+            }
+            interpreter = Interpreter(
+                statechart, initial_context=initial_context)
+            if rec.sc_state:
+                config = json.loads(rec.sc_state)
+                interpreter.restore_configuration(config)
+            else:
+                interpreter.execute_once()
+            rec.sc_interpreter = interpreter
 
     @api.depends('sc_state')
     def _compute_sc_display_state(self):
