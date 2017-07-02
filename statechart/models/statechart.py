@@ -3,16 +3,13 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import io
-import json
 import logging
 
-from openerp import api, fields, models, _
+from openerp import api, fields, models
 from openerp import tools
 
 from sismic.exceptions import StatechartError
 from sismic import io as sismic_io
-
-from .interpreter import Interpreter
 
 _logger = logging.getLogger(__name__)
 

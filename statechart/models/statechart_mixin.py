@@ -87,7 +87,8 @@ class StatechartMixin(models.AbstractModel):
                 if not all([step.transitions for step in steps]):
                     # at least one step had no transition => error
                     raise NoTransitionError(
-                        _("Event not allowed.\n\nOriginal event: %s\nSteps: %s") %
+                        _("Event not allowed.\n\n"
+                          "Original event: %s\nSteps: %s") %
                         (event, steps,))
                 config = interpreter.save_configuration()
                 new_sc_state = json.dumps(config)
@@ -132,8 +133,8 @@ class StatechartMixin(models.AbstractModel):
     @api.multi
     @api.depends('sc_state')
     def _compute_sc_event_allowed(self):
-        # TODO depends() is partial (it does not know the dependencies of guards):
-        #      make sure that works in all practical situations
+        # TODO depends() is partial (it does not know the dependencies of
+        #      guards): make sure that works in all practical situations
         Statechart = self.env['statechart']
         statechart = Statechart.statechart_for_model(self._model._name)
         if not statechart:
@@ -143,7 +144,13 @@ class StatechartMixin(models.AbstractModel):
             interpreter = rec.sc_interpreter
             for event_name in event_names:
                 field_name = _sc_make_event_allowed_field_name(event_name)
-                allowed = (interpreter.is_event_allowed(event_name) is not False)
+                allowed = interpreter.is_event_allowed(event_name)
+                if allowed is None:
+                    # None means a guard could not be evaluated: since
+                    # we don't know if it's allowed, report it as allowed
+                    # and the user may receive an error message later
+                    # if he tries to do the action
+                    allowed = True
                 setattr(rec, field_name, allowed)
 
     @api.model

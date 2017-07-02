@@ -56,12 +56,14 @@ class Interpreter(SismicInterpreter):
         :return: True|False|None
         """
         # Retrieve the firable transitions for all active state
+        evaluator = self._evaluator
         for transition in self._statechart.transitions:
-            if transition.event == event_name and transition.source in self._configuration:
+            if transition.event == event_name and \
+                    transition.source in self._configuration:
                 if transition.guard is None:
                     return True
                 try:
-                    if self._evaluator.evaluate_guard(transition, Event(event_name)):
+                    if evaluator.evaluate_guard(transition, Event(event_name)):
                         return True
                 except:
                     return None
