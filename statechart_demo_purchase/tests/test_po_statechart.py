@@ -5,10 +5,10 @@
 import json
 
 from openerp import fields
-from openerp.tests import common
 
 # AccountingTestCase runs after register_hook
-from openerp.addons.account.tests.account_test_classes import AccountingTestCase
+from openerp.addons.account.tests.account_test_classes \
+    import AccountingTestCase
 from openerp.addons.statechart.exceptions import NoTransitionError
 
 
@@ -19,7 +19,8 @@ class TestPOStatechart(AccountingTestCase):
             self.assertFalse(sc_state)
         else:
             config = json.loads(sc_state)
-            self.assertEqual(set(config['configuration']), set(expected_config))
+            self.assertEqual(set(config['configuration']),
+                             set(expected_config))
 
     def setUp(self):
         super(TestPOStatechart, self).setUp()
@@ -31,7 +32,8 @@ class TestPOStatechart(AccountingTestCase):
                 (3, self.env.ref('purchase.group_purchase_manager').id, False)
             ],
         })
-        self.assertFalse(self.env.user.has_group('purchase.group_purchase_manager'))
+        self.assertFalse(
+            self.env.user.has_group('purchase.group_purchase_manager'))
         # create a PO
         self.PurchaseOrder = self.env['purchase.order']
         self.partner_id = self.env.ref('base.res_partner_1')
@@ -76,12 +78,14 @@ class TestPOStatechart(AccountingTestCase):
         self.assertEqual(self.po.state, 'draft')
         # confirm does the normal Odoo stuff
         self.po.button_confirm()
-        self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
+        self.assertScState(self.po.sc_state,
+                           ["confirmed", "not draft", "root"])
         self.assertEqual(self.po.state, 'to approve')
         self.assertEqual(self.po.notes, 'Congrats for exiting the draft state')
         # do_nothing does nothing ;)
         self.po.do_nothing()
-        self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
+        self.assertScState(self.po.sc_state,
+                           ["confirmed", "not draft", "root"])
         self.assertEqual(self.po.state, 'to approve')
         self.assertTrue(self.po.sc_button_approve_allowed)
         # button_draft does nothing (it has guard=False)
@@ -89,7 +93,8 @@ class TestPOStatechart(AccountingTestCase):
             self.po.button_draft()
         # cancel resets to draft too
         self.po.button_cancel()
-        self.assertScState(self.po.sc_state, ["draft", "root"])
+        self.assertScState(self.po.sc_state,
+                           ["draft", "root"])
         self.assertEqual(self.po.state, 'draft')
 
     def test_automatic_transition(self):
@@ -97,22 +102,27 @@ class TestPOStatechart(AccountingTestCase):
         self.po.order_line[0].product_qty = 1
         self.assertFalse(self.po.sc_button_approve_allowed)
         self.po.button_confirm()
-        self.assertScState(self.po.sc_state, ["approved", "not draft", "root"])
+        self.assertScState(self.po.sc_state,
+                           ["approved", "not draft", "root"])
         self.assertEqual(self.po.state, 'purchase')
-        self.assertEqual(self.po.notes, 'Congrats for entering the approved state')
+        self.assertEqual(self.po.notes,
+                         'Congrats for entering the approved state')
         self.assertFalse(self.po.sc_button_approve_allowed)
 
     def test_no_write(self):
         self.po.button_confirm()
-        self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
+        self.assertScState(self.po.sc_state,
+                           ["confirmed", "not draft", "root"])
         with self.assertRaises(NoTransitionError):
             self.po.write({'name': 'new ref'})
 
     def test_two_interpreters(self):
         self.po.button_confirm()
-        self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
+        self.assertScState(self.po.sc_state,
+                           ["confirmed", "not draft", "root"])
         self.po2.button_confirm()
-        self.assertScState(self.po2.sc_state, ["confirmed", "not draft", "root"])
+        self.assertScState(self.po2.sc_state,
+                           ["confirmed", "not draft", "root"])
 
     def test_return(self):
         res = self.po.compute_something()
