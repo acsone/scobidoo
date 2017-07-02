@@ -97,7 +97,7 @@ class StatechartMixin(models.AbstractModel):
                     #      has changed is not optimal
                     if new_sc_state != rec.sc_state:
                         rec.sc_state = new_sc_state
-                except MissingError:
+                except MissingError:  # pylint: disable=except-pass
                     # object has been deleted so don't attempt to set its state
                     pass
                 if len(self) == 1 and event._return:
@@ -172,10 +172,11 @@ class StatechartMixin(models.AbstractModel):
 
     # TODO convert to @api.model_cr in v10
     def _register_hook(self, cr):
-        super(StatechartMixin, self)._register_hook(cr)
+        res = super(StatechartMixin, self)._register_hook(cr)
         _logger.debug("StatechartMixin register hook for model %s",
                       self._model)
         self._sc_patch(cr, SUPERUSER_ID)
+        return res
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form',
@@ -198,13 +199,13 @@ class StatechartMixin(models.AbstractModel):
         statechart = Statechart.statechart_for_model(self._model._name)
         if not statechart:
             return result
-        fields = result['fields']
+        fields_by_name = result['fields']
         doc = etree.XML(result['arch'])
         form = doc.xpath('/form')[0]
         for event_name in statechart.events_for():
             field_name = _sc_make_event_allowed_field_name(event_name)
-            if field_name not in fields:
-                fields[field_name] = {
+            if field_name not in fields_by_name:
+                fields_by_name[field_name] = {
                     'string': field_name,
                     'type': 'boolean',
                 }
