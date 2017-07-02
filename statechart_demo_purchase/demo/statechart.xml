@@ -37,9 +37,8 @@ statechart:
           - event: button_confirm
             target: confirmed
             action: |
-              # TODO this is not a very nice way
-              #      to invoke the origin method
-              o.button_confirm.origin(o)
+              # TODO this is not a very nice way to invoke the origin method
+              o.button_confirm.origin(o, *event.args, **event.kwargs)
           - event: write
             action: |
               # we can even have the write method go through the statechart
