@@ -96,7 +96,7 @@ class StatechartMixin(models.AbstractModel):
                     # TODO converting to json to determine if sc_state
                     #      has changed is not optimal
                     if new_sc_state != rec.sc_state:
-                        rec.sc_state = new_sc_state
+                        rec.write({'sc_state': new_sc_state})
                 except MissingError:  # pylint: disable=except-pass
                     # object has been deleted so don't attempt to set its state
                     pass
@@ -107,6 +107,15 @@ class StatechartMixin(models.AbstractModel):
     def _sc_make_event_method(cls, event_name):
         @api.multi
         def partial(self, *args, **kwargs):
+            if event_name == 'write':
+                vals = args[0]
+                if 'sc_state' in vals:
+                    if len(vals) == 1:
+                        return self.write.origin(self, vals)
+                    else:
+                        raise UserError(_(
+                            "Cannot write sc_state together "
+                            "with other values."))
             return self._sc_exec_event(event_name, *args, **kwargs)
         try:
             m = getattr(cls, event_name)

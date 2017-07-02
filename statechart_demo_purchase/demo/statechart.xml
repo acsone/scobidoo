@@ -25,8 +25,16 @@ statechart:
       - event: unlink
         # unlink test
         action: |
-          o.state = 'cancel'
-          o.unlink.origin(o)
+          # writing o.state would fail because, since there is a write
+          # event, the call to write ends up being enqueued, and therefore
+          # being executed after the actual unlink; so we write
+          # the call unlink again, which will itself be enqueued and
+          # only call the original unlink when the state is correct.
+          if o.state != 'cancel':
+              o.state = 'cancel'
+              o.unlink()
+          else:
+              o.unlink.origin(o)
     states:
       - name: draft
         on exit: |
