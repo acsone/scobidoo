@@ -5,6 +5,7 @@
 import json
 
 from openerp import fields
+from openerp.exceptions import UserError
 
 # AccountingTestCase runs after register_hook
 from openerp.addons.account.tests.account_test_classes \
@@ -132,3 +133,7 @@ class TestPOStatechart(AccountingTestCase):
         po_id = self.po.id
         self.po.unlink()
         self.assertFalse(self.PurchaseOrder.search([('id', '=', po_id)]))
+
+    def test_deep_user_error(self):
+        with self.assertRaises(UserError):
+            self.po.raise_user_error()

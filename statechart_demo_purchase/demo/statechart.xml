@@ -35,6 +35,9 @@ statechart:
               o.unlink()
           else:
               o.unlink.origin(o)
+      - event: raise_user_error
+        action: |
+          o.raise_user_error.origin(o)
     states:
       - name: draft
         on exit: |

@@ -2,8 +2,17 @@
 # Copyright 2016 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import sys
+
+from sismic.exceptions import CodeEvaluationError
 from sismic.interpreter import Interpreter as SismicInterpreter
 from sismic.model import Event
+
+
+def _root_cause(e):
+    if not hasattr(e, '__cause__') or not e.__cause__:
+        return e
+    return _root_cause(e.__cause__)
 
 
 class Interpreter(SismicInterpreter):
@@ -17,12 +26,23 @@ class Interpreter(SismicInterpreter):
     def executing(self):
         return self._in_execute_once
 
+    def execute(self):
+        try:
+            return super(Interpreter, self).execute()
+        except CodeEvaluationError as e:
+            # TODO how to get original traceback?
+            raise _root_cause(e), None, sys.exc_info()[2]
+
     def execute_once(self):
         if self._in_execute_once:
             raise RuntimeError("Cannot reenter execute_once")
         try:
             self._in_execute_once = True
-            return super(Interpreter, self).execute_once()
+            try:
+                return super(Interpreter, self).execute_once()
+            except CodeEvaluationError as e:
+                # TODO how to get original traceback?
+                raise _root_cause(e), None, sys.exc_info()[2]
         finally:
             self._in_execute_once = False
 
