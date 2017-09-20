@@ -142,3 +142,19 @@ class TestPOStatechart(AccountingTestCase):
     def test_deep_user_error(self):
         with self.assertRaises(UserError):
             self.po.raise_user_error()
+
+
+class TestPODelegatedStatechart(AccountingTestCase):
+
+    def setUp(self):
+        super(TestPODelegatedStatechart, self).setUp()
+        self.PurchaseOrderDelegated = self.env['purchase.order.delegated']
+        self.partner_id = self.env.ref('base.res_partner_1')
+        self.product_id_1 = self.env.ref('product.product_product_8')
+        self.pod = self.PurchaseOrderDelegated.create({
+            'partner_id': self.partner_id.id,
+        })
+
+    def test_allowed_field_delegated(self):
+        # test sc_allowed field from delegate inherited parent
+        self.assertTrue(self.pod.sc_do_nothing_allowed)

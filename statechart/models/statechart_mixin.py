@@ -163,31 +163,6 @@ class StatechartMixin(models.AbstractModel):
                 setattr(rec, field_name, allowed)
 
     @api.model
-    def _sc_patch(self):
-        Statechart = self.env['statechart']
-        statechart = Statechart.statechart_for_model(self._model._name)
-        if not statechart:
-            return
-        event_names = statechart.events_for()
-        _logger.debug("events: %s", event_names)
-        for event_name in event_names:
-            self._sc_make_event_method(event_name)
-            self._sc_make_event_allowed_field(event_name)
-        # in v9 this method does everything needed for the
-        # additional non-stored computed fields we have added,
-        # and does nothing on existing fields
-        # (it has been invoked in registry.setup_models before)
-        self._setup_fields(False)
-
-    # TODO convert to @api.model_cr in v10
-    def _register_hook(self, cr):
-        res = super(StatechartMixin, self)._register_hook(cr)
-        _logger.debug("StatechartMixin register hook for model %s",
-                      self._model)
-        self._sc_patch(cr, SUPERUSER_ID)
-        return res
-
-    @api.model
     def fields_view_get(self, view_id=None, view_type='form',
                         context=None, toolbar=False, submenu=False):
         # Override fields_view_get to automatically add
@@ -224,3 +199,41 @@ class StatechartMixin(models.AbstractModel):
                 }))
         result['arch'] = etree.tostring(doc)
         return result
+
+
+@api.model
+def _sc_patch(self):
+    cls = type(self)
+    if getattr(cls, '_sc_patch_done', False):
+        return
+
+    Statechart = self.env['statechart']
+    statechart = Statechart.statechart_for_model(self._model._name)
+    if statechart:
+        _logger.debug("_sc_patch for model %s", self._model)
+        event_names = statechart.events_for()
+        _logger.debug("events: %s", event_names)
+        for event_name in event_names:
+            self._sc_make_event_method(event_name)
+            self._sc_make_event_allowed_field(event_name)
+
+    for parent in self._inherits:
+        _sc_patch(self.env[parent])
+    self._add_inherited_fields()
+
+    # in v9 this method does everything needed for the
+    # additional non-stored computed fields we have added,
+    # and does nothing on existing fields
+    # (it has been invoked in registry.setup_models before)
+    self._setup_fields(False)
+
+    cls._sc_patch_done = True
+
+
+def _register_hook(self, cr):
+    res = _register_hook.origin(self, cr)
+    _sc_patch(self, cr, SUPERUSER_ID)
+    return res
+
+
+models.BaseModel._patch_method('_register_hook', _register_hook)
