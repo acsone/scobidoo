@@ -49,10 +49,22 @@ class StatechartMixin(models.AbstractModel):
     sc_display_state = fields.Char(
         compute='_compute_sc_display_state')
 
+    @api.model
+    def _get_statechart(self, search_parents):
+        Statechart = self.env['statechart']
+        statechart = Statechart.statechart_for_model(self._model._name)
+        if statechart:
+            return statechart
+        if search_parents:
+            for parent in self._inherits:
+                statechart = Statechart.statechart_for_model(parent)
+                if statechart:
+                    return statechart
+        return None
+
     @api.depends('sc_state')
     def _compute_sc_interpreter(self):
-        statechart_model = self.env['statechart']
-        statechart = statechart_model.statechart_for_model(self._model._name)
+        statechart = self._get_statechart(search_parents=False)
         for rec in self:
             _logger.debug("initializing interpreter for %s", rec)
             initial_context = {
@@ -144,8 +156,7 @@ class StatechartMixin(models.AbstractModel):
     def _compute_sc_event_allowed(self):
         # TODO depends() is partial (it does not know the dependencies of
         #      guards): make sure that works in all practical situations
-        Statechart = self.env['statechart']
-        statechart = Statechart.statechart_for_model(self._model._name)
+        statechart = self._get_statechart(search_parents=False)
         if not statechart:
             return
         event_names = statechart.events_for()
@@ -179,8 +190,7 @@ class StatechartMixin(models.AbstractModel):
             toolbar=toolbar, submenu=submenu)
         if view_type != 'form':
             return result
-        Statechart = self.env['statechart']
-        statechart = Statechart.statechart_for_model(self._model._name)
+        statechart = self._get_statechart(search_parents=True)
         if not statechart:
             return result
         fields_by_name = result['fields']

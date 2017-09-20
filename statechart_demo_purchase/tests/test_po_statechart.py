@@ -4,6 +4,8 @@
 
 import json
 
+from lxml import etree
+
 from openerp import fields
 from openerp.exceptions import UserError
 
@@ -143,6 +145,12 @@ class TestPOStatechart(AccountingTestCase):
         with self.assertRaises(UserError):
             self.po.raise_user_error()
 
+    def test_fields_view_get(self):
+        arch = self.env['purchase.order'].fields_view_get()['arch']
+        doc = etree.XML(arch)
+        field = doc.xpath('//field[@name="sc_do_nothing_allowed"]')
+        self.assertTrue(field)
+
 
 class TestPODelegatedStatechart(AccountingTestCase):
 
@@ -158,3 +166,9 @@ class TestPODelegatedStatechart(AccountingTestCase):
     def test_allowed_field_delegated(self):
         # test sc_allowed field from delegate inherited parent
         self.assertTrue(self.pod.sc_do_nothing_allowed)
+
+    def test_fields_view_get(self):
+        arch = self.env['purchase.order.delegated'].fields_view_get()['arch']
+        doc = etree.XML(arch)
+        field = doc.xpath('//field[@name="sc_do_nothing_allowed"]')
+        self.assertTrue(field)
