@@ -1,0 +1,7 @@
+--find-links https://wheelhouse.acsone.eu/manylinux1
+
+# odoo
+odoo-autodiscover>=2.0.0
+-r https://raw.githubusercontent.com/odoo/odoo/9.0/requirements.txt
+https://nightly.odoo.com/9.0/nightly/src/odoo_9.0.latest.zip
+
