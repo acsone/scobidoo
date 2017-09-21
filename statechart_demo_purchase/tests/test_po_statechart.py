@@ -10,12 +10,14 @@ from openerp import fields
 from openerp.exceptions import UserError
 
 # AccountingTestCase runs after register_hook
-from openerp.addons.account.tests.account_test_classes \
-    import AccountingTestCase
+from openerp.tests import common
 from openerp.addons.statechart.exceptions import NoTransitionError
 
 
-class TestPOStatechart(AccountingTestCase):
+# run tests after install so register_hook has run
+@common.at_install(False)
+@common.post_install(True)
+class TestPOStatechart(common.TransactionCase):
 
     def assertScState(self, sc_state, expected_config):
         if not expected_config:
@@ -152,7 +154,10 @@ class TestPOStatechart(AccountingTestCase):
         self.assertTrue(field)
 
 
-class TestPODelegatedStatechart(AccountingTestCase):
+# run tests after install so register_hook has run
+@common.at_install(False)
+@common.post_install(True)
+class TestPODelegatedStatechart(common.TransactionCase):
 
     def setUp(self):
         super(TestPODelegatedStatechart, self).setUp()
