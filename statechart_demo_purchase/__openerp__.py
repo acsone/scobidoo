@@ -16,6 +16,7 @@
     ],
     'data': [
         'views/purchase_order.xml',
+        'security/purchase_order_delegated.xml',
     ],
     'demo': [
         'demo/statechart.xml',
