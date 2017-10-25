@@ -4,7 +4,7 @@
 
 {
     'name': 'Statechart',
-    'summary': """
+    'description': """
         Add Statecharts to Odoo models""",
     'version': '9.0.1.0.0',
     'license': 'AGPL-3',
