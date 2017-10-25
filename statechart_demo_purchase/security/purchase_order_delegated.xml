@@ -6,7 +6,7 @@
 
     <record model="ir.model.access" id="purchase_order_delegated_access">
         <field name="name">purchase.order.delegated access</field>
-        <field name="model_id" ref="model_statechart"/>
+        <field name="model_id" ref="model_purchase_order_delegated"/>
         <field name="group_id" ref="base.group_user"/>
         <field name="perm_read" eval="1"/>
         <field name="perm_create" eval="1"/>
