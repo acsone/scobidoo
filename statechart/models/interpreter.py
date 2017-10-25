@@ -26,9 +26,9 @@ class Interpreter(SismicInterpreter):
     def executing(self):
         return self._in_execute_once
 
-    def execute(self):
+    def execute(self, max_steps=-1):
         try:
-            return super(Interpreter, self).execute()
+            return super(Interpreter, self).execute(max_steps)
         except CodeEvaluationError as e:
             # TODO how to get original traceback?
             raise _root_cause(e), None, sys.exc_info()[2]
@@ -85,6 +85,6 @@ class Interpreter(SismicInterpreter):
                 try:
                     if evaluator.evaluate_guard(transition, Event(event_name)):
                         return True
-                except:
+                except Exception:  # pylint: disable=broad-except
                     return None
         return False

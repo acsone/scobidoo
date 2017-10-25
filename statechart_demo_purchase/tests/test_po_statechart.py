@@ -115,7 +115,7 @@ class TestPOStatechart(common.TransactionCase):
         #      executing for the same record... need to find something better
         #      than a computed field to manage the lifecycle of interpreter
         #      instances
-        if False:
+        if False:  # pylint: disable=using-constant-test
             self.assertEqual(self.po.notes,
                              'Congrats for entering the approved state')
             self.assertFalse(self.po.sc_button_approve_allowed)
