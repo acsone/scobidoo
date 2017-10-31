@@ -221,6 +221,9 @@ def _sc_patch(self):
     if getattr(cls, '_sc_patch_done', False):
         return
 
+    if 'statechart' not in self.env:
+        return
+
     Statechart = self.env['statechart']
     statechart = Statechart.statechart_for_model(self._model._name)
     if statechart:
