@@ -196,6 +196,7 @@ class StatechartMixin(models.AbstractModel):
         fields_by_name = result['fields']
         doc = etree.XML(result['arch'])
         form = doc.xpath('/form')[0]
+        view = self.env['ir.ui.view'].search([('id', '=', result['view_id'])])
         for event_name in statechart.events_for():
             field_name = _sc_make_event_allowed_field_name(event_name)
             if field_name not in fields_by_name:
@@ -203,10 +204,13 @@ class StatechartMixin(models.AbstractModel):
                     'string': field_name,
                     'type': 'boolean',
                 }
-                form.append(etree.Element("field", {
+                new_node = etree.Element("field", {
                     "name": field_name,
                     "invisible": "1",
-                }))
+                })
+                form.append(new_node)
+                view.postprocess(result['model'], new_node, view_id, False,
+                                 result['fields'], context=None)
         result['arch'] = etree.tostring(doc)
         return result
 
