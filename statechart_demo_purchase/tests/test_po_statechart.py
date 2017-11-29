@@ -110,15 +110,9 @@ class TestPOStatechart(common.TransactionCase):
         self.assertScState(self.po.sc_state,
                            ["approved", "not draft", "root"])
         self.assertEqual(self.po.state, 'purchase')
-        # TODO this test is currently failing because _compute_sc_interpreter
-        #      create a new interpreter instance while another one is already
-        #      executing for the same record... need to find something better
-        #      than a computed field to manage the lifecycle of interpreter
-        #      instances
-        if False:  # pylint: disable=using-constant-test
-            self.assertEqual(self.po.notes,
-                             'Congrats for entering the approved state')
-            self.assertFalse(self.po.sc_button_approve_allowed)
+        self.assertEqual(self.po.notes,
+                         'Congrats for entering the approved state')
+        self.assertFalse(self.po.sc_button_approve_allowed)
 
     def test_no_write(self):
         self.po.button_confirm()
