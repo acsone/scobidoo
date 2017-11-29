@@ -13,3 +13,8 @@ class PurchaseOrder(models.Model):
 
     def raise_user_error(self):
         raise UserError(_("Some error"))
+
+    def write(self, vals):
+        if not vals.get('sc_state'):
+            self.sc_queue('check_write', vals)
+        return super(PurchaseOrder, self).write(vals)

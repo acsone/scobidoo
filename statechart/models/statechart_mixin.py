@@ -49,6 +49,16 @@ class StatechartMixin(models.AbstractModel):
     sc_display_state = fields.Char(
         compute='_compute_sc_display_state')
 
+    @api.multi
+    def sc_queue(self, event_name, *args, **kwargs):
+        for rec in self:
+            interpreter = rec.sc_interpreter
+            event = Event(event_name, args=args, kwargs=kwargs)
+            _logger.debug("=> queueing event %s for %s", event, rec)
+            interpreter.queue(event)
+            if not interpreter.executing:
+                rec._sc_execute(interpreter, event)
+
     @api.model
     def _get_statechart(self, search_parents):
         Statechart = self.env['statechart']
@@ -87,39 +97,59 @@ class StatechartMixin(models.AbstractModel):
             rec.sc_display_state = rec.sc_state
 
     @api.multi
+    def _sc_execute(self, interpreter, orig_event):
+        self.ensure_one()
+        steps = interpreter.execute()
+        _logger.debug("<= %s", steps)
+        if not all([step.transitions for step in steps]):
+            # at least one step had no transition => error
+            raise NoTransitionError(
+                _("Event not allowed.\n\n"
+                  "Original event: %s\nSteps: %s") %
+                (orig_event, steps,))
+        config = interpreter.save_configuration()
+        new_sc_state = json.dumps(config)
+        try:
+            # TODO converting to json to determine if sc_state
+            #      has changed is not optimal
+            if new_sc_state != self.sc_state:
+                self.write({'sc_state': new_sc_state})
+        except MissingError:  # pylint: disable=except-pass
+            # object has been deleted so don't attempt to set its state
+            pass
+
+    @api.multi
     def _sc_exec_event(self, event_name, *args, **kwargs):
         for rec in self:
             interpreter = rec.sc_interpreter
-            event = Event(event_name, args=args, kwargs=kwargs)
-            interpreter.queue(event)
-            _logger.debug("=> queueing event %s for %s", event, rec)
             if not interpreter.executing:
-                steps = interpreter.execute()
-                _logger.debug("<= %s", steps)
-                if not all([step.transitions for step in steps]):
-                    # at least one step had no transition => error
-                    raise NoTransitionError(
-                        _("Event not allowed.\n\n"
-                          "Original event: %s\nSteps: %s") %
-                        (event, steps,))
-                config = interpreter.save_configuration()
-                new_sc_state = json.dumps(config)
-                try:
-                    # TODO converting to json to determine if sc_state
-                    #      has changed is not optimal
-                    if new_sc_state != rec.sc_state:
-                        rec.write({'sc_state': new_sc_state})
-                except MissingError:  # pylint: disable=except-pass
-                    # object has been deleted so don't attempt to set its state
-                    pass
+                event = Event(event_name, args=args, kwargs=kwargs)
+                _logger.debug("=> queueing event %s for %s", event, rec)
+                interpreter.queue(event)
+                rec._sc_execute(interpreter, event)
                 if len(self) == 1 and event._return:
                     return event._return
+            else:
+                event = Event(event_name, args=args, kwargs=kwargs)
+                _logger.error(_(
+                    "Reentrancy error, this method call is being "
+                    "enqueued automatically as event %s for %s. "
+                    "Please use sc_queue() "
+                    "instead of a direct method call. "
+                    "This error will become fatal in a future "
+                    "version of Scobidoo."
+                ), event, rec)
+                interpreter.queue(event)
 
     @classmethod
     def _sc_make_event_method(cls, event_name):
+        if event_name == 'write':
+            raise UserError(_("write cannot be a statechart event"))
+
         @api.multi
         def partial(self, *args, **kwargs):
             if event_name == 'write':
+                # TODO remove this, we don't allow write as event
                 vals = args[0]
                 if 'sc_state' in vals:
                     if len(vals) == 1:
