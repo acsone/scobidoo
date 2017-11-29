@@ -148,16 +148,6 @@ class StatechartMixin(models.AbstractModel):
 
         @api.multi
         def partial(self, *args, **kwargs):
-            if event_name == 'write':
-                # TODO remove this, we don't allow write as event
-                vals = args[0]
-                if 'sc_state' in vals:
-                    if len(vals) == 1:
-                        return self.write.origin(self, vals)
-                    else:
-                        raise UserError(_(
-                            "Cannot write sc_state together "
-                            "with other values."))
             return self._sc_exec_event(event_name, *args, **kwargs)
         try:
             m = getattr(cls, event_name)
