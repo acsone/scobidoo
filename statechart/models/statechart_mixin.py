@@ -237,8 +237,7 @@ class StatechartMixin(models.AbstractModel):
 
 @api.model
 def _sc_patch(self):
-    cls = type(self)
-    if getattr(cls, '_sc_patch_done', False):
+    if hasattr(self, '_sc_patch_done'):
         return
 
     if 'statechart' not in self.env:
@@ -264,7 +263,7 @@ def _sc_patch(self):
     # (it has been invoked in registry.setup_models before)
     self._setup_fields(False)
 
-    cls._sc_patch_done = True
+    self._sc_patch_done = True
 
 
 def _register_hook(self, cr):
