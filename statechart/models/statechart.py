@@ -20,13 +20,8 @@ class Statechart(models.Model):
     _description = 'Statechart'
 
     name = fields.Char(
-        related='model_id.model',
+        required=True,
         readonly=True)
-    model_id = fields.Many2one(
-        'ir.model',
-        string='Model',
-        required='True',
-        ondelete='restrict')
     yaml = fields.Text(
         help="YAML representation of the state chart."
              "Currently it is the input, to become a computed field "
@@ -34,9 +29,9 @@ class Statechart(models.Model):
              "the statechart.")
 
     _sql_constraint = [
-        ('unique_model_id',
-         'unique(model_id)',
-         u'There can be at most one statechart per model')
+        ('unique_name',
+         'unique(name)',
+         u'Statechart name must be unique')
     ]
 
     @api.multi
@@ -51,20 +46,20 @@ class Statechart(models.Model):
                 raise
 
     @api.model
-    @tools.ormcache('model_name')
-    def statechart_for_model(self, model_name):
+    @tools.ormcache('name')
+    def statechart_for_name(self, name):
         """Load and parse the statechart for an Odoo model."""
-        statechart = self.search([('model_id.model', '=', model_name)])
+        statechart = self.search([('name', '=', name)])
         if not statechart:
             return
         return statechart.get_statechart()
 
     @api.multi
     def write(self, vals):
-        self.statechart_for_model.clear_cache(self)
+        self.statechart_for_name.clear_cache(self)
         return super(Statechart, self).write(vals)
 
     @api.multi
     def unlink(self):
-        self.statechart_for_model.clear_cache(self)
+        self.statechart_for_name.clear_cache(self)
         return super(Statechart, self).unlink()

@@ -10,6 +10,7 @@ class PurchaseOrder(models.Model):
 
     _inherit = ['purchase.order', 'statechart.mixin']
     _name = 'purchase.order'
+    _statechart = 'sc_purchase_order'
 
     def raise_user_error(self):
         raise UserError(_("Some error"))
