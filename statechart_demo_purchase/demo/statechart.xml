@@ -25,16 +25,8 @@ statechart:
       - event: unlink
         # unlink test
         action: |
-          # writing o.state would fail because, since there is a write
-          # event, the call to write ends up being enqueued, and therefore
-          # being executed after the actual unlink; so we write
-          # the call unlink again, which will itself be enqueued and
-          # only call the original unlink when the state is correct.
-          if o.state != 'cancel':
-              o.state = 'cancel'
-              o.unlink()
-          else:
-              o.unlink.origin(o)
+          o.state = 'cancel'
+          o.unlink.origin(o)
       - event: raise_user_error
         action: |
           o.raise_user_error.origin(o)
@@ -49,19 +41,14 @@ statechart:
             action: |
               # TODO this is not a very nice way to invoke the origin method
               o.button_confirm.origin(o, *event.args, **event.kwargs)
-          - event: write
-            action: |
-              # we can even have the write method go through the statechart
-              o.write.origin(o, event.args[0])
+          - event: check_write
       - name: not draft
         transitions:
-          - event: write
+          - event: check_write
             guard: |
               # and put some guard on the write methods, eg to
               # allow writeing selected fields only depending on state
               not (set(event.args[0].keys()) - set(['state', 'sc_state', 'notes', 'group_id']))
-            action: |
-              o.write.origin(o, event.args[0])
         states:
           - name: confirmed
             transitions:
