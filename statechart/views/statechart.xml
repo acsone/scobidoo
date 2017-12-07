@@ -12,12 +12,10 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <!-- TODO -->
+                    <field name="name"/>
                 </header>
                 <sheet>
-                    <!-- TODO -->
                     <group>
-                        <field name="model_id"/>
                         <field name="yaml"/>
                     </group>
                 </sheet>

@@ -32,6 +32,7 @@ class StatechartMixin(models.AbstractModel):
 
     _name = 'statechart.mixin'
     _description = 'Statechart Mixin'
+    _statechart = None  # The name of the statechart to use
 
     # TODO if we want this to be configurable through the Odoo UI
     #      this mixin probably must go away and the register_hook
@@ -62,12 +63,12 @@ class StatechartMixin(models.AbstractModel):
     @api.model
     def _get_statechart(self, search_parents):
         Statechart = self.env['statechart']
-        statechart = Statechart.statechart_for_model(self._model._name)
+        statechart = Statechart.statechart_for_name(self._model._statechart)
         if statechart:
             return statechart
         if search_parents:
             for parent in self._inherits:
-                statechart = Statechart.statechart_for_model(parent)
+                statechart = Statechart.statechart_for_name(parent._statechart)
                 if statechart:
                     return statechart
         return None
@@ -244,15 +245,21 @@ def _sc_patch(self):
     if 'statechart' not in self.env:
         return
 
-    Statechart = self.env['statechart']
-    statechart = Statechart.statechart_for_model(self._model._name)
-    if statechart:
-        _logger.debug("_sc_patch for model %s", self._model)
-        event_names = statechart.events_for()
-        _logger.debug("events: %s", event_names)
-        for event_name in event_names:
-            self._sc_make_event_method(event_name)
-            self._sc_make_event_allowed_field(event_name)
+    sc_name = getattr(cls, '_statechart', None)
+
+    if getattr(cls, '_sc_patch_done', False):
+        return
+
+    if sc_name:
+        Statechart = self.env['statechart']
+        statechart = Statechart.statechart_for_name(sc_name)
+        if statechart:
+            _logger.debug("_sc_patch for model %s", self._model)
+            event_names = statechart.events_for()
+            _logger.debug("events: %s", event_names)
+            for event_name in event_names:
+                self._sc_make_event_method(event_name)
+                self._sc_make_event_allowed_field(event_name)
 
     for parent in self._inherits:
         _sc_patch(self.env[parent])
