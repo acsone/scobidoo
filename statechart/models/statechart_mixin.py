@@ -241,7 +241,6 @@ def _sc_patch(self):
 
     if 'statechart' not in self.env:
         return
-
     Statechart = self.env['statechart']
     statechart = Statechart.statechart_for_model(self._model._name)
     if statechart:
@@ -251,6 +250,7 @@ def _sc_patch(self):
         for event_name in event_names:
             self._sc_make_event_method(event_name)
             self._sc_make_event_allowed_field(event_name)
+        cls._sc_patch_done = True
 
     for parent in self._inherits:
         _sc_patch(self.env[parent])
@@ -261,8 +261,6 @@ def _sc_patch(self):
     # and does nothing on existing fields
     # (it has been invoked in registry.setup_models before)
     self._setup_fields(False)
-
-    cls._sc_patch_done = True
 
 
 def _register_hook(self, cr):
