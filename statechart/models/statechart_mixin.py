@@ -131,15 +131,13 @@ class StatechartMixin(models.AbstractModel):
                     return event._return
             else:
                 event = Event(event_name, args=args, kwargs=kwargs)
-                _logger.error(_(
+                msg = _(
                     "Reentrancy error, this method call is being "
                     "enqueued automatically as event %s for %s. "
                     "Please use sc_queue() "
                     "instead of a direct method call. "
-                    "This error will become fatal in a future "
-                    "version of Scobidoo."
-                ), event, rec)
-                interpreter.queue(event)
+                ) % (event, rec)
+                raise RuntimeError(msg)
 
     @classmethod
     def _sc_make_event_method(cls, event_name):
