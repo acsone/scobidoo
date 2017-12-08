@@ -66,15 +66,19 @@ class StatechartMixin(models.AbstractModel):
         if statechart:
             return statechart
         if search_parents:
-            for parent in self._inherits:
-                statechart = Statechart.statechart_for_model(parent)
+            inherits = self._inherit
+            if not isinstance(inherits, list):
+                inherits = [inherits]
+            inherits.extend(self._inherits.keys())
+            for parent in inherits:
+                statechart = self.env[parent]._get_statechart(True)
                 if statechart:
                     return statechart
         return None
 
     @api.depends('sc_state')
     def _compute_sc_interpreter(self):
-        statechart = self._get_statechart(search_parents=False)
+        statechart = self._get_statechart(search_parents=True)
         for rec in self:
             _logger.debug("initializing interpreter for %s", rec)
             initial_context = {

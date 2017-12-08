@@ -79,5 +79,44 @@ statechart:
               o.notes = 'Congrats for entering the approved state'
         </field>
     </record>
-
+  <record model="statechart" id="statechart_grandparent_demo">
+        <field name="name">Statechart Grand Parents</field>
+        <field name="model_ids" eval="[(4, ref('statechart_demo_purchase.model_test_inherit_grand_parent'))]"/>
+        <field name="yaml">
+statechart:
+  name: Statechart Grand Parents
+  root state:
+    name: root
+    initial: draft
+    states:
+      - name: draft
+        transitions:
+          - event: button_confirm
+            target: confirmed
+      - name: confirmed
+        transitions:
+          - event: button_cancel
+            target: draft
+      </field>
+    </record>
+    <record model="statechart" id="statechart_child2_demo">
+        <field name="name">Statechart Child2</field>
+        <field name="model_ids" eval="[(4, ref('statechart_demo_purchase.model_test_inherit_child2'))]"/>
+        <field name="yaml">
+statechart:
+  name: Statechart Child2
+  root state:
+    name: root
+    initial: draft
+    states:
+      - name: draft
+        transitions:
+          - event: button_confirm
+            target: confirmed
+      - name: confirmed
+        transitions:
+          - event: button_cancel
+            target: draft
+      </field>
+    </record>
 </odoo>
