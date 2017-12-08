@@ -244,6 +244,10 @@ def _sc_patch(self):
     Statechart = self.env['statechart']
     statechart = Statechart.statechart_for_model(self._model._name)
     if statechart:
+        if not isinstance(self, StatechartMixin):
+            raise RuntimeError(
+                "Model %s with statechart %s must inherit from "
+                "'statechart.mixin'" % (self._model._name, statechart.name))
         _logger.debug("_sc_patch for model %s", self._model)
         event_names = statechart.events_for()
         _logger.debug("events: %s", event_names)
