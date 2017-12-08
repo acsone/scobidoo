@@ -33,3 +33,7 @@ class TestInherit(common.TransactionCase):
             self.child2.sc_interpreter.statechart.name,
             'Statechart Child2'
         )
+        self.assertTrue(
+            self.child1.sc_button_confirm_allowed)
+        self.assertTrue(
+            self.child2.sc_button_confirm_allowed)
