@@ -66,15 +66,19 @@ class StatechartMixin(models.AbstractModel):
         if statechart:
             return statechart
         if search_parents:
-            for parent in self._inherits:
-                statechart = Statechart.statechart_for_model(parent)
+            inherits = getattr(self, '_inherit', None) or []
+            if not isinstance(inherits, list):
+                inherits = [inherits]
+            inherits.extend(self._inherits.keys())
+            for parent in inherits:
+                statechart = self.env[parent]._get_statechart(True)
                 if statechart:
                     return statechart
         return None
 
     @api.depends('sc_state')
     def _compute_sc_interpreter(self):
-        statechart = self._get_statechart(search_parents=False)
+        statechart = self._get_statechart(search_parents=True)
         for rec in self:
             _logger.debug("initializing interpreter for %s", rec)
             initial_context = {
@@ -174,7 +178,7 @@ class StatechartMixin(models.AbstractModel):
     def _compute_sc_event_allowed(self):
         # TODO depends() is partial (it does not know the dependencies of
         #      guards): make sure that works in all practical situations
-        statechart = self._get_statechart(search_parents=False)
+        statechart = self._get_statechart(search_parents=True)
         if not statechart:
             return
         event_names = statechart.events_for()
@@ -241,9 +245,14 @@ def _sc_patch(self):
 
     if 'statechart' not in self.env:
         return
+
     Statechart = self.env['statechart']
     statechart = Statechart.statechart_for_model(self._model._name)
-    if statechart:
+    if statechart and not getattr(cls, '_sc_patch_done', False):
+        if not isinstance(self, StatechartMixin):
+            raise RuntimeError(
+                "Model %s with statechart %s must inherit from "
+                "'statechart.mixin'" % (self._model._name, statechart.name))
         _logger.debug("_sc_patch for model %s", self._model)
         event_names = statechart.events_for()
         _logger.debug("events: %s", event_names)
@@ -251,6 +260,17 @@ def _sc_patch(self):
             self._sc_make_event_method(event_name)
             self._sc_make_event_allowed_field(event_name)
         cls._sc_patch_done = True
+    elif isinstance(self, StatechartMixin):
+        # inherited fields from patched parent
+        statechart = self._get_statechart(search_parents=True)
+        if not statechart:
+            return
+        event_names = statechart.events_for()
+        for event_name in event_names:
+            field_name = _sc_make_event_allowed_field_name(event_name)
+            if field_name not in self._fields:
+                self._sc_make_event_allowed_field(event_name)
+        self._setup_fields(False)
 
     for parent in self._inherits:
         _sc_patch(self.env[parent])
