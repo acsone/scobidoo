@@ -13,27 +13,33 @@ class TestInherit(common.TransactionCase):
 
     def setUp(self):
         super(TestInherit, self).setUp()
-        # force two step validation
         self.child1 = self.env['test.inherit.child1'].create(
             {'name': 'child1'})
         self.child2 = self.env['test.inherit.child2'].create(
             {'name': 'child2'})
-        self.statechart_grand_parent = self.env.ref(
-            'statechart_demo_purchase.statechart_grandparent_demo')
-        self.statechart_grand_child2 = self.env.ref(
-            'statechart_demo_purchase.statechart_child2_demo')
 
     def test_statechart(self):
+        # child2 has it's own statechart
+        self.assertEqual(
+            self.child2.sc_interpreter.statechart.name,
+            'test.inherit.child2'
+        )
+        self.assertTrue(self.child2.sc_button_child2_allowed)
+        self.child2.button_child2()
+        # child2 does not have elements of it's parent statechart
+        with self.assertRaises(AttributeError):
+            self.child2.button_grand_parent()
+        with self.assertRaises(AttributeError):
+            self.child2.sc_button_grand_parent_allowed
         # check that the statechart is inherited for child1
         self.assertEqual(
             self.child1.sc_interpreter.statechart.name,
-            'Statechart Grand Parents'
+            'test.inherit.grand.parent'
         )
-        self.assertEqual(
-            self.child2.sc_interpreter.statechart.name,
-            'Statechart Child2'
-        )
-        self.assertTrue(
-            self.child1.sc_button_confirm_allowed)
-        self.assertTrue(
-            self.child2.sc_button_confirm_allowed)
+        self.assertTrue(self.child1.sc_button_grand_parent_allowed)
+        self.child1.button_grand_parent()
+        # child1 must not have elements of child2's statechart
+        with self.assertRaises(AttributeError):
+            self.child1.button_child2()
+        with self.assertRaises(AttributeError):
+            self.child1.sc_child2_allowed

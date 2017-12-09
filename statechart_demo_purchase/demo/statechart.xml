@@ -5,11 +5,11 @@
 <odoo noupdate="1">
 
     <record model="statechart" id="purchase_order_statechart_demo">
-        <field name="name">Purchase Order Statechart</field>
+        <field name="name">purchase.order</field>
         <field name="model_ids" eval="[(4, ref('purchase.model_purchase_order'))]"/>
         <field name="yaml">
 statechart:
-  name: Purchase Order statechart
+  name: purchase.order
   root state:
     name: root
     initial: draft
@@ -79,44 +79,36 @@ statechart:
               o.notes = 'Congrats for entering the approved state'
         </field>
     </record>
-  <record model="statechart" id="statechart_grandparent_demo">
-        <field name="name">Statechart Grand Parents</field>
+
+    <record model="statechart" id="statechart_grandparent_demo">
+        <field name="name">test.inherit.grand.parent</field>
         <field name="model_ids" eval="[(4, ref('statechart_demo_purchase.model_test_inherit_grand_parent'))]"/>
         <field name="yaml">
 statechart:
-  name: Statechart Grand Parents
+  name: test.inherit.grand.parent
   root state:
     name: root
     initial: draft
     states:
       - name: draft
         transitions:
-          - event: button_confirm
-            target: confirmed
-      - name: confirmed
-        transitions:
-          - event: button_cancel
-            target: draft
-      </field>
+          - event: button_grand_parent
+        </field>
     </record>
+
     <record model="statechart" id="statechart_child2_demo">
-        <field name="name">Statechart Child2</field>
+        <field name="name">test.inherit.child2</field>
         <field name="model_ids" eval="[(4, ref('statechart_demo_purchase.model_test_inherit_child2'))]"/>
         <field name="yaml">
 statechart:
-  name: Statechart Child2
+  name: test.inherit.child2
   root state:
     name: root
     initial: draft
     states:
       - name: draft
         transitions:
-          - event: button_confirm
-            target: confirmed
-      - name: confirmed
-        transitions:
-          - event: button_cancel
-            target: draft
-      </field>
+          - event: button_child2
+        </field>
     </record>
 </odoo>
