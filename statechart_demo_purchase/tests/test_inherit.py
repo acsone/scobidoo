@@ -18,8 +18,8 @@ class TestInherit(common.TransactionCase):
         self.child2 = self.env['test.inherit.child2'].create(
             {'name': 'child2'})
 
-    def test_statechart(self):
-        # child2 has it's own statechart
+    def test_statechart_override(self):
+        # child2 has it's own statechart, replaceing its parent's
         self.assertEqual(
             self.child2.sc_interpreter.statechart.name,
             'test.inherit.child2'
@@ -27,10 +27,10 @@ class TestInherit(common.TransactionCase):
         self.assertTrue(self.child2.sc_button_child2_allowed)
         self.child2.button_child2()
         # child2 does not have elements of it's parent statechart
-        with self.assertRaises(AttributeError):
-            self.child2.button_parent()
-        with self.assertRaises(AttributeError):
-            self.child2.sc_button_parent_allowed
+        self.assertFalse(hasattr(self.child2, 'button_parent'))
+        self.assertFalse(hasattr(self.child2, 'sc_button_parent_allowed'))
+
+    def test_statechart_inherit(self):
         # check that the statechart is inherited for child1
         self.assertEqual(
             self.child1.sc_interpreter.statechart.name,
@@ -39,7 +39,5 @@ class TestInherit(common.TransactionCase):
         self.assertTrue(self.child1.sc_button_parent_allowed)
         self.child1.button_parent()
         # child1 must not have elements of child2's statechart
-        with self.assertRaises(AttributeError):
-            self.child1.button_child2()
-        with self.assertRaises(AttributeError):
-            self.child1.sc_child2_allowed
+        self.assertFalse(hasattr(self.child1, 'button_child2'))
+        self.assertFalse(hasattr(self.child1, 'sc_button_child2_allowed'))
