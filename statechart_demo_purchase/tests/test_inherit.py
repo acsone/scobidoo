@@ -28,16 +28,16 @@ class TestInherit(common.TransactionCase):
         self.child2.button_child2()
         # child2 does not have elements of it's parent statechart
         with self.assertRaises(AttributeError):
-            self.child2.button_grand_parent()
+            self.child2.button_parent()
         with self.assertRaises(AttributeError):
-            self.child2.sc_button_grand_parent_allowed
+            self.child2.sc_button_parent_allowed
         # check that the statechart is inherited for child1
         self.assertEqual(
             self.child1.sc_interpreter.statechart.name,
-            'test.inherit.grand.parent'
+            'test.inherit.parent'
         )
-        self.assertTrue(self.child1.sc_button_grand_parent_allowed)
-        self.child1.button_grand_parent()
+        self.assertTrue(self.child1.sc_button_parent_allowed)
+        self.child1.button_parent()
         # child1 must not have elements of child2's statechart
         with self.assertRaises(AttributeError):
             self.child1.button_child2()

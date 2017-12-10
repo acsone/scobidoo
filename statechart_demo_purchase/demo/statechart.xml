@@ -79,18 +79,18 @@ statechart:
         </field>
     </record>
 
-    <record model="statechart" id="statechart_grandparent_demo">
-        <field name="model_ids" eval="[(4, ref('statechart_demo_purchase.model_test_inherit_grand_parent'))]"/>
+    <record model="statechart" id="statechart_parent_demo">
+        <field name="model_ids" eval="[(4, ref('statechart_demo_purchase.model_test_inherit_parent'))]"/>
         <field name="yaml">
 statechart:
-  name: test.inherit.grand.parent
+  name: test.inherit.parent
   root state:
     name: root
     initial: draft
     states:
       - name: draft
         transitions:
-          - event: button_grand_parent
+          - event: button_parent
         </field>
     </record>
 
