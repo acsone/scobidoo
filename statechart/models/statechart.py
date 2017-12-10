@@ -60,20 +60,20 @@ class Statechart(models.Model):
                 raise
 
     @api.model
-    @tools.ormcache('model_name')
-    def statechart_for_model(self, model_name):
+    @tools.ormcache('name')
+    def statechart_by_name(self, name):
         """Load and parse the statechart for an Odoo model."""
-        statechart = self.search([('model_ids.model', '=', model_name)])
+        statechart = self.search([('name', '=', name)])
         if not statechart:
-            return
+            raise RuntimeError("Statechart %s not found" % name)
         return statechart.get_statechart()
 
     @api.multi
     def write(self, vals):
-        self.statechart_for_model.clear_cache(self)
+        self.statechart_by_name.clear_cache(self)
         return super(Statechart, self).write(vals)
 
     @api.multi
     def unlink(self):
-        self.statechart_for_model.clear_cache(self)
+        self.self.statechart_by_name.clear_cache(self)
         return super(Statechart, self).unlink()
