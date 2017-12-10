@@ -20,24 +20,33 @@ class Statechart(models.Model):
     _description = 'Statechart'
 
     name = fields.Char(
-        required=True,
-        readonly=True)
+        readonly=True,
+        store=True,
+        compute='_compute_name',
+    )
     model_ids = fields.One2many(
-        'ir.model',
+        comodel_name='ir.model',
         inverse_name='statechart_id',
         string='Models',
-        ondelete='restrict')
+        ondelete='restrict',
+    )
     yaml = fields.Text(
         help="YAML representation of the state chart."
              "Currently it is the input, to become a computed field "
              "from a future record-based reprensentation of "
-             "the statechart.")
+             "the statechart.",
+    )
 
     _sql_constraint = [
         ('unique_name',
          'unique(name)',
          u'Statechart name must be unique')
     ]
+
+    @api.depends('yaml')
+    def _compute_name(self):
+        for rec in self:
+            rec.name = rec.get_statechart().name
 
     @api.multi
     def get_statechart(self):
