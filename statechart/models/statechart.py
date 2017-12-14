@@ -75,5 +75,5 @@ class Statechart(models.Model):
 
     @api.multi
     def unlink(self):
-        self.self.statechart_by_name.clear_cache(self)
+        self.statechart_by_name.clear_cache(self)
         return super(Statechart, self).unlink()
