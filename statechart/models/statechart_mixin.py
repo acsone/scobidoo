@@ -59,22 +59,10 @@ class StatechartMixin(models.AbstractModel):
             if not interpreter.executing:
                 rec._sc_execute(interpreter, event)
 
-    @api.model
-    def _get_statechart(self, search_parents):
-        Statechart = self.env['statechart']
-        statechart = Statechart.statechart_for_model(self._model._name)
-        if statechart:
-            return statechart
-        if search_parents:
-            for parent in self._inherits:
-                statechart = Statechart.statechart_for_model(parent)
-                if statechart:
-                    return statechart
-        return None
-
     @api.depends('sc_state')
     def _compute_sc_interpreter(self):
-        statechart = self._get_statechart(search_parents=False)
+        Statechart = self.env['statechart']
+        statechart = Statechart.statechart_by_name(self._statechart_name)
         for rec in self:
             _logger.debug("initializing interpreter for %s", rec)
             initial_context = {
@@ -132,8 +120,7 @@ class StatechartMixin(models.AbstractModel):
             else:
                 event = Event(event_name, args=args, kwargs=kwargs)
                 msg = _(
-                    "Reentrancy error, this method call is being "
-                    "enqueued automatically as event %s for %s. "
+                    "Reentrancy error for %s on %s. "
                     "Please use sc_queue() "
                     "instead of a direct method call. "
                 ) % (event, rec)
@@ -147,14 +134,17 @@ class StatechartMixin(models.AbstractModel):
         @api.multi
         def partial(self, *args, **kwargs):
             return self._sc_exec_event(event_name, *args, **kwargs)
+
         try:
             m = getattr(cls, event_name)
         except AttributeError:
-            _logger.debug("adding event method %s", event_name)
+            _logger.debug("adding event method %s to class %s",
+                          event_name, cls)
             setattr(cls, event_name, partial)
         else:
             if callable(m):
-                _logger.debug("patching event method %s", event_name)
+                _logger.debug("patching event method %s on class %s",
+                              event_name, cls)
                 cls._patch_method(event_name, partial)
             else:
                 raise UserError(
@@ -166,7 +156,7 @@ class StatechartMixin(models.AbstractModel):
     def _sc_make_event_allowed_field(self, event_name):
         field_name = _sc_make_event_allowed_field_name(event_name)
         field = fields.Boolean(compute='_compute_sc_event_allowed')
-        _logger.debug("adding field %s", field_name)
+        _logger.debug("adding field %s to %s", field_name, self)
         self._add_field(field_name, field)
 
     @api.multi
@@ -174,9 +164,8 @@ class StatechartMixin(models.AbstractModel):
     def _compute_sc_event_allowed(self):
         # TODO depends() is partial (it does not know the dependencies of
         #      guards): make sure that works in all practical situations
-        statechart = self._get_statechart(search_parents=False)
-        if not statechart:
-            return
+        Statechart = self.env['statechart']
+        statechart = Statechart.statechart_by_name(self._statechart_name)
         event_names = statechart.events_for()
         for rec in self:
             interpreter = rec.sc_interpreter
@@ -208,9 +197,8 @@ class StatechartMixin(models.AbstractModel):
             toolbar=toolbar, submenu=submenu)
         if view_type != 'form':
             return result
-        statechart = self._get_statechart(search_parents=True)
-        if not statechart:
-            return result
+        Statechart = self.env['statechart']
+        statechart = Statechart.statechart_by_name(self._statechart_name)
         fields_by_name = result['fields']
         doc = etree.XML(result['arch'])
         form = doc.xpath('/form')[0]
@@ -236,21 +224,42 @@ class StatechartMixin(models.AbstractModel):
 @api.model
 def _sc_patch(self):
     cls = type(self)
+
     if getattr(cls, '_sc_patch_done', False):
         return
+    cls._sc_patch_done = True
 
     if 'statechart' not in self.env:
         return
+
     Statechart = self.env['statechart']
-    statechart = Statechart.statechart_for_model(self._model._name)
-    if statechart:
+    sc = Statechart.search([('model_ids.model', '=', self._model._name)])
+    if sc:
+        # \o/ here is the magic trick
+        # TODO: If cls.__bases__[0]._statechart_name is set and
+        #       differs from statechart.name, it means a child model
+        #       tries to have a different statechart than it's parent.
+        #       Should this be an error, or should we leave it to the
+        #       dev to ensure the child's statechart is compatible
+        #       with the parent's?
+        cls.__bases__[0]._statechart_name = sc.name
+
+    # TODO For models with _inherit and _name where
+    #      the statechart is defined in a parent model, this method
+    #      only works if parent models are _sc_patch'ed before
+    #      children models. We need to check if this is guaranteed.
+    #      If not we need to manually call _sc_patch on _inherit
+    #      models first.
+
+    statechart_name = getattr(self, '_statechart_name', None)
+    if statechart_name:
         _logger.debug("_sc_patch for model %s", self._model)
+        statechart = Statechart.statechart_by_name(statechart_name)
         event_names = statechart.events_for()
         _logger.debug("events: %s", event_names)
         for event_name in event_names:
             self._sc_make_event_method(event_name)
             self._sc_make_event_allowed_field(event_name)
-        cls._sc_patch_done = True
 
     for parent in self._inherits:
         _sc_patch(self.env[parent])

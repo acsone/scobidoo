@@ -172,3 +172,44 @@ class TestPODelegatedStatechart(common.TransactionCase):
         doc = etree.XML(arch)
         field = doc.xpath('//field[@name="sc_do_nothing_allowed"]')
         self.assertTrue(field)
+
+
+# run tests after install so register_hook has run
+@common.at_install(False)
+@common.post_install(True)
+class TestPOInheritedStatechart(common.TransactionCase):
+
+    def setUp(self):
+        super(TestPOInheritedStatechart, self).setUp()
+        # force two step validation, otherwise button_confirm
+        # calls button_approve which creates a reentrency error
+        self.env.user.company_id.po_double_validation = 'two_step'
+        self.env.user.company_id.po_double_validation_amount = 0
+        self.env.user.write({
+            'groups_id': [
+                (3, self.env.ref('purchase.group_purchase_manager').id, False)
+            ],
+        })
+        self.assertFalse(
+            self.env.user.has_group('purchase.group_purchase_manager'))
+        # create a dummy PO
+        self.PurchaseOrderInherited = self.env['purchase.order.inherited']
+        self.partner_id = self.env.ref('base.res_partner_1')
+        self.product_id_1 = self.env.ref('product.product_product_8')
+        self.poi = self.PurchaseOrderInherited.create({
+            'partner_id': self.partner_id.id,
+        })
+
+    def test_allowed_field_inherited(self):
+        # test sc_allowed field from inherited parent
+        self.assertTrue(self.poi.sc_do_nothing_allowed)
+
+    def test_event_method_inherited(self):
+        # check a statechart event method has been generated in child class
+        self.poi.do_nothing()
+
+    def test_patched_event_method_inherited(self):
+        # check we actually go through the statechart
+        self.poi.button_confirm()
+        self.assertEqual(self.poi.notes,
+                         'Congrats for entering the approved state')

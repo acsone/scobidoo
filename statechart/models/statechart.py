@@ -20,24 +20,33 @@ class Statechart(models.Model):
     _description = 'Statechart'
 
     name = fields.Char(
-        related='model_id.model',
-        readonly=True)
-    model_id = fields.Many2one(
-        'ir.model',
-        string='Model',
-        required='True',
-        ondelete='restrict')
+        readonly=True,
+        store=True,
+        compute='_compute_name',
+    )
+    model_ids = fields.One2many(
+        comodel_name='ir.model',
+        inverse_name='statechart_id',
+        string='Models',
+        ondelete='restrict',
+    )
     yaml = fields.Text(
         help="YAML representation of the state chart."
              "Currently it is the input, to become a computed field "
              "from a future record-based reprensentation of "
-             "the statechart.")
+             "the statechart.",
+    )
 
     _sql_constraint = [
-        ('unique_model_id',
-         'unique(model_id)',
-         u'There can be at most one statechart per model')
+        ('unique_name',
+         'unique(name)',
+         u'Statechart name must be unique')
     ]
+
+    @api.depends('yaml')
+    def _compute_name(self):
+        for rec in self:
+            rec.name = rec.get_statechart().name
 
     @api.multi
     def get_statechart(self):
@@ -51,20 +60,20 @@ class Statechart(models.Model):
                 raise
 
     @api.model
-    @tools.ormcache('model_name')
-    def statechart_for_model(self, model_name):
+    @tools.ormcache('name')
+    def statechart_by_name(self, name):
         """Load and parse the statechart for an Odoo model."""
-        statechart = self.search([('model_id.model', '=', model_name)])
+        statechart = self.search([('name', '=', name)])
         if not statechart:
-            return
+            raise RuntimeError("Statechart %s not found" % name)
         return statechart.get_statechart()
 
     @api.multi
     def write(self, vals):
-        self.statechart_for_model.clear_cache(self)
+        self.statechart_by_name.clear_cache(self)
         return super(Statechart, self).write(vals)
 
     @api.multi
     def unlink(self):
-        self.statechart_for_model.clear_cache(self)
+        self.statechart_by_name.clear_cache(self)
         return super(Statechart, self).unlink()
