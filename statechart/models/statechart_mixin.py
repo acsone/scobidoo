@@ -43,7 +43,9 @@ class StatechartMixin(models.AbstractModel):
     #      a better way to cache interpreters; this is currently
     #      implemented with the sc_interpreter special field.
 
-    sc_state = fields.Char()
+    sc_state = fields.Char(
+        copy=False,
+    )
     sc_interpreter = InterpreterField(
         compute='_compute_sc_interpreter')
     sc_display_state = fields.Char(
