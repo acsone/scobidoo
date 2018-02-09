@@ -71,7 +71,7 @@ class TestPOStatechart(common.TransactionCase):
         })
 
     def test_1(self):
-        self.assertScState(self.po.sc_state, False)
+        self.assertScState(self.po.sc_state, ["draft", "root"])
         self.assertEqual(self.po.state, 'draft')
         self.assertTrue(self.po.sc_do_nothing_allowed)
         self.assertTrue(self.po.sc_button_confirm_allowed)

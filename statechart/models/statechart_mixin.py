@@ -220,6 +220,17 @@ class StatechartMixin(models.AbstractModel):
         result['arch'] = etree.tostring(doc)
         return result
 
+    @api.model
+    def create(self, vals):
+        rec = super(StatechartMixin, self).create(vals)
+        # make sure the interpreter is initialized, because
+        # merely entering the root state may have side effects
+        # (onentry, etc) and we don't want that to occur
+        # more than once
+        config = rec.sc_interpreter.save_configuration()
+        rec.sc_state = json.dumps(config)
+        return rec
+
 
 @api.model
 def _sc_patch(self):
