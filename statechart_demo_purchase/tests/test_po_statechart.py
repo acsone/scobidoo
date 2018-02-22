@@ -154,6 +154,16 @@ class TestPOStatechart(common.TransactionCase):
         self.assertTrue(po.sc_button_confirm_allowed)
         self.assertFalse(po.sc_button_cancel_allowed)
 
+    def test_default_get(self):
+        defaults = self.env['purchase.order'].default_get([
+            'sc_do_nothing_allowed',
+            'sc_button_confirm_allowed',
+            'sc_button_cancel_allowed',
+        ])
+        self.assertTrue(defaults.get('sc_do_nothing_allowed'))
+        self.assertTrue(defaults.get('sc_button_confirm_allowed'))
+        self.assertFalse(defaults.get('sc_button_cancel_allowed'))
+
 
 # run tests after install so register_hook has run
 @common.at_install(False)

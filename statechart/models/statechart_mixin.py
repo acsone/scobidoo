@@ -155,9 +155,12 @@ class StatechartMixin(models.AbstractModel):
                     (event_name, m, cls))
 
     @api.model
-    def _sc_make_event_allowed_field(self, event_name):
+    def _sc_make_event_allowed_field(self, event_name, default):
         field_name = _sc_make_event_allowed_field_name(event_name)
-        field = fields.Boolean(compute='_compute_sc_event_allowed')
+        field = fields.Boolean(
+            compute='_compute_sc_event_allowed',
+            default=default,
+        )
         _logger.debug("adding field %s to %s", field_name, self)
         self._add_field(field_name, field)
 
@@ -270,9 +273,22 @@ def _sc_patch(self):
         statechart = Statechart.statechart_by_name(statechart_name)
         event_names = statechart.events_for()
         _logger.debug("events: %s", event_names)
+        dummy = self.new()
+        dummy_interpreter = dummy.sc_interpreter
         for event_name in event_names:
             self._sc_make_event_method(event_name)
-            self._sc_make_event_allowed_field(event_name)
+            # This computation of a default value for the sc_event_allowed
+            # fields is necessary because the web ui issues a default_get
+            # call when opening a form in create mode instead of doing
+            # a new() then reading the fields.
+            # CAUTION: because this initialization of the interpreter
+            # implies executing the transition to the initial state,
+            # it is very important that anything this transition does
+            # is idempotent (ie it's associated action, and the on_entry
+            # of the initial state must not have side effects) - this
+            # is good practice anyway.
+            default = dummy_interpreter.is_event_allowed(event_name)
+            self._sc_make_event_allowed_field(event_name, default)
 
     for parent in self._inherits:
         _sc_patch(self.env[parent])
