@@ -160,6 +160,8 @@ class StatechartMixin(models.AbstractModel):
         field = fields.Boolean(
             compute='_compute_sc_event_allowed',
             default=default,
+            readonly=True,
+            store=False,
         )
         _logger.debug("adding field %s to %s", field_name, self)
         self._add_field(field_name, field)
