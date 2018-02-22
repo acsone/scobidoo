@@ -148,6 +148,12 @@ class TestPOStatechart(common.TransactionCase):
         field = doc.xpath('//field[@name="sc_do_nothing_allowed"]')
         self.assertTrue(field)
 
+    def test_defaults(self):
+        po = self.env['purchase.order'].new()
+        self.assertTrue(po.sc_do_nothing_allowed)
+        self.assertTrue(po.sc_button_confirm_allowed)
+        self.assertFalse(po.sc_button_cancel_allowed)
+
 
 # run tests after install so register_hook has run
 @common.at_install(False)
