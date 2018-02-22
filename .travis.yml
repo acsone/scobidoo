@@ -2,9 +2,9 @@ sudo: false
 cache: pip
 
 addons:
-    apt:
-     packages:
-        - expect-dev  # provides unbuffer utility
+  apt:
+    packages:
+      - expect-dev  # provides unbuffer utility
 
 language: python
 
@@ -24,22 +24,21 @@ jobs:
     - stage: test
       env: FLAKE8=1
       script: 
-      - echo "Flake8 check $ADDONS_TEST"
-      - acsoo flake8
+        - echo "Flake8 check $ADDONS_TEST"
+        - acsoo flake8
     - stage: test
       env: PYLINT=1
       script:
-      - echo "Pylint check $ADDONS_TEST"
-      - acsoo pylint
+        - echo "Pylint check $ADDONS_TEST"
+        - acsoo pylint
     - stage: test
       env: ODOO=1
       install:
-      - pip install -r requirements-test.txt
+        - pip install -r requirements-test.txt
       script:
-      - echo "Installing $ADDONS_INST"
-      - unbuffer ${VIRTUAL_ENV}/bin/openerp-server -d ${DB_NAME} --stop-after-init -i ${ADDONS_INST} | acsoo checklog
-      - echo "Testing $ADDONS_TEST"
-      - unbuffer coverage run ${VIRTUAL_ENV}/bin/openerp-server -d ${DB_NAME} --stop-after-init -i ${ADDONS_TEST} --test-enable | acsoo checklog
+        - echo "Installing $ADDONS_INST"
+        - unbuffer ${VIRTUAL_ENV}/bin/openerp-server -d ${DB_NAME} --stop-after-init -i ${ADDONS_INST} | acsoo checklog
+        - echo "Testing $ADDONS_TEST"
+        - unbuffer coverage run ${VIRTUAL_ENV}/bin/openerp-server -d ${DB_NAME} --stop-after-init -i ${ADDONS_TEST} --test-enable | acsoo checklog
       after_success:
-      - codecov
-
+        - codecov
