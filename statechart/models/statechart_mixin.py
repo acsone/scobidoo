@@ -275,10 +275,11 @@ def _sc_patch(self):
         statechart = Statechart.statechart_by_name(statechart_name)
         event_names = statechart.events_for()
         _logger.debug("events: %s", event_names)
+        for event_name in event_names:
+            self._sc_make_event_method(event_name)
         dummy = self.new()
         dummy_interpreter = dummy.sc_interpreter
         for event_name in event_names:
-            self._sc_make_event_method(event_name)
             # This computation of a default value for the sc_event_allowed
             # fields is necessary because the web ui issues a default_get
             # call when opening a form in create mode instead of doing
