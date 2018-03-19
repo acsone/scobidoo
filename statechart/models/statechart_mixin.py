@@ -96,7 +96,7 @@ class StatechartMixin(models.AbstractModel):
             raise NoTransitionError(
                 _("This action is not allowed in the current state "
                   "or with your access rights.\n\n"
-                  "Original event: %s\nSteps: %s") %
+                  "Technical details of the error: %s\nSteps: %s") %
                 (orig_event, steps,))
         config = interpreter.save_configuration()
         new_sc_state = json.dumps(config)
