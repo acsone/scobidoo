@@ -94,7 +94,8 @@ class StatechartMixin(models.AbstractModel):
         if not all([step.transitions for step in steps]):
             # at least one step had no transition => error
             raise NoTransitionError(
-                _("Event not allowed.\n\n"
+                _("This action is not allowed in the current state "
+                  "or with your access rights.\n\n"
                   "Original event: %s\nSteps: %s") %
                 (orig_event, steps,))
         config = interpreter.save_configuration()
