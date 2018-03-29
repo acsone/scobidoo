@@ -33,7 +33,7 @@ class Statechart(models.Model):
     yaml = fields.Text(
         help="YAML representation of the state chart."
              "Currently it is the input, to become a computed field "
-             "from a future record-based reprensentation of "
+             "from a future record-based representation of "
              "the statechart.",
     )
 
