@@ -254,6 +254,11 @@ def _sc_patch(self):
     Statechart = self.env['statechart']
     sc = Statechart.search([('model_ids.model', '=', self._model._name)])
     if sc:
+        if not isinstance(self, StatechartMixin):
+            _logger.warning("Statechart %s for model %s ignored because "
+                            "it does not inherit from StatechartMixin.",
+                            sc.name, self._model._name)
+            return
         # \o/ here is the magic trick
         # TODO: If cls.__bases__[0]._statechart_name is set and
         #       differs from statechart.name, it means a child model
