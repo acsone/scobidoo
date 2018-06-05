@@ -2,7 +2,7 @@
 
 # odoo
 odoo-autodiscover>=2.0.0
--r https://raw.githubusercontent.com/odoo/odoo/9.0/requirements.txt
-https://nightly.odoo.com/9.0/nightly/src/odoo_9.0.latest.zip
+-r https://raw.githubusercontent.com/odoo/odoo/10.0/requirements.txt
+https://nightly.odoo.com/9.0/nightly/src/odoo_10.0.latest.zip
 
 -e git+https://github.com/acsone/sismic.git@py27#egg=sismic
