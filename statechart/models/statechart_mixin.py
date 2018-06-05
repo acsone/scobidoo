@@ -7,7 +7,7 @@ import logging
 
 from lxml import etree
 
-from openerp import api, fields, models, _, SUPERUSER_ID
+from openerp import api, fields, models, _
 from openerp.exceptions import UserError, MissingError
 
 from .event import Event
