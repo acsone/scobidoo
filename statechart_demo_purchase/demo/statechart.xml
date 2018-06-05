@@ -24,6 +24,7 @@ statechart:
         </field>
     </record>
 
+<!-- statechart overwriting not supported 
     <record model="statechart" id="statechart_child2_demo">
         <field name="model_ids" eval="[(4, ref('statechart_demo_purchase.model_test_inherit_child2'))]"/>
         <field name="yaml">
@@ -38,5 +39,6 @@ statechart:
           - event: button_child2
         </field>
     </record>
+-->
 
 </odoo>
