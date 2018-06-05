@@ -7,7 +7,7 @@ import logging
 
 from lxml import etree
 
-from openerp import api, fields, models, _, SUPERUSER_ID
+from openerp import api, fields, models, _
 from openerp.exceptions import UserError, MissingError
 
 from .event import Event
@@ -240,80 +240,82 @@ class StatechartMixin(models.AbstractModel):
         return rec
 
 
-@api.model
-def _sc_patch(self):
-    cls = type(self)
+class Base(models.AbstractModel):
 
-    if getattr(cls, '_sc_patch_done', False):
-        return
-    cls._sc_patch_done = True
+    _inherit = 'base'
 
-    if 'statechart' not in self.env:
-        return
+    @api.model
+    def _sc_patch(self):
+        cls = type(self)
 
-    Statechart = self.env['statechart']
-    sc = Statechart.search([('model_ids.model', '=', self._model._name)])
-    if sc:
-        if not isinstance(self, StatechartMixin):
-            _logger.warning("Statechart %s for model %s ignored because "
-                            "it does not inherit from StatechartMixin.",
-                            sc.name, self._model._name)
+        if getattr(cls, '_sc_patch_done', False):
             return
-        # \o/ here is the magic trick
-        # TODO: If cls.__bases__[0]._statechart_name is set and
-        #       differs from statechart.name, it means a child model
-        #       tries to have a different statechart than it's parent.
-        #       Should this be an error, or should we leave it to the
-        #       dev to ensure the child's statechart is compatible
-        #       with the parent's?
-        cls.__bases__[0]._statechart_name = sc.name
+        cls._sc_patch_done = True
 
-    # TODO For models with _inherit and _name where
-    #      the statechart is defined in a parent model, this method
-    #      only works if parent models are _sc_patch'ed before
-    #      children models. We need to check if this is guaranteed.
-    #      If not we need to manually call _sc_patch on _inherit
-    #      models first.
+        if 'statechart' not in self.env:
+            return
 
-    statechart_name = getattr(self, '_statechart_name', None)
-    if statechart_name:
-        _logger.debug("_sc_patch for model %s", self._model)
-        statechart = Statechart.statechart_by_name(statechart_name)
-        event_names = statechart.events_for()
-        _logger.debug("events: %s", event_names)
-        for event_name in event_names:
-            self._sc_make_event_method(event_name)
-        dummy = self.new()
-        dummy_interpreter = dummy.sc_interpreter
-        for event_name in event_names:
-            # This computation of a default value for the sc_event_allowed
-            # fields is necessary because the web ui issues a default_get
-            # call when opening a form in create mode instead of doing
-            # a new() then reading the fields.
-            # CAUTION: because this initialization of the interpreter
-            # implies executing the transition to the initial state,
-            # it is very important that anything this transition does
-            # is idempotent (ie it's associated action, and the on_entry
-            # of the initial state must not have side effects) - this
-            # is good practice anyway.
-            default = dummy_interpreter.is_event_allowed(event_name)
-            self._sc_make_event_allowed_field(event_name, default)
+        Statechart = self.env['statechart']
+        sc = Statechart.search([('model_ids.model', '=', self._name)])
+        if sc:
+            if not isinstance(self, StatechartMixin):
+                _logger.warning("Statechart %s for model %s ignored because "
+                                "it does not inherit from StatechartMixin.",
+                                sc.name, self._model._name)
+                return
+            # \o/ here is the magic trick
+            # TODO: If cls.__bases__[0]._statechart_name is set and
+            #       differs from statechart.name, it means a child model
+            #       tries to have a different statechart than it's parent.
+            #       Should this be an error, or should we leave it to the
+            #       dev to ensure the child's statechart is compatible
+            #       with the parent's?
+            cls.__bases__[0]._statechart_name = sc.name
 
-    for parent in self._inherits:
-        _sc_patch(self.env[parent])
-    self._add_inherited_fields()
+        # TODO For models with _inherit and _name where
+        #      the statechart is defined in a parent model, this method
+        #      only works if parent models are _sc_patch'ed before
+        #      children models. We need to check if this is guaranteed.
+        #      If not we need to manually call _sc_patch on _inherit
+        #      models first.
 
-    # in v9 this method does everything needed for the
-    # additional non-stored computed fields we have added,
-    # and does nothing on existing fields
-    # (it has been invoked in registry.setup_models before)
-    self._setup_fields(False)
+        statechart_name = getattr(self, '_statechart_name', None)
+        if statechart_name:
+            _logger.debug("_sc_patch for model %s", self._model)
+            statechart = Statechart.statechart_by_name(statechart_name)
+            event_names = statechart.events_for()
+            _logger.debug("events: %s", event_names)
+            for event_name in event_names:
+                self._sc_make_event_method(event_name)
+            dummy = self.new()
+            dummy_interpreter = dummy.sc_interpreter
+            for event_name in event_names:
+                # This computation of a default value for the sc_event_allowed
+                # fields is necessary because the web ui issues a default_get
+                # call when opening a form in create mode instead of doing
+                # a new() then reading the fields.
+                # CAUTION: because this initialization of the interpreter
+                # implies executing the transition to the initial state,
+                # it is very important that anything this transition does
+                # is idempotent (ie it's associated action, and the on_entry
+                # of the initial state must not have side effects) - this
+                # is good practice anyway.
+                default = dummy_interpreter.is_event_allowed(event_name)
+                self._sc_make_event_allowed_field(event_name, default)
 
+        # TODO 10
+        # for parent in self._inherits:
+        #     _sc_patch(self.env[parent])
+        self._add_inherited_fields()
 
-def _register_hook(self, cr):
-    res = _register_hook.origin(self, cr)
-    _sc_patch(self, cr, SUPERUSER_ID)
-    return res
+        # in v9 this method does everything needed for the
+        # additional non-stored computed fields we have added,
+        # and does nothing on existing fields
+        # (it has been invoked in registry.setup_models before)
+        self._setup_fields(False)
 
-
-models.BaseModel._patch_method('_register_hook', _register_hook)
+    @api.model_cr
+    def _register_hook(self):
+        res = super(Base, self)._register_hook()
+        self._sc_patch()
+        return res
