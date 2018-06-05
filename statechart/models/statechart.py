@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2016 ACSONE SA/NV
+# Copyright 2016-2018 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import io
@@ -51,12 +51,17 @@ class Statechart(models.Model):
     @api.multi
     def get_statechart(self):
         self.ensure_one()
-        _logger.debug("loading statechart model for %s", self.display_name)
+        _logger.debug(
+            "loading statechart %s for %s",
+            self.name, self.model_ids.mapped('model'),
+        )
         with io.StringIO(self.yaml) as f:
             try:
-                return sismic_io.import_from_yaml(f)
+                statechart = sismic_io.import_from_yaml(f)
+                _logger.debug("loaded statechart %s", statechart.name)
+                return statechart
             except StatechartError:
-                # TODO better error message
+                _logger.error("error loading statechart", exc_info=True)
                 raise
 
     @api.model
