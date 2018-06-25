@@ -7,8 +7,8 @@ import logging
 
 from lxml import etree
 
-from openerp import api, fields, models, _
-from openerp.exceptions import UserError, MissingError
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError, MissingError
 
 from .event import Event
 from .interpreter import Interpreter
@@ -223,8 +223,9 @@ class StatechartMixin(models.AbstractModel):
                     "invisible": "1",
                 })
                 form.append(new_node)
-                view.postprocess(result['model'], new_node, view_id, False,
-                                 result['fields'], context=None)
+                view.with_context({}).postprocess(
+                    result['model'], new_node, view_id, False,
+                    result['fields'])
         result['arch'] = etree.tostring(doc)
         return result
 
@@ -239,18 +240,9 @@ class StatechartMixin(models.AbstractModel):
         rec.sc_state = json.dumps(config)
         return rec
 
-
-class Base(models.AbstractModel):
-
-    _inherit = 'base'
-
     @api.model
     def _sc_patch(self):
         cls = type(self)
-
-        if getattr(cls, '_sc_patch_done', False):
-            return
-        cls._sc_patch_done = True
 
         if 'statechart' not in self.env:
             return
@@ -261,7 +253,7 @@ class Base(models.AbstractModel):
             if not isinstance(self, StatechartMixin):
                 _logger.warning("Statechart %s for model %s ignored because "
                                 "it does not inherit from StatechartMixin.",
-                                sc.name, self._model._name)
+                                sc.name, self._name)
                 return
             # \o/ here is the magic trick
             # TODO: If cls.__bases__[0]._statechart_name is set and
@@ -281,13 +273,17 @@ class Base(models.AbstractModel):
 
         statechart_name = getattr(self, '_statechart_name', None)
         if statechart_name:
-            _logger.debug("_sc_patch for model %s", self._model)
+            _logger.debug("_sc_patch for model %s", self._name)
             statechart = Statechart.statechart_by_name(statechart_name)
             event_names = statechart.events_for()
             _logger.debug("events: %s", event_names)
             for event_name in event_names:
                 self._sc_make_event_method(event_name)
-            dummy = self.new()
+            # Had to init the sc_state or there will be a recursion
+            # error while getting the SC interpreter
+            dummy = self.new({
+                'sc_state': json.dumps({"configuration": ["root"]}),
+            })
             dummy_interpreter = dummy.sc_interpreter
             for event_name in event_names:
                 # This computation of a default value for the sc_event_allowed
@@ -316,6 +312,6 @@ class Base(models.AbstractModel):
 
     @api.model_cr
     def _register_hook(self):
-        res = super(Base, self)._register_hook()
+        res = super(StatechartMixin, self)._register_hook()
         self._sc_patch()
         return res
