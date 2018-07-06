@@ -5,11 +5,11 @@
 import io
 import logging
 
-from openerp import api, fields, models
-from openerp import tools
-
 from sismic.exceptions import StatechartError
 from sismic import io as sismic_io
+
+from openerp import api, fields, models
+from openerp import tools
 
 _logger = logging.getLogger(__name__)
 

@@ -128,6 +128,7 @@ class StatechartMixin(models.AbstractModel):
                     "instead of a direct method call. "
                 ) % (event, rec)
                 raise RuntimeError(msg)
+        return None
 
     @classmethod
     def _sc_make_event_method(cls, event_name):
