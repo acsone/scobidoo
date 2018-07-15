@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2017 ACSONE SA/NV
+# Copyright 2017-2018 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from openerp import api, fields, models, _
@@ -24,6 +24,7 @@ class IrModel(models.Model):
                 # this contrains doesn't work
                 # StatechartMixin = type(self.env['statechart.mixin'])
                 # if no isinstance(self.env[rec.model], StatechartMixin)
+                # TODO in v10, the isinstance method should work
                 raise ValidationError(_(
                     "Model %s must inherit from ''statechart.mixin' "
                     "to support statecharts.") % rec.model)
