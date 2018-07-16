@@ -7,12 +7,15 @@ from odoo import models, fields
 class GrandParent(models.AbstractModel):
     _name = 'test.inherit.grand.parent'
     _inherit = 'statechart.mixin'
+
     name = fields.Char()
 
 
 class Parent(models.AbstractModel):
     _inherit = 'test.inherit.grand.parent'
     _name = 'test.inherit.parent'
+    _statechart_file = \
+        'statechart_demo_purchase/models/statechart_parent_demo.yml'
 
 
 class Child1(models.Model):

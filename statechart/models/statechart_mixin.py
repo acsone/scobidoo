@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2016-2018 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
@@ -8,12 +7,11 @@ import logging
 from lxml import etree
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError, MissingError
+from odoo.exceptions import MissingError
 
 from .event import Event
 from .interpreter import Interpreter
 from ..exceptions import NoTransitionError
-
 
 _logger = logging.getLogger(__name__)
 
@@ -140,32 +138,6 @@ class StatechartMixin(models.AbstractModel):
                 raise RuntimeError(msg)
         return None
 
-    @classmethod
-    def _sc_make_event_method(cls, event_name):
-        if event_name == 'write':
-            raise UserError(_("write cannot be a statechart event"))
-
-        @api.multi
-        def partial(self, *args, **kwargs):
-            return self._sc_exec_event(event_name, *args, **kwargs)
-
-        try:
-            m = getattr(cls, event_name)
-        except AttributeError:
-            _logger.debug("adding event method %s to class %s",
-                          event_name, cls)
-            setattr(cls, event_name, partial)
-        else:
-            if callable(m):
-                _logger.debug("patching event method %s on class %s",
-                              event_name, cls)
-                cls._patch_method(event_name, partial)
-            else:
-                raise UserError(
-                    _("Statechart event %s would mask "
-                      "attribute %s of class %s") %
-                    (event_name, m, cls))
-
     @api.depends('sc_state')
     def _compute_sc_event_allowed(self):
         # TODO depends() is partial (it does not know the dependencies of
@@ -254,111 +226,3 @@ class StatechartMixin(models.AbstractModel):
                 default = dummy_interpreter.is_event_allowed(event_name)
                 res[field] = default
         return res
-
-    def _add_sc_event_allowed_field(self, event_name):
-        field_name = _sc_make_event_allowed_field_name(event_name)
-        if field_name not in type(self)._fields:
-            field = fields.Boolean(
-                compute='_compute_sc_event_allowed',
-                readonly=True,
-                store=False,
-            )
-            _logger.debug("adding field %s to %s", field_name, self)
-            self._add_field(field_name, field)
-            return True
-        return False
-
-    @api.model
-    def _add_manual_fields(self, partial):
-        """ Add sc_event_allowed fields.
-
-        We hook into _add_manual_fields since it is a natural place
-        to add fields that are declared in the database (ie
-        implicitly in the statechart in our case).
-
-        This cannot be done in _register_hook because some stuff
-        needs it before (ig loading views containing attrs referencing
-        these fields).
-        """
-        super(StatechartMixin, self)._add_manual_fields(partial)
-        statechart = self.env['statechart'].statechart_for_model(self._name)
-        if not statechart:
-            return
-        for event_name in statechart.events_for():
-            self._add_sc_event_allowed_field(event_name)
-
-
-class StatechartInjector(models.AbstractModel):
-    """ Inject statechart logic in all models that need one.
-
-    This is done as an abstract model, as a trick to have something
-    executed exactly once at the end of registry initialization.
-    """
-
-    _inherit = 'base'
-    _name = 'statechart.injector'
-
-    @api.model_cr
-    def _register_hook(self):
-        Statechart = self.env['statechart']
-
-        done = set()
-
-        def patch(model):
-            if model._name in done:
-                return
-            done.add(model._name)
-            # patch parents first (if not done yet)
-            parents = []
-            if isinstance(model._inherit, basestring):
-                parents.append(model._inherit)
-            elif model._inherit:
-                parents.extend(model._inherit)
-            parents.extend(model._inherits.keys())
-            for parent in parents:
-                patch(self.env[parent])
-            # make/patch event methods on models that have a statechart,
-            # they will be inherited
-            statechart = Statechart.statechart_for_model(model._name)
-            if not statechart:
-                return
-            if not isinstance(model, StatechartMixin):
-                _logger.error(
-                    "Statechart %s for model %s ignored because "
-                    "it does not inherit from StatechartMixin.",
-                    statechart.name, model,
-                )
-                return
-            if hasattr(model, '_statechart'):
-                _logger.error(
-                    "Statechart %s for model %s ignored because "
-                    "one of it's parent models already has a "
-                    "statechart (%s).",
-                    statechart.name, model, model._statechart.name,
-                )
-                return
-            # now let's patch the model
-            _logger.info(
-                "Patching model %s with statechart %s",
-                model, statechart.name,
-            )
-            type(model)._statechart = statechart
-            event_names = statechart.events_for()
-            _logger.debug("events: %s", event_names)
-            # add/patch event method
-            for event_name in event_names:
-                model._sc_make_event_method(event_name)
-
-        for model in self.env.values():
-            patch(model)
-
-        # second pass of adding sc_event_allowed fields, necessary for _inherit
-        for model in self.env.values():
-            statechart = getattr(type(model), '_statechart', None)
-            if not statechart:
-                continue
-            added = False
-            for event_name in statechart.events_for():
-                added = model._add_sc_event_allowed_field(event_name)
-            if added:
-                model._setup_fields(False)

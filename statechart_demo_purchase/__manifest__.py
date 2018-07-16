@@ -18,6 +18,5 @@
         'security/purchase_order_delegated.xml',
     ],
     'demo': [
-        'demo/statechart.xml',
     ],
 }

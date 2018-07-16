@@ -9,6 +9,8 @@ class PurchaseOrder(models.Model):
 
     _inherit = ['purchase.order', 'statechart.mixin']
     _name = 'purchase.order'
+    _statechart_file = \
+        'statechart_demo_purchase/models/purchase_order_statechart_demo.yml'
 
     def raise_user_error(self):
         raise UserError(_("Some error"))
