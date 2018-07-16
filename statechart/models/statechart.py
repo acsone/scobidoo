@@ -8,8 +8,8 @@ import logging
 from sismic.exceptions import StatechartError
 from sismic import io as sismic_io
 
-from openerp import api, fields, models
-from openerp import tools
+from odoo import api, fields, models
+from odoo import tools
 
 _logger = logging.getLogger(__name__)
 

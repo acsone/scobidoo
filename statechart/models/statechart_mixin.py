@@ -7,8 +7,8 @@ import logging
 
 from lxml import etree
 
-from openerp import api, fields, models, _
-from openerp.exceptions import UserError, MissingError
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError, MissingError
 
 from .event import Event
 from .interpreter import Interpreter
