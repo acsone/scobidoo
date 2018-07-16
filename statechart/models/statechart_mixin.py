@@ -258,16 +258,21 @@ class StatechartMixin(models.AbstractModel):
                 res[field] = default
         return res
 
+
+class IrModelFields(models.Model):
+
+    _inherit = 'ir.model.fields'
+
     @api.model
-    def _add_manual_fields(self, partial):
+    def _add_manual_fields(self, model):
         """ Add sc_event_allowed fields.
 
         We hook into _add_manual_fields since it is a natural place
         to add fields that are declared in the database (ie
         implicitly in the statechart in our case).
         """
-        super(StatechartMixin, self)._add_manual_fields(partial)
-        statechart = self.env['statechart'].statechart_for_model(self._name)
+        super(IrModelFields, self)._add_manual_fields(model)
+        statechart = self.env['statechart'].statechart_for_model(model._name)
         if not statechart:
             return
         event_names = statechart.events_for()
@@ -278,8 +283,8 @@ class StatechartMixin(models.AbstractModel):
                 readonly=True,
                 store=False,
             )
-            _logger.debug("adding field %s to %s", field_name, self)
-            self._add_field(field_name, field)
+            _logger.debug("adding field %s to %s", field_name, model)
+            model._add_field(field_name, field)
 
 
 class StatechartInjector(models.AbstractModel):
