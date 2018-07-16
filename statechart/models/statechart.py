@@ -46,16 +46,11 @@ class Statechart(models.Model):
     @api.depends('yaml')
     def _compute_name(self):
         for rec in self:
-            rec.name = rec.get_statechart().name
+            rec.name = self.parse_statechart(rec.yaml).name
 
-    @api.multi
-    def get_statechart(self):
-        self.ensure_one()
-        _logger.debug(
-            "loading statechart %s for %s",
-            self.name, self.model_ids.mapped('model'),
-        )
-        with io.StringIO(self.yaml) as f:
+    @api.model
+    def parse_statechart(self, yaml):
+        with io.StringIO(yaml) as f:
             try:
                 statechart = sismic_io.import_from_yaml(f)
                 _logger.debug("loaded statechart %s", statechart.name)
@@ -68,17 +63,57 @@ class Statechart(models.Model):
     @tools.ormcache('name')
     def statechart_by_name(self, name):
         """Load and parse the statechart for an Odoo model."""
-        statechart = self.search([('name', '=', name)])
-        if not statechart:
-            raise RuntimeError("Statechart %s not found" % name)
-        return statechart.get_statechart()
+        # Use SQL because when this is called, this statechart model
+        # may not be fully initialized.
+        self.env.cr.execute(
+            """SELECT yaml FROM statechart WHERE name=%s""",
+            (name, )
+        )
+        r = self.env.cr.fetchone()
+        if not r:
+            raise RuntimeError("Statechart named %s not found" % name)
+        yaml, = r
+        _logger.debug(
+            "loading statechart named %s...", name,
+        )
+        return self.parse_statechart(yaml)
+
+    @api.model
+    @tools.ormcache('model_name')
+    def statechart_for_model(self, model_name):
+        """Load and parse the statechart for an Odoo model.
+
+        Return the sismic statechart object or None if there
+        is no statechart defined for this model.
+        """
+        # Use SQL because when this is called, this statechart model
+        # may not be fully initialized.
+        self.env.cr.execute(
+            """
+            SELECT statechart.name, statechart.yaml
+            FROM ir_model, statechart
+            WHERE statechart.id=ir_model.statechart_id
+              AND ir_model.model=%s
+            """,
+            (model_name, )
+        )
+        r = self.env.cr.fetchone()
+        if not r:
+            return None
+        name, yaml = r
+        _logger.debug(
+            "loading statechart %s for model %s...", name, model_name,
+        )
+        return self.parse_statechart(yaml)
 
     @api.multi
     def write(self, vals):
         self.statechart_by_name.clear_cache(self)
+        self.statechart_for_model.clear_cache(self)
         return super(Statechart, self).write(vals)
 
     @api.multi
     def unlink(self):
         self.statechart_by_name.clear_cache(self)
+        self.statechart_for_model.clear_cache(self)
         return super(Statechart, self).unlink()

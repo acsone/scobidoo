@@ -24,6 +24,17 @@ def _sc_make_event_allowed_field_name(event_name):
     return 'sc_' + event_name + '_allowed'
 
 
+def _sc_is_event_allowed_field_name(field_name):
+    return (
+        field_name.startswith('sc_') and
+        field_name.endswith('_allowed')
+    )
+
+
+def _sc_event_from_event_allowed_field_name(field_name):
+    return field_name[3:-8]
+
+
 class InterpreterField(fields.Field):
     type = 'sc_interpreter'
 
@@ -156,18 +167,6 @@ class StatechartMixin(models.AbstractModel):
                       "attribute %s of class %s") %
                     (event_name, m, cls))
 
-    @api.model
-    def _sc_make_event_allowed_field(self, event_name, default):
-        field_name = _sc_make_event_allowed_field_name(event_name)
-        field = fields.Boolean(
-            compute='_compute_sc_event_allowed',
-            default=default,
-            readonly=True,
-            store=False,
-        )
-        _logger.debug("adding field %s to %s", field_name, self)
-        self._add_field(field_name, field)
-
     @api.depends('sc_state')
     def _compute_sc_event_allowed(self):
         # TODO depends() is partial (it does not know the dependencies of
@@ -239,6 +238,49 @@ class StatechartMixin(models.AbstractModel):
         rec.sc_state = json.dumps(config)
         return rec
 
+    @api.model
+    def default_get(self, fields_list):
+        """ Get default values for sc_event_allowed fields.
+
+        To compute this we instanciate a dummy interpreter. This implies
+        entering the initial state and executing the associated actions.
+        It is therefore important that such actions have no side effects.
+        """
+        res = super(StatechartMixin, self).default_get(fields_list)
+        dummy_interpreter = None
+        for field in fields_list:
+            if _sc_is_event_allowed_field_name(field):
+                if not dummy_interpreter:
+                    dummy = self.new()
+                    dummy_interpreter = dummy.sc_interpreter
+                event_name = _sc_event_from_event_allowed_field_name(field)
+                default = dummy_interpreter.is_event_allowed(event_name)
+                res[field] = default
+        return res
+
+    @api.model
+    def _add_manual_fields(self, partial):
+        """ Add sc_event_allowed fields.
+
+        We hook into _add_manual_fields since it is a natural place
+        to add fields that are declared in the database (ie
+        implicitly in the statechart in our case).
+        """
+        super(StatechartMixin, self)._add_manual_fields(partial)
+        statechart = self.env['statechart'].statechart_for_model(self._name)
+        if not statechart:
+            return
+        event_names = statechart.events_for()
+        for event_name in event_names:
+            field_name = _sc_make_event_allowed_field_name(event_name)
+            field = fields.Boolean(
+                compute='_compute_sc_event_allowed',
+                readonly=True,
+                store=False,
+            )
+            _logger.debug("adding field %s to %s", field_name, self)
+            self._add_field(field_name, field)
+
 
 class StatechartInjector(models.AbstractModel):
     """ Inject statechart logic in all models that need one.
@@ -260,11 +302,11 @@ class StatechartInjector(models.AbstractModel):
 
         done = set()
 
-        def patch(model):
-            if model in done:
+        def patch(model_name):
+            if model_name in done:
                 return
-            done.add(model)
-            Model = self.env[model]
+            done.add(model_name)
+            Model = self.env[model_name]
             # patch parents first (if not done yet)
             parents = []
             if isinstance(Model._inherit, basestring):
@@ -276,14 +318,14 @@ class StatechartInjector(models.AbstractModel):
                 patch(parent)
             # make/patch event methods on models that have a statechart,
             # they will be inherited
-            statechart_name = statechart_name_by_model.get(model)
+            statechart_name = statechart_name_by_model.get(model_name)
             if not statechart_name:
                 return
             if not isinstance(Model, StatechartMixin):
                 _logger.error(
                     "Statechart %s for model %s ignored because "
                     "it does not inherit from StatechartMixin.",
-                    statechart_name, model,
+                    statechart_name, model_name,
                 )
                 return
             if hasattr(Model, '_statechart_name'):
@@ -291,13 +333,13 @@ class StatechartInjector(models.AbstractModel):
                     "Statechart %s for model %s ignored because "
                     "one of it's parent models already has a "
                     "statechart (%s).",
-                    statechart_name, model, Model._statechart_name,
+                    statechart_name, model_name, Model._statechart_name,
                 )
                 return
             # now let's patch the model
             _logger.info(
                 "Patching model %s with statechart %s",
-                model, statechart_name,
+                model_name, statechart_name,
             )
             Model.__class__._statechart_name = statechart_name
             statechart = Statechart.statechart_by_name(statechart_name)
@@ -306,31 +348,6 @@ class StatechartInjector(models.AbstractModel):
             # add/patch event method
             for event_name in event_names:
                 Model._sc_make_event_method(event_name)
-            # add sc_event_allowed fields
-            dummy = Model.new()
-            dummy_interpreter = dummy.sc_interpreter
-            models_to_add_fields = [Model]
-            # we need to add sc_event_allowed fields to _inherit children
-            # they will be added on _inherits children later with
-            # _add_inherited_fields()
-            for m in Model._inherit_children:
-                models_to_add_fields.append(self.env[m])
-            for event_name in event_names:
-                # This computation of a default value for the sc_event_allowed
-                # fields is necessary because the web ui issues a default_get
-                # call when opening a form in create mode instead of doing
-                # a new() then reading the fields.
-                # CAUTION: because this initialization of the interpreter
-                # implies executing the transition to the initial state,
-                # it is very important that anything this transition does
-                # is idempotent (ie it's associated action, and the on_entry
-                # of the initial state must not have side effects) - this
-                # is good practice anyway.
-                default = dummy_interpreter.is_event_allowed(event_name)
-                for m in models_to_add_fields:
-                    m._sc_make_event_allowed_field(event_name, default)
 
-        for model in self.env:
-            patch(model)
-            self.env[model]._add_inherited_fields()
-            self.env[model]._setup_fields(False)
+        for model_name in self.env:
+            patch(model_name)
