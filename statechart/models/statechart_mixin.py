@@ -314,7 +314,7 @@ class StatechartInjector(models.AbstractModel):
             Model = self.env[model_name]
             # patch parents first (if not done yet)
             parents = []
-            if isinstance(Model._inherit, basestring):
+            if isinstance(Model._inherit, str):
                 parents.append(Model._inherit)
             elif Model._inherit:
                 parents.extend(Model._inherit)
