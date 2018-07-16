@@ -63,6 +63,8 @@ class Statechart(models.Model):
     @tools.ormcache('name')
     def statechart_by_name(self, name):
         """Load and parse the statechart for an Odoo model."""
+        if not self._table_exist():
+            raise RuntimeError("Statechart named %s not found" % name)
         # Use SQL because when this is called, this statechart model
         # may not be fully initialized.
         self.env.cr.execute(
@@ -86,6 +88,8 @@ class Statechart(models.Model):
         Return the sismic statechart object or None if there
         is no statechart defined for this model.
         """
+        if not self._table_exist():
+            return None
         # Use SQL because when this is called, this statechart model
         # may not be fully initialized.
         self.env.cr.execute(
