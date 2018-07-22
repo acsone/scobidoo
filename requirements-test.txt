@@ -2,4 +2,4 @@
 
 # odoo
 -r https://raw.githubusercontent.com/odoo/odoo/11.0/requirements.txt
-https://nightly.odoo.com/10.0/nightly/src/odoo_11.0.latest.zip
+https://nightly.odoo.com/11.0/nightly/src/odoo_11.0.latest.zip
