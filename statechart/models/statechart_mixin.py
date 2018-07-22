@@ -258,21 +258,9 @@ class StatechartMixin(models.AbstractModel):
                 res[field] = default
         return res
 
-    @api.model
-    def _add_manual_fields(self, partial):
-        """ Add sc_event_allowed fields.
-
-        We hook into _add_manual_fields since it is a natural place
-        to add fields that are declared in the database (ie
-        implicitly in the statechart in our case).
-        """
-        super(StatechartMixin, self)._add_manual_fields(partial)
-        statechart = self.env['statechart'].statechart_for_model(self._name)
-        if not statechart:
-            return
-        event_names = statechart.events_for()
-        for event_name in event_names:
-            field_name = _sc_make_event_allowed_field_name(event_name)
+    def _add_sc_event_allowed_field(self, event_name):
+        field_name = _sc_make_event_allowed_field_name(event_name)
+        if field_name not in type(self)._fields:
             field = fields.Boolean(
                 compute='_compute_sc_event_allowed',
                 readonly=True,
@@ -280,6 +268,25 @@ class StatechartMixin(models.AbstractModel):
             )
             _logger.debug("adding field %s to %s", field_name, self)
             self._add_field(field_name, field)
+
+    @api.model
+    def _add_manual_fields(self, partial):
+        """ Add sc_event_allowed fields.
+
+        We hook into _add_manual_fields since it is a natural place
+        to add fields that are declared in the database (ie
+        implicitly in the statechart in our case).
+
+        This cannot be done in _register_hook because some stuff
+        needs it before (ig loading views containing attrs referencing
+        these fields).
+        """
+        super(StatechartMixin, self)._add_manual_fields(partial)
+        statechart = self.env['statechart'].statechart_for_model(self._name)
+        if not statechart:
+            return
+        for event_name in statechart.events_for():
+            self._add_sc_event_allowed_field(event_name)
 
 
 class StatechartInjector(models.AbstractModel):
@@ -351,3 +358,13 @@ class StatechartInjector(models.AbstractModel):
 
         for model_name in self.env:
             patch(model_name)
+
+        # second pass of adding sc_event_allowed fields, necessary for _inherit
+        for model in self.env.values():
+            statechart_name = getattr(type(model), '_statechart_name', None)
+            if not statechart_name:
+                continue
+            statechart = Statechart.statechart_by_name(statechart_name)
+            for event_name in statechart.events_for():
+                model._add_sc_event_allowed_field(event_name)
+            model._setup_fields(False)
