@@ -302,11 +302,6 @@ class StatechartInjector(models.AbstractModel):
     @api.model_cr
     def _register_hook(self):
         Statechart = self.env['statechart']
-        statechart_by_model_name = {}
-        for statechart in Statechart.search([]):
-            for model_name in statechart.model_ids.mapped('model'):
-                statechart_by_model_name[model_name] = \
-                    Statechart.parse_statechart(statechart.yaml)
 
         done = set()
 
@@ -325,7 +320,7 @@ class StatechartInjector(models.AbstractModel):
                 patch(self.env[parent])
             # make/patch event methods on models that have a statechart,
             # they will be inherited
-            statechart = statechart_by_model_name.get(model._name)
+            statechart = Statechart.statechart_for_model(model._name)
             if not statechart:
                 return
             if not isinstance(model, StatechartMixin):

@@ -14,6 +14,17 @@ from odoo import tools
 _logger = logging.getLogger(__name__)
 
 
+def _parse_statechart(yaml):
+    with io.StringIO(yaml) as f:
+        try:
+            statechart = sismic_io.import_from_yaml(f)
+            _logger.debug("loaded statechart %s", statechart.name)
+            return statechart
+        except StatechartError:
+            _logger.error("error loading statechart", exc_info=True)
+            raise
+
+
 class Statechart(models.Model):
 
     _name = 'statechart'
@@ -46,39 +57,7 @@ class Statechart(models.Model):
     @api.depends('yaml')
     def _compute_name(self):
         for rec in self:
-            rec.name = self.parse_statechart(rec.yaml).name
-
-    @api.model
-    def parse_statechart(self, yaml):
-        with io.StringIO(yaml) as f:
-            try:
-                statechart = sismic_io.import_from_yaml(f)
-                _logger.debug("loaded statechart %s", statechart.name)
-                return statechart
-            except StatechartError:
-                _logger.error("error loading statechart", exc_info=True)
-                raise
-
-    @api.model
-    @tools.ormcache('name')
-    def statechart_by_name(self, name):
-        """Load and parse the statechart for an Odoo model."""
-        if not self._table_exist():
-            raise RuntimeError("Statechart named %s not found" % name)
-        # Use SQL because when this is called, this statechart model
-        # may not be fully initialized.
-        self.env.cr.execute(
-            """SELECT yaml FROM statechart WHERE name=%s""",
-            (name, )
-        )
-        r = self.env.cr.fetchone()
-        if not r:
-            raise RuntimeError("Statechart named %s not found" % name)
-        yaml, = r
-        _logger.debug(
-            "loading statechart named %s...", name,
-        )
-        return self.parse_statechart(yaml)
+            rec.name = _parse_statechart(rec.yaml).name
 
     @api.model
     @tools.ormcache('model_name')
@@ -108,16 +87,14 @@ class Statechart(models.Model):
         _logger.debug(
             "loading statechart %s for model %s...", name, model_name,
         )
-        return self.parse_statechart(yaml)
+        return _parse_statechart(yaml)
 
     @api.multi
     def write(self, vals):
-        self.statechart_by_name.clear_cache(self)
         self.statechart_for_model.clear_cache(self)
         return super(Statechart, self).write(vals)
 
     @api.multi
     def unlink(self):
-        self.statechart_by_name.clear_cache(self)
         self.statechart_for_model.clear_cache(self)
         return super(Statechart, self).unlink()
