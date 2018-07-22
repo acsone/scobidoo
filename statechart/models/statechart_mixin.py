@@ -74,8 +74,7 @@ class StatechartMixin(models.AbstractModel):
 
     @api.depends('sc_state')
     def _compute_sc_interpreter(self):
-        Statechart = self.env['statechart']
-        statechart = Statechart.statechart_by_name(self._statechart_name)
+        statechart = self._statechart
         for rec in self:
             _logger.debug("initializing interpreter for %s", rec)
             initial_context = {
@@ -171,8 +170,7 @@ class StatechartMixin(models.AbstractModel):
     def _compute_sc_event_allowed(self):
         # TODO depends() is partial (it does not know the dependencies of
         #      guards): make sure that works in all practical situations
-        Statechart = self.env['statechart']
-        statechart = Statechart.statechart_by_name(self._statechart_name)
+        statechart = self._statechart
         event_names = statechart.events_for()
         for rec in self:
             interpreter = rec.sc_interpreter
@@ -204,8 +202,7 @@ class StatechartMixin(models.AbstractModel):
             toolbar=toolbar, submenu=submenu)
         if view_type != 'form':
             return result
-        Statechart = self.env['statechart']
-        statechart = Statechart.statechart_by_name(self._statechart_name)
+        statechart = self._statechart
         fields_by_name = result['fields']
         doc = etree.XML(result['arch'])
         form = doc.xpath('/form')[0]
@@ -268,6 +265,9 @@ class StatechartMixin(models.AbstractModel):
             )
             _logger.debug("adding field %s to %s", field_name, self)
             self._add_field(field_name, field)
+            return True
+        else:
+            return False
 
     @api.model
     def _add_manual_fields(self, partial):
@@ -302,69 +302,69 @@ class StatechartInjector(models.AbstractModel):
     @api.model_cr
     def _register_hook(self):
         Statechart = self.env['statechart']
-        statechart_name_by_model = {}
+        statechart_by_model_name = {}
         for statechart in Statechart.search([]):
-            for model in statechart.model_ids.mapped('model'):
-                statechart_name_by_model[model] = statechart.name
+            for model_name in statechart.model_ids.mapped('model'):
+                statechart_by_model_name[model_name] = \
+                    Statechart.parse_statechart(statechart.yaml)
 
         done = set()
 
-        def patch(model_name):
-            if model_name in done:
+        def patch(model):
+            if model._name in done:
                 return
-            done.add(model_name)
-            Model = self.env[model_name]
+            done.add(model._name)
             # patch parents first (if not done yet)
             parents = []
-            if isinstance(Model._inherit, basestring):
-                parents.append(Model._inherit)
-            elif Model._inherit:
-                parents.extend(Model._inherit)
-            parents.extend(Model._inherits.keys())
+            if isinstance(model._inherit, basestring):
+                parents.append(model._inherit)
+            elif model._inherit:
+                parents.extend(model._inherit)
+            parents.extend(model._inherits.keys())
             for parent in parents:
-                patch(parent)
+                patch(self.env[parent])
             # make/patch event methods on models that have a statechart,
             # they will be inherited
-            statechart_name = statechart_name_by_model.get(model_name)
-            if not statechart_name:
+            statechart = statechart_by_model_name.get(model._name)
+            if not statechart:
                 return
-            if not isinstance(Model, StatechartMixin):
+            if not isinstance(model, StatechartMixin):
                 _logger.error(
                     "Statechart %s for model %s ignored because "
                     "it does not inherit from StatechartMixin.",
-                    statechart_name, model_name,
+                    statechart.name, model,
                 )
                 return
-            if hasattr(Model, '_statechart_name'):
+            if hasattr(model, '_statechart'):
                 _logger.error(
                     "Statechart %s for model %s ignored because "
                     "one of it's parent models already has a "
                     "statechart (%s).",
-                    statechart_name, model_name, Model._statechart_name,
+                    statechart.name, model, model._statechart.name,
                 )
                 return
             # now let's patch the model
             _logger.info(
                 "Patching model %s with statechart %s",
-                model_name, statechart_name,
+                model, statechart.name,
             )
-            Model.__class__._statechart_name = statechart_name
-            statechart = Statechart.statechart_by_name(statechart_name)
+            type(model)._statechart = statechart
             event_names = statechart.events_for()
             _logger.debug("events: %s", event_names)
             # add/patch event method
             for event_name in event_names:
-                Model._sc_make_event_method(event_name)
+                model._sc_make_event_method(event_name)
 
-        for model_name in self.env:
-            patch(model_name)
+        for model in self.env.values():
+            patch(model)
 
         # second pass of adding sc_event_allowed fields, necessary for _inherit
         for model in self.env.values():
-            statechart_name = getattr(type(model), '_statechart_name', None)
-            if not statechart_name:
+            statechart = getattr(type(model), '_statechart', None)
+            if not statechart:
                 continue
-            statechart = Statechart.statechart_by_name(statechart_name)
+            added = False
             for event_name in statechart.events_for():
-                model._add_sc_event_allowed_field(event_name)
-            model._setup_fields(False)
+                added = model._add_sc_event_allowed_field(event_name)
+            if added:
+                model._setup_fields(False)
