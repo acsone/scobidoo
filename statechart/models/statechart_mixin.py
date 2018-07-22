@@ -266,8 +266,7 @@ class StatechartMixin(models.AbstractModel):
             _logger.debug("adding field %s to %s", field_name, self)
             self._add_field(field_name, field)
             return True
-        else:
-            return False
+        return False
 
     @api.model
     def _add_manual_fields(self, partial):
