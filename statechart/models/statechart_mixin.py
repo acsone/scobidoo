@@ -4,8 +4,6 @@
 import json
 import logging
 
-from lxml import etree
-
 from odoo import api, fields, models, _
 from odoo.exceptions import MissingError
 
@@ -156,45 +154,6 @@ class StatechartMixin(models.AbstractModel):
                     # if he tries to do the action
                     allowed = True
                 setattr(rec, field_name, allowed)
-
-    @api.model
-    def fields_view_get(self, view_id=None, view_type='form',
-                        context=None, toolbar=False, submenu=False):
-        # Override fields_view_get to automatically add
-        # the sc_<event>_allowed fields to form view. This is necessary
-        # because the views are loaded before _register_hook so our
-        # runtime-added fields are not present at that time.
-        # This is also a shortcut for the developper who does
-        # not need to add them manually in the views.
-        # TODO we could go further and automatically make buttons
-        #      that trigger events visible or not; this is a bit
-        #      more (too much?) magical
-        result = super(StatechartMixin, self).fields_view_get(
-            view_id=view_id, view_type=view_type,
-            toolbar=toolbar, submenu=submenu)
-        if view_type != 'form':
-            return result
-        statechart = self._statechart
-        fields_by_name = result['fields']
-        doc = etree.XML(result['arch'])
-        form = doc.xpath('/form')[0]
-        view = self.env['ir.ui.view'].search([('id', '=', result['view_id'])])
-        for event_name in statechart.events_for():
-            field_name = _sc_make_event_allowed_field_name(event_name)
-            if field_name not in fields_by_name:
-                fields_by_name[field_name] = {
-                    'string': field_name,
-                    'type': 'boolean',
-                }
-                new_node = etree.Element("field", {
-                    "name": field_name,
-                    "invisible": "1",
-                })
-                form.append(new_node)
-                view.postprocess(result['model'], new_node, view_id, False,
-                                 result['fields'])
-        result['arch'] = etree.tostring(doc)
-        return result
 
     @api.model
     def create(self, vals):
