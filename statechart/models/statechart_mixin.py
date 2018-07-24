@@ -60,9 +60,9 @@ class StatechartMixin(models.AbstractModel):
 
     @api.multi
     def sc_queue(self, event_name, *args, **kwargs):
+        event = Event(event_name, None, args, kwargs)
         for rec in self:
             interpreter = rec.sc_interpreter
-            event = Event(event_name, args=args, kwargs=kwargs)
             _logger.debug("=> queueing event %s for %s", event, rec)
             interpreter.queue(event)
             if not interpreter.executing:
@@ -116,18 +116,16 @@ class StatechartMixin(models.AbstractModel):
             pass
 
     @api.multi
-    def _sc_exec_event(self, event_name, *args, **kwargs):
+    def _sc_exec_event(self, event):
         for rec in self:
             interpreter = rec.sc_interpreter
             if not interpreter.executing:
-                event = Event(event_name, args=args, kwargs=kwargs)
                 _logger.debug("=> queueing event %s for %s", event, rec)
                 interpreter.queue(event)
                 rec._sc_execute(interpreter, event)
                 if len(self) == 1 and event._return:
                     return event._return
             else:
-                event = Event(event_name, args=args, kwargs=kwargs)
                 msg = _(
                     "Reentrancy error for %s on %s. "
                     "Please use sc_queue() "

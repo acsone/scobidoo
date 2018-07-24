@@ -6,6 +6,7 @@ import logging
 from odoo import api, models, fields, _
 from odoo.exceptions import UserError
 
+from .event import Event
 from .statechart import parse_statechart_file
 from .statechart_mixin import (
     _sc_make_event_allowed_field_name,
@@ -16,25 +17,34 @@ _logger = logging.getLogger(__name__)
 
 
 class StatechartInjector(models.AbstractModel):
+    """ Inject statechart in models.
+
+    Having this in an AbstractModel that is otherwise not used,
+    gives us a mechanism to run something only once on all models,
+    at different stages in the registry setup process.
+    """
     _name = 'statechart.injector'
 
     def _sc_make_event_method(self, model, event_name):
         if event_name == 'write':
             raise UserError(_("write cannot be a statechart event"))
 
+        method = None
+
         @api.multi
         def partial(self, *args, **kwargs):
-            return self._sc_exec_event(event_name, *args, **kwargs)
+            event = Event(event_name, method, args, kwargs)
+            return self._sc_exec_event(event)
 
         cls = type(model)
 
         try:
-            m = getattr(cls, event_name)
+            method = getattr(cls, event_name)
         except AttributeError:
             _logger.debug("adding event method %s to %s", event_name, cls)
             setattr(cls, event_name, partial)
         else:
-            if callable(m):
+            if callable(method):
                 _logger.debug(
                     "patching event method %s on %s",
                     event_name, cls,
@@ -44,7 +54,7 @@ class StatechartInjector(models.AbstractModel):
                 raise UserError(
                     _("Statechart event %s would mask "
                       "attribute %s of %s") %
-                    (event_name, m, cls)
+                    (event_name, method, cls)
                 )
 
     def _sc_make_event_allowed_field(self, model, event_name):
@@ -63,12 +73,11 @@ class StatechartInjector(models.AbstractModel):
 
     @api.model
     def _prepare_setup(self):
-        """ Inject statechart in models.
+        """ Very early, load the statechart, and add the sc_event_allowed
+        fields on the model classes provided by the developer.
 
-        _prepare_setup() run very early. Having this in an AbstractModel
-        that is otherwise not used, gives us the garantee this will run
-        only once, so we can inject the sc_event_allowed fields in all models,
-        before further processing takes place in _setup_base etc.
+        Further steps of the regular setup process will then add these fields
+        on children models.
         """
         for model in self.env.values():
             model_cls = type(model).__bases__[0]
@@ -90,6 +99,24 @@ class StatechartInjector(models.AbstractModel):
             )
             model_cls._statechart = statechart
             for event_name in statechart.events_for():
-                self._sc_make_event_method(model, event_name)
                 self._sc_make_event_allowed_field(model, event_name)
-        return super()._prepare_setup()
+        return super(StatechartInjector, self)._prepare_setup()
+
+    @api.model
+    def _setup_complete(self):
+        """ Very late, patch the event methods to invoke the statechart.
+
+        Given the Odoo >= 10 inheritance model, we patch only the
+        class that has the statechart declared, in not the children classes.
+        """
+        for model in self.env.values():
+            model_cls = type(model).__bases__[0]
+            if not hasattr(model_cls, '_statechart'):
+                continue
+            if getattr(model_cls, '_statechart_patched', False):
+                continue
+            model_cls._statechart_patched = True
+            statechart = model._statechart
+            for event_name in statechart.events_for():
+                self._sc_make_event_method(model, event_name)
+        return super(StatechartInjector, self)._setup_complete()
