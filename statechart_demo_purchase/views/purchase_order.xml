@@ -30,6 +30,11 @@
             <attribute name="states"/>
             <attribute name="groups"/>
           </button>
+          <button name="button_cancel" position="after">
+            <field name="sc_button_confirm_allowed" invisible="1"/>
+            <field name="sc_button_approve_allowed" invisible="1"/>
+            <field name="sc_button_cancel_allowed" invisible="1"/>
+          </button>
         </field>
     </record>
 

@@ -19,9 +19,6 @@
         ],
     },
     'data': [
-        'views/ir_model.xml',
-        'security/statechart.xml',
-        'views/statechart.xml',
     ],
     'demo': [
     ],

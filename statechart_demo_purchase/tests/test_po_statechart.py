@@ -142,12 +142,6 @@ class TestPOStatechart(common.TransactionCase):
         with self.assertRaises(UserError):
             self.po.raise_user_error()
 
-    def test_fields_view_get(self):
-        arch = self.env['purchase.order'].fields_view_get()['arch']
-        doc = etree.XML(arch)
-        field = doc.xpath('//field[@name="sc_do_nothing_allowed"]')
-        self.assertTrue(field)
-
     def test_defaults(self):
         po = self.env['purchase.order'].new()
         self.assertTrue(po.sc_do_nothing_allowed)
