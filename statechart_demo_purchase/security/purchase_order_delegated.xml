@@ -24,6 +24,16 @@
         <field name="perm_unlink" eval="1"/>
     </record>
 
+    <record model="ir.model.access" id="test_inherit_parent_access">
+        <field name="name">test.inherit.parent access</field>
+        <field name="model_id" ref="model_test_inherit_parent"/>
+        <field name="group_id" ref="base.group_user"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+    </record>
+
     <record model="ir.model.access" id="test_inherit_child1_access">
         <field name="name">test.inherit.child1 access</field>
         <field name="model_id" ref="model_test_inherit_child1"/>

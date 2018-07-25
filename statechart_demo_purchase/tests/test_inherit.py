@@ -15,6 +15,8 @@ class TestInherit(common.TransactionCase):
 
     def setUp(self):
         super(TestInherit, self).setUp()
+        self.parent = self.env['test.inherit.parent'].create(
+            {'name': 'parent'})
         self.child1 = self.env['test.inherit.child1'].create(
             {'name': 'child1'})
         self.child2 = self.env['test.inherit.child2'].create(
@@ -52,3 +54,9 @@ class TestInherit(common.TransactionCase):
         # child1 must not have elements of child2's statechart
         self.assertFalse(hasattr(self.child1, 'button_child2'))
         self.assertFalse(hasattr(self.child1, 'sc_button_child2_allowed'))
+
+    def test_statechart_inherit_double_patch(self):
+        self.parent.button_parent()
+        self.child1.button_parent()
+        self.parent.button_parent_method()
+        self.child1.button_parent_method()
