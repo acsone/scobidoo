@@ -14,9 +14,6 @@ from openerp.tests import common
 from openerp.addons.statechart.exceptions import NoTransitionError
 
 
-# run tests after install so register_hook has run
-@common.at_install(False)
-@common.post_install(True)
 class TestPOStatechart(common.TransactionCase):
 
     def assertScState(self, sc_state, expected_config):
@@ -159,9 +156,6 @@ class TestPOStatechart(common.TransactionCase):
         self.assertFalse(defaults.get('sc_button_cancel_allowed'))
 
 
-# run tests after install so register_hook has run
-@common.at_install(False)
-@common.post_install(True)
 class TestPODelegatedStatechart(common.TransactionCase):
 
     def setUp(self):
@@ -184,9 +178,6 @@ class TestPODelegatedStatechart(common.TransactionCase):
         self.assertTrue(field)
 
 
-# run tests after install so register_hook has run
-@common.at_install(False)
-@common.post_install(True)
 class TestPOInheritedStatechart(common.TransactionCase):
 
     def setUp(self):
