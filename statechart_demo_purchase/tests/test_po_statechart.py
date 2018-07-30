@@ -210,7 +210,15 @@ class TestPOInheritedStatechart(common.TransactionCase):
         self.poi.do_nothing()
 
     def test_patched_event_method_inherited(self):
-        # check we actually go through the statechart
+        # sanity checks
+        self.assertEqual(self.poi.amount_total, 0)
+        self.assertNotIn(
+            self.env.ref('purchase.group_purchase_manager'),
+            self.env.user.groups_id
+        )
+        # check we actually go through the statechart:
+        # if amount < 1000, we transition automatically
+        # from confirmed to approved
         self.poi.button_confirm()
         self.assertEqual(self.poi.notes,
                          'Congrats for entering the approved state')
