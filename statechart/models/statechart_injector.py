@@ -82,9 +82,9 @@ class StatechartInjector(models.AbstractModel):
         """
         for model in self.env.values():
             model_cls = type(model).__bases__[0]
-            if hasattr(model_cls, '_statechart'):
+            if hasattr(model, '_statechart'):
                 continue
-            if not hasattr(model_cls, '_statechart_file'):
+            if not hasattr(model, '_statechart_file'):
                 continue
             if not isinstance(model, StatechartMixin):
                 _logger.warning(
@@ -92,11 +92,11 @@ class StatechartInjector(models.AbstractModel):
                     "inherit from statechart.mixin",
                     model_cls,
                 )
-            statechart = parse_statechart_file(model_cls._statechart_file)
+            statechart = parse_statechart_file(model._statechart_file)
             _logger.info(
                 "storing _statechart %s on model class %s",
                 statechart.name,
-                model_cls,
+                model,
             )
             model_cls._statechart = statechart
             for event_name in statechart.events_for():
@@ -112,9 +112,9 @@ class StatechartInjector(models.AbstractModel):
         """
         for model in self.env.values():
             model_cls = type(model).__bases__[0]
-            if not hasattr(model_cls, '_statechart'):
+            if not hasattr(model, '_statechart'):
                 continue
-            if getattr(model_cls, '_statechart_patched', False):
+            if getattr(model, '_statechart_patched', False):
                 continue
             model_cls._statechart_patched = True
             statechart = model._statechart
