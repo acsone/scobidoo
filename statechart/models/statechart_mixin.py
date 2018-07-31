@@ -241,15 +241,15 @@ class StatechartMixin(models.AbstractModel):
         """
         res = super(StatechartMixin, self)._prepare_setup()
         for model_cls in type(self).__bases__:
-            if hasattr(model_cls, '_statechart'):
+            if '_statechart_file' not in model_cls.__dict__:
                 _logger.debug(
-                    "_prepare_setup: class %s already has _statechart.",
+                    "_prepare_setup: class %s has no _statechart_file.",
                     model_cls,
                 )
                 continue
-            if not hasattr(model_cls, '_statechart_file'):
+            if hasattr(model_cls, '_statechart'):
                 _logger.debug(
-                    "_prepare_setup: class %s has no _statechart_file.",
+                    "_prepare_setup: class %s already has _statechart.",
                     model_cls,
                 )
                 continue
@@ -275,13 +275,13 @@ class StatechartMixin(models.AbstractModel):
         """
         res = super(StatechartMixin, self)._setup_complete()
         for model_cls in type(self).__bases__:
-            if not hasattr(model_cls, '_statechart'):
+            if '_statechart_file' not in model_cls.__dict__:
                 _logger.debug(
-                    "_setup_complete: class %s has no _statechart",
+                    "_setup_complete: class %s has no _statechart_file.",
                     model_cls,
                 )
                 continue
-            if getattr(model_cls, '_statechart_patched', False):
+            if hasattr(model_cls, '_statechart_patched'):
                 _logger.debug(
                     "_setup_complete: class %s is already patched",
                     model_cls,
