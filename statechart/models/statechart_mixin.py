@@ -6,10 +6,11 @@ import json
 import logging
 
 from openerp import api, fields, models, _
-from openerp.exceptions import MissingError
+from openerp.exceptions import UserError, MissingError
 
 from .event import Event
 from .interpreter import Interpreter
+from .statechart import parse_statechart_file
 from ..exceptions import NoTransitionError
 
 _logger = logging.getLogger(__name__)
@@ -183,4 +184,118 @@ class StatechartMixin(models.AbstractModel):
                 event_name = _sc_event_from_event_allowed_field_name(field)
                 default = dummy_interpreter.is_event_allowed(event_name)
                 res[field] = default
+        return res
+
+    def _sc_make_event_method(self, model, event_name):
+        if event_name == 'write':
+            raise UserError(_("write cannot be a statechart event"))
+
+        method = None
+
+        @api.multi
+        def partial(self, *args, **kwargs):
+            event = Event(event_name, method, args, kwargs)
+            return self._sc_exec_event(event)
+
+        cls = type(model)
+
+        try:
+            method = getattr(cls, event_name)
+        except AttributeError:
+            _logger.debug("adding event method %s to %s", event_name, cls)
+            setattr(cls, event_name, partial)
+        else:
+            if callable(method):
+                _logger.debug(
+                    "patching event method %s on %s",
+                    event_name, cls,
+                )
+                cls._patch_method(event_name, partial)
+            else:
+                raise UserError(
+                    _("Statechart event %s would mask "
+                      "attribute %s of %s") %
+                    (event_name, method, cls)
+                )
+
+    def _sc_make_event_allowed_field(self, model_cls, event_name):
+        # we add the fields in the original python class
+        # so all downstream field processing done by Odoo works
+        # (_inherit, _inherits in particular)
+        field_name = _sc_make_event_allowed_field_name(event_name)
+        field = fields.Boolean(
+            compute='_compute_sc_event_allowed',
+            readonly=True,
+            store=False,
+        )
+        _logger.debug("adding field %s to %s", field_name, model_cls)
+        setattr(model_cls, field_name, field)
+
+    @api.model
+    def _prepare_setup(self):
+        """ Very early, load the statechart, and add the sc_event_allowed
+        fields on the model classes provided by the developer.
+
+        Further steps of the regular setup process will then add these fields
+        on children models.
+        """
+        res = super(StatechartMixin, self)._prepare_setup()
+        for model_cls in type(self).__bases__:
+            if hasattr(model_cls, '_statechart'):
+                _logger.debug(
+                    "_prepare_setup: class %s already has _statechart.",
+                    model_cls,
+                )
+                continue
+            if not hasattr(model_cls, '_statechart_file'):
+                _logger.debug(
+                    "_prepare_setup: class %s has no _statechart_file.",
+                    model_cls,
+                )
+                continue
+            statechart = parse_statechart_file(model_cls._statechart_file)
+            _logger.info(
+                "adding sc_event_allowed fields of statechart %s on %s.",
+                statechart.name,
+                model_cls,
+            )
+            model_cls._statechart = statechart
+            for event_name in statechart.events_for():
+                self._sc_make_event_allowed_field(model_cls, event_name)
+            # we are not supposed to have multiple statecharts on a model
+            break
+        return res
+
+    @api.model
+    def _setup_complete(self):
+        """ Very late, patch the event methods to invoke the statechart.
+
+        Given the Odoo >= 10 inheritance model, we patch only the
+        class that has the statechart declared, in not the children classes.
+        """
+        res = super(StatechartMixin, self)._setup_complete()
+        for model_cls in type(self).__bases__:
+            if not hasattr(model_cls, '_statechart'):
+                _logger.debug(
+                    "_setup_complete: class %s has no _statechart",
+                    model_cls,
+                )
+                continue
+            if getattr(model_cls, '_statechart_patched', False):
+                _logger.debug(
+                    "_setup_complete: class %s is already patched",
+                    model_cls,
+                )
+                continue
+            statechart = model_cls._statechart
+            _logger.info(
+                "patching/adding event methods of statechart %s on %s.",
+                statechart.name,
+                type(self),
+            )
+            model_cls._statechart_patched = True
+            for event_name in statechart.events_for():
+                self._sc_make_event_method(self, event_name)
+            # we are not supposed to have multiple statecharts on a model
+            break
         return res
