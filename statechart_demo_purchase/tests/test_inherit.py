@@ -7,9 +7,6 @@ import unittest
 from openerp.tests import common
 
 
-# run tests after install so register_hook has run
-@common.at_install(False)
-@common.post_install(True)
 class TestInherit(common.TransactionCase):
 
     def setUp(self):

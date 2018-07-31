@@ -8,3 +8,4 @@ class PurchaseOrderInherited(models.Model):
 
     _inherit = 'purchase.order'
     _name = 'purchase.order.inherited'
+    _table = 'purchase_order'

@@ -13,9 +13,6 @@ from openerp.tests import common
 from openerp.addons.statechart.exceptions import NoTransitionError
 
 
-# run tests after install so register_hook has run
-@common.at_install(False)
-@common.post_install(True)
 class TestPOStatechart(common.TransactionCase):
 
     def assertScState(self, sc_state, expected_config):
@@ -158,9 +155,6 @@ class TestPOStatechart(common.TransactionCase):
         self.assertFalse(defaults.get('sc_button_cancel_allowed'))
 
 
-# run tests after install so register_hook has run
-@common.at_install(False)
-@common.post_install(True)
 class TestPODelegatedStatechart(common.TransactionCase):
 
     def setUp(self):
@@ -183,9 +177,6 @@ class TestPODelegatedStatechart(common.TransactionCase):
         self.assertTrue(field)
 
 
-# run tests after install so register_hook has run
-@common.at_install(False)
-@common.post_install(True)
 class TestPOInheritedStatechart(common.TransactionCase):
 
     def setUp(self):
@@ -218,7 +209,15 @@ class TestPOInheritedStatechart(common.TransactionCase):
         self.poi.do_nothing()
 
     def test_patched_event_method_inherited(self):
-        # check we actually go through the statechart
+        # sanity checks
+        self.assertEqual(self.poi.amount_total, 0)
+        self.assertNotIn(
+            self.env.ref('purchase.group_purchase_manager'),
+            self.env.user.groups_id
+        )
+        # check we actually go through the statechart:
+        # if amount < 1000, we transition automatically
+        # from confirmed to approved
         self.poi.button_confirm()
         self.assertEqual(self.poi.notes,
                          'Congrats for entering the approved state')
