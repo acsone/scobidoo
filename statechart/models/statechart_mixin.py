@@ -268,34 +268,28 @@ class StatechartMixin(models.AbstractModel):
 
     @api.model
     def _setup_complete(self):
-        """ Very late, patch the event methods to invoke the statechart.
-
-        Given the Odoo >= 10 inheritance model, we patch only the
-        class that has the statechart declared, in not the children classes.
-        """
+        """ Very late, patch the event methods to invoke the statechart. """
         res = super(StatechartMixin, self)._setup_complete()
-        for model_cls in type(self).__bases__:
-            if not hasattr(model_cls, '_statechart'):
-                _logger.debug(
-                    "_setup_complete: class %s has no _statechart",
-                    model_cls,
-                )
-                continue
-            if getattr(model_cls, '_statechart_patched', False):
-                _logger.debug(
-                    "_setup_complete: class %s is already patched",
-                    model_cls,
-                )
-                continue
-            statechart = model_cls._statechart
-            _logger.info(
-                "patching/adding event methods of statechart %s on %s.",
-                statechart.name,
-                type(self),
+        cls = type(self)
+        if not hasattr(cls, '_statechart'):
+            _logger.debug(
+                "_setup_complete: class %s has no _statechart",
+                cls,
             )
-            model_cls._statechart_patched = True
-            for event_name in statechart.events_for():
-                self._sc_make_event_method(self, event_name)
-            # we are not supposed to have multiple statecharts on a model
-            break
+            return res
+        if getattr(cls, '_statechart_patched', False):
+            _logger.debug(
+                "_setup_complete: class %s is already patched",
+                cls,
+            )
+            return res
+        statechart = cls._statechart
+        _logger.info(
+            "patching/adding event methods of statechart %s on %s.",
+            statechart.name,
+            cls,
+        )
+        cls._statechart_patched = True
+        for event_name in statechart.events_for():
+            self._sc_make_event_method(self, event_name)
         return res
