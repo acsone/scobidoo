@@ -6,12 +6,12 @@ import json
 
 from lxml import etree
 
-from openerp import fields
-from openerp.exceptions import UserError
+from odoo import fields
+from odoo.exceptions import UserError
 
 # AccountingTestCase runs after register_hook
-from openerp.tests import common
-from openerp.addons.statechart.exceptions import NoTransitionError
+from odoo.tests import common
+from odoo.addons.statechart.exceptions import NoTransitionError
 
 
 class TestPOStatechart(common.TransactionCase):

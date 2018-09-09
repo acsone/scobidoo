@@ -5,7 +5,7 @@
 import unittest
 
 # AccountingTestCase runs after register_hook
-from openerp.tests import common
+from odoo.tests import common
 
 
 class TestInherit(common.TransactionCase):
