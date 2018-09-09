@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 # AccountingTestCase runs after register_hook
-from openerp.tests import common
+from odoo.tests import common
 
 from odoo.addons.statechart.exceptions import NoTransitionError
 
