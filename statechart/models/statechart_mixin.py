@@ -74,7 +74,11 @@ class StatechartMixin(models.AbstractModel):
     def _compute_sc_interpreter(self):
         statechart = self._statechart
         for rec in self:
-            _logger.debug("initializing interpreter for %s", rec)
+            _logger.debug(
+                "initializing interpreter for %s "
+                "with statechart %s",
+                rec, statechart.name,
+            )
             initial_context = {
                 'o': rec,
                 # TODO: more action context
@@ -202,11 +206,11 @@ class StatechartMixin(models.AbstractModel):
         try:
             method = getattr(cls, event_name)
         except AttributeError:
-            _logger.debug("adding event method %s to %s", event_name, cls)
+            _logger.info("adding event method %s to %s", event_name, cls)
             setattr(cls, event_name, partial)
         else:
             if callable(method):
-                _logger.debug(
+                _logger.info(
                     "patching event method %s on %s",
                     event_name, cls,
                 )
@@ -223,73 +227,73 @@ class StatechartMixin(models.AbstractModel):
         # so all downstream field processing done by Odoo works
         # (_inherit, _inherits in particular)
         field_name = _sc_make_event_allowed_field_name(event_name)
+        if hasattr(model_cls, field_name):
+            return
         field = fields.Boolean(
             compute='_compute_sc_event_allowed',
             readonly=True,
             store=False,
         )
-        _logger.debug("adding field %s to %s", field_name, model_cls)
+        _logger.info("adding field %s to %s", field_name, model_cls)
         setattr(model_cls, field_name, field)
 
     @api.model
     def _prepare_setup(self):
         """ Very early, load the statechart, and add the sc_event_allowed
-        fields on the model classes provided by the developer.
+        fields on the model classes where the developer has declared
+        the _statechart_file attribute.
+
+        This closely emulates what the developer would have done when
+        adding such fields manually.
 
         Further steps of the regular setup process will then add these fields
         on children models.
         """
         res = super(StatechartMixin, self)._prepare_setup()
         for model_cls in type(self).__bases__:
-            if hasattr(model_cls, '_statechart'):
-                _logger.debug(
-                    "_prepare_setup: class %s already has _statechart.",
-                    model_cls,
-                )
-                continue
-            if not hasattr(model_cls, '_statechart_file'):
+            if '_statechart_file' not in model_cls.__dict__:
                 _logger.debug(
                     "_prepare_setup: class %s has no _statechart_file.",
                     model_cls,
                 )
                 continue
             statechart = parse_statechart_file(model_cls._statechart_file)
-            _logger.info(
+            _logger.debug(
                 "adding sc_event_allowed fields of statechart %s on %s.",
                 statechart.name,
                 model_cls,
             )
-            model_cls._statechart = statechart
             for event_name in statechart.events_for():
                 self._sc_make_event_allowed_field(model_cls, event_name)
-            # we are not supposed to have multiple statecharts on a model
-            break
         return res
 
     @api.model
     def _setup_complete(self):
-        """ Very late, patch the event methods to invoke the statechart. """
+        """ Very late, patch the event methods to invoke the statechart.
+
+        We record a set of event methods already patched, so an inherited
+        class can override the statechart with another one adding new events,
+        and we will not patch the same method twice.
+        """
         res = super(StatechartMixin, self)._setup_complete()
         cls = type(self)
-        if not hasattr(cls, '_statechart'):
+        if not hasattr(self, '_statechart_file'):
             _logger.debug(
-                "_setup_complete: class %s has no _statechart",
+                "_setup_complete: class %s has no _statechart_file.",
                 cls,
             )
             return res
-        if getattr(cls, '_statechart_patched', False):
-            _logger.debug(
-                "_setup_complete: class %s is already patched",
-                cls,
-            )
-            return res
-        statechart = cls._statechart
-        _logger.info(
+        statechart = parse_statechart_file(self._statechart_file)
+        _logger.debug(
             "patching/adding event methods of statechart %s on %s.",
             statechart.name,
             cls,
         )
-        cls._statechart_patched = True
+        cls._statechart = statechart
+        if not hasattr(cls, '_statechart_patched'):
+            cls._statechart_patched = set()
         for event_name in statechart.events_for():
-            self._sc_make_event_method(self, event_name)
+            if event_name not in cls._statechart_patched:
+                self._sc_make_event_method(self, event_name)
+                cls._statechart_patched.add(event_name)
         return res
