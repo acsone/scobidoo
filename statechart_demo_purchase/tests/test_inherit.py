@@ -5,8 +5,6 @@
 # AccountingTestCase runs after register_hook
 from openerp.tests import common
 
-from odoo.addons.statechart.exceptions import NoTransitionError
-
 
 class TestInherit(common.TransactionCase):
 
@@ -31,16 +29,12 @@ class TestInherit(common.TransactionCase):
         # child2 does have elements of it's parent statechart
         # but they are disabled because they are not in child2's statechart
         self.assertFalse(self.child2.sc_button_parent_allowed)
-        with self.assertRaises(NoTransitionError):
-            self.child2.button_parent()
 
     def test_statechart_override_2(self):
         # model test.inherit.parent has been overridden by,
         # a subclass that adds event button_parent_override
         self.parent.button_parent_override()
         self.child1.button_parent_override()
-        with self.assertRaises(NoTransitionError):
-            self.child2.button_parent_override()
 
     def test_statechart_inherit(self):
         # check that the statechart is inherited for child1
