@@ -21,6 +21,12 @@ class Parent(models.Model):
         pass
 
 
+class ParentOverride(models.Model):
+    _inherit = 'test.inherit.parent'
+    _statechart_file = \
+        'statechart_demo_purchase/models/statechart_parent_override_demo.yml'
+
+
 class Child1(models.Model):
     _name = 'test.inherit.child1'
     _inherit = 'test.inherit.parent'
@@ -32,3 +38,5 @@ class Child1(models.Model):
 class Child2(models.Model):
     _name = 'test.inherit.child2'
     _inherit = 'test.inherit.parent'
+    _statechart_file = \
+        'statechart_demo_purchase/models/statechart_child2_demo.yml'

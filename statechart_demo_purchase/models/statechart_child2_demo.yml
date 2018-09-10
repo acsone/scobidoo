@@ -1,0 +1,9 @@
+statechart:
+  name: test.inherit.child2
+  root state:
+    name: root
+    initial: draft
+    states:
+      - name: draft
+        transitions:
+          - event: button_child2
