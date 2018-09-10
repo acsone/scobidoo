@@ -268,21 +268,22 @@ class StatechartMixin(models.AbstractModel):
         return res
 
     @api.model
-    def _setup_complete(self):
-        """ Very late, patch the event methods to invoke the statechart.
-
-        We record a set of event methods already patched, so an inherited
-        class can override the statechart with another one adding new events,
-        and we will not patch the same method twice.
-        """
-        res = super(StatechartMixin, self)._setup_complete()
+    def _sc_patch(self):
         cls = type(self)
         if not hasattr(self, '_statechart_file'):
             _logger.debug(
                 "_setup_complete: class %s has no _statechart_file.",
                 cls,
             )
-            return res
+            return
+        if self._inherit:
+            if isinstance(self._inherit, str):
+                parents = [self._inherit]
+            else:
+                parents = self._inherit
+            for parent in parents:
+                if parent != self._name:
+                    self.env[parent]._sc_patch()
         statechart = parse_statechart_file(self._statechart_file)
         _logger.debug(
             "patching/adding event methods of statechart %s on %s.",
@@ -296,4 +297,15 @@ class StatechartMixin(models.AbstractModel):
             if event_name not in cls._statechart_patched:
                 self._sc_make_event_method(self, event_name)
                 cls._statechart_patched.add(event_name)
+
+    @api.model
+    def _setup_complete(self):
+        """ Very late, patch the event methods to invoke the statechart.
+
+        We record a set of event methods already patched, so an inherited
+        class can override the statechart with another one adding new events,
+        and we will not patch the same method twice.
+        """
+        res = super(StatechartMixin, self)._setup_complete()
+        self._sc_patch()
         return res
