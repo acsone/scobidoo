@@ -9,15 +9,5 @@ and has performance issues.
 This is meant as a replacement, based on the Statechart
 paradigm.
 
-Roadmap
--------
-
-* can we do without the StatechartMixin abstract class? for now it's
-  here because it's easier to add the register_hook, but more importantly
-  to add the sc_state; maybe it's possible to have a custom field type
-  to hold sc_state and the asociated interpreter state, simimlar to alfodoo's cmisfield
-* make statechart.yaml a computed field (possibly bidirectional) so the statechart
-  can be created (and extended) with standard Odoo records;
-  potential difficulty is to preserve xmlids.
-* have a Odoo UI to create statechart records
-* and many important implementation details TODO's in the code
+There is no documentation yet. In the meantime here are the
+[Odoo Experience 2018](https://docs.google.com/presentation/d/e/2PACX-1vR9VGsSQUnITdnQq5KRiWnY7o-yERCB8YfnqxzhFW5tFcJ8AzMmIQ1CpLTdEgy5Sz9nx-yQlC0BhyGR/pub?start=false&loop=false&delayms=3000) which should get you started.
