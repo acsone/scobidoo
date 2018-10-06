@@ -81,6 +81,7 @@ class StatechartMixin(models.AbstractModel):
             )
             initial_context = {
                 'o': rec,
+                'self': rec,
                 # TODO: more action context
             }
             interpreter = Interpreter(
