@@ -1,5 +1,5 @@
 # Copyright 2016-2018 ACSONE SA/NV
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 import logging
 
@@ -22,5 +22,6 @@ def parse_statechart(f):
 
 
 def parse_statechart_file(filename):
+    _logger.info("loading statechart file %s", filename)
     with tools.file_open(filename, 'r') as f:
         return parse_statechart(f)
