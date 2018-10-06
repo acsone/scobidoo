@@ -41,7 +41,7 @@ statechart:
             guard: |
               # and put some guard on the write methods, eg to
               # allow writeing selected fields only depending on state
-              not (set(event.args[0].keys()) - set(['state', 'sc_state', 'notes', 'group_id']))
+              not (set(event.args[0].keys()) - set(['state', 'sc_state', 'notes', 'group_id', 'date_approve']))
         states:
           - name: confirmed
             transitions:
