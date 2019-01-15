@@ -7,6 +7,7 @@ from odoo import fields, models
 class PurchaseOrderDelegated(models.Model):
 
     _name = 'purchase.order.delegated'
+    _description = "Purchase Order Delegated"
 
     po_id = fields.Many2one(
         comodel_name='purchase.order',
