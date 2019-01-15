@@ -16,6 +16,7 @@
     'data': [
         'views/purchase_order.xml',
         'security/purchase_order_delegated.xml',
+        'security/thing_with_mailthread.xml',
     ],
     'demo': [
     ],
