@@ -5,8 +5,7 @@ setuptools.setup(
     odoo_addon={
         'external_dependencies_override': {
             'python': {
-                # https://github.com/AlexandreDecan/sismic/issues/89
-                'sismic': 'sismic==1.3',
+                'sismic': 'sismic>=1.4.1',
             },
         },
     },
