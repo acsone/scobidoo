@@ -1,0 +1,7 @@
+statechart:
+  name: simple.statechart
+  root state:
+    name: root
+    initial: draft
+    states:
+      - name: draft

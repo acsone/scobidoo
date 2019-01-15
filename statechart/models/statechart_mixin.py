@@ -283,7 +283,9 @@ class StatechartMixin(models.AbstractModel):
                 parents = self._inherit
             for parent in parents:
                 if parent != self._name:
-                    self.env[parent]._sc_patch()
+                    parent_model = self.env[parent]
+                    if hasattr(parent_model, '_sc_patch'):
+                        parent_model._sc_patch()
         statechart = parse_statechart_file(self._statechart_file)
         _logger.debug(
             "patching/adding event methods of statechart %s on %s.",
