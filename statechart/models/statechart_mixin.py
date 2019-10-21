@@ -206,11 +206,11 @@ class StatechartMixin(models.AbstractModel):
         try:
             method = getattr(cls, event_name)
         except AttributeError:
-            _logger.info("adding event method %s to %s", event_name, cls)
+            _logger.debug("adding event method %s to %s", event_name, cls)
             setattr(cls, event_name, partial)
         else:
             if callable(method):
-                _logger.info(
+                _logger.debug(
                     "patching event method %s on %s",
                     event_name, cls,
                 )
@@ -234,7 +234,7 @@ class StatechartMixin(models.AbstractModel):
             readonly=True,
             store=False,
         )
-        _logger.info("adding field %s to %s", field_name, model_cls)
+        _logger.debug("adding field %s to %s", field_name, model_cls)
         setattr(model_cls, field_name, field)
 
     @api.model
