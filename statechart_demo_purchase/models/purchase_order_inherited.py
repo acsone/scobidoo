@@ -8,4 +8,7 @@ class PurchaseOrderInherited(models.Model):
 
     _inherit = 'purchase.order'
     _name = 'purchase.order.inherited'
-    _table = 'purchase_order'
+
+    # TODO try uncommenting this if test_patched_event_method_inherited
+    # TODO starts failing again...
+    # _table = 'purchase_order'

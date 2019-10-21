@@ -59,7 +59,6 @@ class StatechartMixin(models.AbstractModel):
     sc_display_state = fields.Char(
         compute='_compute_sc_display_state')
 
-    @api.multi
     def sc_queue(self, event_name, *args, **kwargs):
         event = Event(event_name, None, args, kwargs)
         for rec in self:
@@ -98,7 +97,6 @@ class StatechartMixin(models.AbstractModel):
         for rec in self:
             rec.sc_display_state = rec.sc_state
 
-    @api.multi
     def _sc_execute(self, interpreter, orig_event):
         self.ensure_one()
         steps = interpreter.execute()
@@ -121,7 +119,6 @@ class StatechartMixin(models.AbstractModel):
             # object has been deleted so don't attempt to set its state
             pass
 
-    @api.multi
     def _sc_exec_event(self, event):
         for rec in self:
             interpreter = rec.sc_interpreter
@@ -196,7 +193,6 @@ class StatechartMixin(models.AbstractModel):
 
         method = None
 
-        @api.multi
         def partial(self, *args, **kwargs):
             event = Event(event_name, method, args, kwargs)
             return self._sc_exec_event(event)
