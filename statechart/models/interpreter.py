@@ -62,7 +62,6 @@ class Interpreter(SismicInterpreter):
         self._initialized = True
 
     def is_event_allowed(self, event_name):
-        # type: (str) -> Union[None, bool]
         """
         Return True if there is at least one transition for the event,
         False if there is no transition for the event,
