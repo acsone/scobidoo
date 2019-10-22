@@ -6,6 +6,7 @@ from odoo import models, fields
 
 class GrandParent(models.AbstractModel):
     _name = 'test.inherit.grand.parent'
+    _description = 'Test Inherit Grand Parent'
     _inherit = 'statechart.mixin'
 
     name = fields.Char()
@@ -14,6 +15,7 @@ class GrandParent(models.AbstractModel):
 class Parent(models.Model):
     _inherit = 'test.inherit.grand.parent'
     _name = 'test.inherit.parent'
+    _description = 'Test Inherit Parent'
     _statechart_file = \
         'statechart_demo_purchase/models/statechart_parent_demo.yml'
 
@@ -29,6 +31,7 @@ class ParentOverride(models.Model):
 
 class Child1(models.Model):
     _name = 'test.inherit.child1'
+    _description = 'Test Inherit Child1'
     _inherit = 'test.inherit.parent'
 
     def button_parent_method(self):
@@ -37,6 +40,7 @@ class Child1(models.Model):
 
 class Child2(models.Model):
     _name = 'test.inherit.child2'
+    _description = 'Test Inherit Child2'
     _inherit = 'test.inherit.parent'
     _statechart_file = \
         'statechart_demo_purchase/models/statechart_child2_demo.yml'
