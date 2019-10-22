@@ -9,4 +9,4 @@ class ThingWithMailthread(models.Model):
     _name = 'thing.with.mailthread'
     _description = "Thing with mail thread"
     _inherit = ['mail.thread', 'statechart.mixin']
-    _statechart_file = 'statechart_demo_purchase/models/simple_statechart.yml'
+    _statechart_file = 'test_statechart/models/simple_statechart.yml'

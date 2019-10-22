@@ -2,12 +2,11 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 {
-    'name': 'Statechart Demo Purchase',
-    'description': """
-        Statechart demo and tests""",
+    'name': 'Test Statechart',
+    'summary': """Tests for the statechart module""",
     'version': '13.0.1.0.0',
     'license': 'LGPL-3',
-    'author': 'ACSONE SA/NV,Odoo Community Association (OCA)',
+    'author': 'ACSONE SA/NV',
     'website': 'https://acsone.eu/',
     'depends': [
         'purchase',

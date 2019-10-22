@@ -2,5 +2,6 @@
 
 # odoo
 -r https://raw.githubusercontent.com/odoo/odoo/13.0/requirements.txt
-https://nightly.odoo.com/13.0/nightly/src/odoo_13.0.latest.zip
 phonenumbers
+https://nightly.odoo.com/13.0/nightly/src/odoo_13.0.latest.zip
+
