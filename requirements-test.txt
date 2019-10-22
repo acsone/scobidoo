@@ -1,5 +1,6 @@
 --find-links https://wheelhouse.acsone.eu/manylinux1
 
 # odoo
--r https://raw.githubusercontent.com/odoo/odoo/12.0/requirements.txt
-https://nightly.odoo.com/12.0/nightly/src/odoo_12.0.latest.zip
+-r https://raw.githubusercontent.com/odoo/odoo/13.0/requirements.txt
+phonenumbers
+https://nightly.odoo.com/13.0/nightly/src/odoo_13.0.latest.zip
