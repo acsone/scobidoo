@@ -16,7 +16,7 @@ class Parent(models.Model):
     _inherit = 'test.inherit.grand.parent'
     _name = 'test.inherit.parent'
     _statechart_file = \
-        'statechart_demo_purchase/models/statechart_parent_demo.yml'
+        'test_statechart/models/statechart_parent_demo.yml'
 
     def button_parent_method(self):
         pass
@@ -25,7 +25,7 @@ class Parent(models.Model):
 class ParentOverride(models.Model):
     _inherit = 'test.inherit.parent'
     _statechart_file = \
-        'statechart_demo_purchase/models/statechart_parent_override_demo.yml'
+        'test_statechart/models/statechart_parent_override_demo.yml'
 
 
 class Child1(models.Model):
@@ -40,4 +40,4 @@ class Child2(models.Model):
     _name = 'test.inherit.child2'
     _inherit = 'test.inherit.parent'
     _statechart_file = \
-        'statechart_demo_purchase/models/statechart_child2_demo.yml'
+        'test_statechart/models/statechart_child2_demo.yml'
