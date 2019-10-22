@@ -9,7 +9,7 @@ setuptools.setup(
     version=version,
     install_requires=[
         'odoo9-addon-statechart',
-        'odoo9-addon-statechart_demo_purchase',
+        'odoo9-addon-test_statechart',
     ],
     classifiers=[
         'Programming Language :: Python',
