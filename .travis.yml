@@ -37,6 +37,7 @@ jobs:
       install:
         - pip install -r requirements-test.txt
       script:
+        - set -eo pipefail
         - echo "Installing $ADDONS_INST"
         - unbuffer ${VIRTUAL_ENV}/bin/odoo -d ${DB_NAME} --stop-after-init -i ${ADDONS_INST} | acsoo checklog
         - echo "Testing $ADDONS_TEST"
