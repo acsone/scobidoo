@@ -28,6 +28,12 @@ class TestPOStatechart(common.TransactionCase):
         # force two step validation
         self.env.user.company_id.po_double_validation = 'two_step'
         self.env.user.company_id.po_double_validation_amount = 0
+        # workaround strange issue introduced in
+        # https://github.com/odoo/odoo/commit/3a58dfa1e51702a659e9113271
+        self.env.user.company_id.write({"po_double_validation_amount": 0})
+        self.assertEqual(
+            self.env.user.company_id.po_double_validation_amount, 0
+        )
         self.env.user.write({
             'groups_id': [
                 (3, self.env.ref('purchase.group_purchase_manager').id, False)
@@ -185,6 +191,12 @@ class TestPOInheritedStatechart(common.TransactionCase):
         # calls button_approve which creates a reentrency error
         self.env.user.company_id.po_double_validation = 'two_step'
         self.env.user.company_id.po_double_validation_amount = 0
+        # workaround strange issue introduced in
+        # https://github.com/odoo/odoo/commit/3a58dfa1e51702a659e9113271
+        self.env.user.company_id.write({"po_double_validation_amount": 0})
+        self.assertEqual(
+            self.env.user.company_id.po_double_validation_amount, 0
+        )
         self.env.user.write({
             'groups_id': [
                 (3, self.env.ref('purchase.group_purchase_manager').id, False)
