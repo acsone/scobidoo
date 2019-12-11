@@ -30,7 +30,7 @@ class TestPOStatechart(common.TransactionCase):
         self.env.user.company_id.po_double_validation_amount = 0
         # workaround strange issue introduced in
         # https://github.com/odoo/odoo/commit/3a58dfa1e51702a659e9113271
-        self.env.user.company_id.write({"po_double_validation_amount": 0})
+        # self.env.user.company_id.write({"po_double_validation_amount": 0})
         self.assertEqual(
             self.env.user.company_id.po_double_validation_amount, 0
         )
@@ -193,7 +193,7 @@ class TestPOInheritedStatechart(common.TransactionCase):
         self.env.user.company_id.po_double_validation_amount = 0
         # workaround strange issue introduced in
         # https://github.com/odoo/odoo/commit/3a58dfa1e51702a659e9113271
-        self.env.user.company_id.write({"po_double_validation_amount": 0})
+        # self.env.user.company_id.write({"po_double_validation_amount": 0})
         self.assertEqual(
             self.env.user.company_id.po_double_validation_amount, 0
         )
