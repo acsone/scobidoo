@@ -4,7 +4,7 @@
 {
     'name': 'Test Statechart',
     'summary': """Tests for the statechart module""",
-    'version': '13.0.1.0.0',
+    'version': '14.0.1.0.0',
     'license': 'LGPL-3',
     'author': 'ACSONE SA/NV',
     'website': 'https://acsone.eu/',
