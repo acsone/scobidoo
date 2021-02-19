@@ -9,6 +9,7 @@ setuptools.setup(
     version=version,
     install_requires=[
         'odoo14-addon-statechart',
+        'odoo14-addon-statechart_demo',
         'odoo14-addon-test_statechart',
     ],
     classifiers=[
