@@ -1,0 +1,30 @@
+statechart:
+  name: res.partner
+  root state:
+    name: root
+    initial: tracks
+    states:
+      - name: tracks
+        parallel states:
+          - name: track 1
+            initial: track 1 start
+            states:
+              - name: track 1 start
+                transitions:
+                  - event: track_1_validate
+                    target: track 1 done
+              - name: track 1 done
+          - name: track 2
+            initial: track 2 start
+            states:
+              - name: track 2 start
+                transitions:
+                  - event: track_2_validate
+                    target: track 2 done
+              - name: track 2 done
+        transitions:
+          # final validation when both tracks are done
+          - event: validate
+            target: done
+            guard: active("track 1 done") and active("track 2 done")
+      - name: done
