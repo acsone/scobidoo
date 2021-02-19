@@ -3,7 +3,6 @@
 
 # AccountingTestCase runs after register_hook
 from odoo.tests import common
-from odoo.exceptions import CacheMiss
 
 from odoo.addons.statechart.exceptions import NoTransitionError
 
@@ -30,13 +29,17 @@ class TestInherit(common.TransactionCase):
         self.child2.button_child2()
         # child2 does have elements of it's parent statechart
         # but they are disabled because they are not in child2's statechart
-        with self.assertRaises(CacheMiss):
-            # here we have a cache miss because the field exists
+        with self.assertRaises(ValueError) as cm:
+            # here we have a ValueError because the field exists
             # (it has been created in the parent class), but the statechart
             # has been replaced in the child class, so
-            # _compute_sc_event_allowed does not compute it anymore
+            # _compute_sc_event_allowed can not compute it anymore
             # as it is not part of the child class statechart
             self.assertFalse(self.child2.sc_button_parent_allowed)
+        assert (
+            "Compute method failed to assign test.inherit.child2"
+            in str(cm.exception)
+        )
         with self.assertRaises(NoTransitionError):
             self.child2.button_parent()
 
