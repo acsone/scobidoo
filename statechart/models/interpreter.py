@@ -51,14 +51,18 @@ class Interpreter(SismicInterpreter):
         Note the evaluator context is not included in this configuration
         and must be saved independently if necessary.
         """
-        # TODO memory, something else?
-        return dict(
+        # TODO something else?
+        config = dict(
             configuration=list(self._configuration)
         )
+        if self._memory:
+            config["memory"] = self._memory
+        return config
 
     def restore_configuration(self, config):
-        # TODO memory, something else?
+        # TODO something else?
         self._configuration = set(config['configuration'])
+        self._memory = config.get("memory", {})
         self._initialized = True
 
     def is_event_allowed(self, event_name):
