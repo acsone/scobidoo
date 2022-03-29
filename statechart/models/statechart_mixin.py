@@ -58,6 +58,11 @@ class StatechartMixin(models.AbstractModel):
         compute='_compute_sc_interpreter')
     sc_display_state = fields.Char(
         compute='_compute_sc_display_state')
+    sc_has_allowed_events = fields.Boolean(
+        compute="_compute_sc_has_allowed_events",
+        search="_search_sc_has_allowed_events",
+        string="Need action?",
+    )
 
     def sc_queue(self, event_name, *args, **kwargs):
         event = Event(event_name, None, args, kwargs)
@@ -307,3 +312,34 @@ class StatechartMixin(models.AbstractModel):
         res = super(StatechartMixin, self)._setup_complete()
         self._sc_patch()
         return res
+
+    @api.model
+    def _get_sc_event_allowed_field_names(self):
+        event_names = self._statechart.events_for()
+        return [
+            _sc_make_event_allowed_field_name(event_name) for event_name in event_names
+        ]
+
+    @api.depends("sc_state")
+    def _compute_sc_has_allowed_events(self):
+        sc_fields = self._get_sc_event_allowed_field_names()
+        for rec in self:
+            rec.sc_has_allowed_events = any([rec[f] for f in sc_fields])
+
+    @api.model
+    def _get_sc_has_allowed_events_pre_filter(self):
+        return []
+
+    @api.model
+    def _search_sc_has_allowed_events(self, operator, value):
+        if (operator == "=" and value) or operator == "!=" and not value:
+            records = self.search(self._get_sc_has_allowed_events_pre_filter())
+            return [
+                ("id", "in", [rec.id for rec in records if rec.sc_has_allowed_events])
+            ]
+        return ["!"] + self._search_sc_has_allowed_events("=", True)
+
+    def _get_sc_has_allowed_events_domain(self):
+        return [
+            ("sc_has_allowed_events", "=", True)
+        ] + self._get_sc_has_allowed_events_pre_filter()
