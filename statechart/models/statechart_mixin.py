@@ -53,6 +53,7 @@ class StatechartMixin(models.AbstractModel):
 
     sc_state = fields.Char(
         copy=False,
+        readonly=True,
     )
     sc_interpreter = InterpreterField(
         compute='_compute_sc_interpreter')
