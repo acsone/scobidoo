@@ -24,6 +24,6 @@ def parse_statechart(f):
 
 @lru_cache(maxsize=None)
 def parse_statechart_file(filename):
-    _logger.info("loading statechart file %s", filename)
+    _logger.debug("loading statechart file %s", filename)
     with tools.file_open(filename, 'r') as f:
         return parse_statechart(f)
