@@ -2,6 +2,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 import sys
+import traceback
 
 from sismic.exceptions import CodeEvaluationError
 from sismic.interpreter import Interpreter as SismicInterpreter
@@ -43,6 +44,7 @@ class Interpreter(SismicInterpreter):
             try:
                 return super(Interpreter, self).execute_once()
             except CodeEvaluationError as e:
+                traceback.print_exc()
                 raise _root_cause(e).with_traceback(sys.exc_info()[2])
         finally:
             self._in_execute_once = False
