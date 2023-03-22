@@ -8,6 +8,7 @@ from sismic.exceptions import CodeEvaluationError
 from sismic.interpreter import Interpreter as SismicInterpreter
 from sismic.model import Event
 from odoo.exceptions import except_orm
+from odoo import tools
 
 
 def _root_cause(e):
@@ -44,7 +45,8 @@ class Interpreter(SismicInterpreter):
             try:
                 return super(Interpreter, self).execute_once()
             except CodeEvaluationError as e:
-                traceback.print_exc()
+                if not tools.config["test_enable"]:
+                    traceback.print_exc()
                 raise _root_cause(e).with_traceback(sys.exc_info()[2])
         finally:
             self._in_execute_once = False
