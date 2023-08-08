@@ -316,7 +316,8 @@ class StatechartMixin(models.AbstractModel):
 
     @api.model
     def _get_sc_event_allowed_field_names(self):
-        event_names = self._statechart.events_for()
+        ignore_for_has_allowed_events = self.env.context.get("ignore_for_has_allowed_events", [])
+        event_names = [name for name in self._statechart.events_for() if name not in ignore_for_has_allowed_events]
         return [
             _sc_make_event_allowed_field_name(event_name) for event_name in event_names
         ]
