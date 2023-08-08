@@ -10,10 +10,18 @@ statechart:
             target: confirmed1
           - target: confirmed1
             guard: o.amount < 1
+          - target: canceled
+            event: cancel
       - name: confirmed1
         transitions:
           - target: confirmed2
             guard: o.amount < 100
           - target: confirmed2
             event: confirm2
+          - target: canceled
+            event: cancel
       - name: confirmed2
+        transitions:
+          - target: canceled
+            event: cancel
+      - name: canceled
