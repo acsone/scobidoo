@@ -162,16 +162,17 @@ class StatechartMixin(models.AbstractModel):
                     allowed = True
                 setattr(rec, field_name, allowed)
 
-    @api.model
-    def create(self, vals):
-        rec = super(StatechartMixin, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(StatechartMixin, self).create(vals_list)
         # make sure the interpreter is initialized, because
         # merely entering the root state may have side effects
         # (onentry, etc) and we don't want that to occur
         # more than once
-        config = rec.sc_interpreter.save_configuration()
-        rec.sc_state = json.dumps(config)
-        return rec
+        for rec in res:
+            config = rec.sc_interpreter.save_configuration()
+            rec.sc_state = json.dumps(config)
+        return res
 
     @api.model
     def default_get(self, fields_list):

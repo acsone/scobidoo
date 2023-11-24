@@ -5,7 +5,7 @@
     'name': 'Statechart',
     'description': """
         Add Statecharts to Odoo models""",
-    'version': '14.0.1.0.0',
+    'version': "16.0.1.0.0",
     'license': 'LGPL-3',
     'author': 'ACSONE SA/NV,Odoo Community Association (OCA)',
     'website': 'https://acsone.eu/',
