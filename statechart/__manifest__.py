@@ -3,7 +3,7 @@
 
 {
     "name": "Statechart",
-    "description": """
+    "summary": """
         Add Statecharts to Odoo models""",
     "version": "14.0.1.0.0",
     "license": "LGPL-3",

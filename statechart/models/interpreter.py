@@ -31,7 +31,7 @@ class Interpreter(SismicInterpreter):
         try:
             return super(Interpreter, self).execute(max_steps)
         except CodeEvaluationError as e:
-            raise _root_cause(e).with_traceback(sys.exc_info()[2])
+            raise _root_cause(e).with_traceback(sys.exc_info()[2]) from e
 
     def execute_once(self):
         if self._in_execute_once:
@@ -41,7 +41,7 @@ class Interpreter(SismicInterpreter):
             try:
                 return super(Interpreter, self).execute_once()
             except CodeEvaluationError as e:
-                raise _root_cause(e).with_traceback(sys.exc_info()[2])
+                raise _root_cause(e).with_traceback(sys.exc_info()[2]) from e
         finally:
             self._in_execute_once = False
 
