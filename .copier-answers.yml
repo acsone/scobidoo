@@ -13,7 +13,7 @@ github_enable_stale_action: true
 github_enforce_dev_status_compatibility: true
 include_wkhtmltopdf: false
 odoo_test_flavor: Both
-odoo_version: 14.0
+odoo_version: 16.0
 org_name: ACSONE SA/NV
 org_slug: acsone
 rebel_module_groups: []
@@ -29,6 +29,6 @@ repo_description: 'Add Statecharts to Odoo models.
 repo_name: SCObidoo
 repo_slug: scobidoo
 repo_website: https://github.com/acsone/scobidoo
-use_pyproject_toml: false
+use_pyproject_toml: true
 use_ruff: true
 
