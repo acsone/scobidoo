@@ -1,57 +1,56 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2016 ACSONE SA/NV
      License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl). -->
-
 <odoo>
 
     <record model="ir.model.access" id="purchase_order_delegated_access">
         <field name="name">purchase.order.delegated access</field>
-        <field name="model_id" ref="model_purchase_order_delegated"/>
-        <field name="group_id" ref="base.group_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="model_id" ref="model_purchase_order_delegated" />
+        <field name="group_id" ref="base.group_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="1" />
     </record>
 
     <record model="ir.model.access" id="purchase_order_inherited_access">
         <field name="name">purchase.order.inherited access</field>
-        <field name="model_id" ref="model_purchase_order_inherited"/>
-        <field name="group_id" ref="base.group_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="model_id" ref="model_purchase_order_inherited" />
+        <field name="group_id" ref="base.group_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="1" />
     </record>
 
     <record model="ir.model.access" id="test_inherit_parent_access">
         <field name="name">test.inherit.parent access</field>
-        <field name="model_id" ref="model_test_inherit_parent"/>
-        <field name="group_id" ref="base.group_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="model_id" ref="model_test_inherit_parent" />
+        <field name="group_id" ref="base.group_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="1" />
     </record>
 
     <record model="ir.model.access" id="test_inherit_child1_access">
         <field name="name">test.inherit.child1 access</field>
-        <field name="model_id" ref="model_test_inherit_child1"/>
-        <field name="group_id" ref="base.group_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="model_id" ref="model_test_inherit_child1" />
+        <field name="group_id" ref="base.group_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="1" />
     </record>
 
     <record model="ir.model.access" id="test_inherit_child2_access">
         <field name="name">test.inherit.child2 access</field>
-        <field name="model_id" ref="model_test_inherit_child2"/>
-        <field name="group_id" ref="base.group_user"/>
-        <field name="perm_read" eval="1"/>
-        <field name="perm_create" eval="1"/>
-        <field name="perm_write" eval="1"/>
-        <field name="perm_unlink" eval="1"/>
+        <field name="model_id" ref="model_test_inherit_child2" />
+        <field name="group_id" ref="base.group_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="1" />
     </record>
 
 </odoo>
