@@ -6,23 +6,21 @@ import sys
 from sismic.exceptions import CodeEvaluationError
 from sismic.interpreter import Interpreter as SismicInterpreter
 from sismic.model import Event
+
 from odoo.exceptions import except_orm
 
 
 def _root_cause(e):
     if isinstance(e, except_orm):
         return e
-    if not hasattr(e, '__cause__') or not e.__cause__:
+    if not hasattr(e, "__cause__") or not e.__cause__:
         return e
     return _root_cause(e.__cause__)
 
 
-
 class Interpreter(SismicInterpreter):
-
     def __init__(self, *args, **kwargs):
-        super(Interpreter, self).__init__(
-            *args, ignore_contract=True, **kwargs)
+        super(Interpreter, self).__init__(*args, ignore_contract=True, **kwargs)
         self._in_execute_once = False
 
     @property
@@ -33,7 +31,7 @@ class Interpreter(SismicInterpreter):
         try:
             return super(Interpreter, self).execute(max_steps)
         except CodeEvaluationError as e:
-            raise _root_cause(e).with_traceback(sys.exc_info()[2])
+            raise _root_cause(e).with_traceback(sys.exc_info()[2]) from e
 
     def execute_once(self):
         if self._in_execute_once:
@@ -43,7 +41,7 @@ class Interpreter(SismicInterpreter):
             try:
                 return super(Interpreter, self).execute_once()
             except CodeEvaluationError as e:
-                raise _root_cause(e).with_traceback(sys.exc_info()[2])
+                raise _root_cause(e).with_traceback(sys.exc_info()[2]) from e
         finally:
             self._in_execute_once = False
 
@@ -56,16 +54,14 @@ class Interpreter(SismicInterpreter):
         and must be saved independently if necessary.
         """
         # TODO something else?
-        config = dict(
-            configuration=list(self._configuration)
-        )
+        config = dict(configuration=list(self._configuration))
         if self._memory:
             config["memory"] = self._memory
         return config
 
     def restore_configuration(self, config):
         # TODO something else?
-        self._configuration = set(config['configuration'])
+        self._configuration = set(config["configuration"])
         self._memory = config.get("memory", {})
         self._initialized = True
 
@@ -82,8 +78,10 @@ class Interpreter(SismicInterpreter):
         # Retrieve the firable transitions for all active state
         evaluator = self._evaluator
         for transition in self._statechart.transitions:
-            if transition.event == event_name and \
-                    transition.source in self._configuration:
+            if (
+                transition.event == event_name
+                and transition.source in self._configuration
+            ):
                 if transition.guard is None:
                     return True
                 try:

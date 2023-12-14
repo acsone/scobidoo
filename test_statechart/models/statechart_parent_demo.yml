@@ -9,5 +9,4 @@ statechart:
           - event: button_parent
           - event: button_parent_method
             action: |
-                event.method(o)
-
+              event.method(o)

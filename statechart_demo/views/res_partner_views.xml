@@ -1,17 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
         <record id="view_partner_form" model="ir.ui.view">
             <field name="name">res.partner.form</field>
             <field name="model">res.partner</field>
-            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="inherit_id" ref="base.view_partner_form" />
             <field name="arch" type="xml">
                 <xpath expr="//sheet" position="before">
                     <header>
-                        <button 
+                        <button
                             name="track_1_validate"
                             type="object"
-                            string="Validate (track 1)" 
+                            string="Validate (track 1)"
                             attrs="{'invisible': [('sc_track_1_validate_allowed', '=', False)]}"
                             class="btn-primary"
                         />
@@ -29,7 +29,7 @@
                             attrs="{'invisible': [('sc_validate_allowed', '=', False)]}"
                             class="btn-primary"
                         />
-                        <field name="sc_state"/>
+                        <field name="sc_state" />
                     </header>
                 </xpath>
                 <xpath expr="/form" position="inside">

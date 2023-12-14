@@ -12,16 +12,15 @@ class TestBasic(common.TransactionCase):
             self.assertFalse(sc_state)
         else:
             config = json.loads(sc_state)
-            self.assertEqual(set(config['configuration']),
-                             set(expected_config))
+            self.assertEqual(set(config["configuration"]), set(expected_config))
 
     def test_basic(self):
         """
         Test that we can create a model with a statechart and that the
         statechart is correctly initialized
         """
-        model = self.env['scobidoo.test.model']
-        record = model.create({'amount': 200})
+        model = self.env["scobidoo.test.model"]
+        record = model.create({"amount": 200})
         record.confirm1()
         self.assertScState(record.sc_state, ["confirmed1", "root"])
         # big amount, confirm manually
@@ -33,8 +32,8 @@ class TestBasic(common.TransactionCase):
         Test that we can create a model with a statechart and that the
         statechart is correctly initialized
         """
-        model = self.env['scobidoo.test.model']
-        record = model.create({'amount': 50})
+        model = self.env["scobidoo.test.model"]
+        record = model.create({"amount": 50})
         record.confirm1()
         # small amount, step 2 done automatically
         self.assertScState(record.sc_state, ["confirmed2", "root"])

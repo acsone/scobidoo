@@ -3,10 +3,11 @@
 
 {
     "name": "Statechart Demo",
-    "summary": """Demo workflows for the statechart module""",    "version": "14.0.1.0.0",
+    "summary": """Demo workflows for the statechart module""",
+    "version": "14.0.1.0.0",
     "license": "LGPL-3",
     "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
-    "website": "https://acsone.eu/",
+    "website": "https://github.com/acsone/scobidoo",
     "depends": [
         "contacts",
         "statechart",

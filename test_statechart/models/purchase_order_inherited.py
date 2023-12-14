@@ -5,10 +5,9 @@ from odoo import models
 
 
 class PurchaseOrderInherited(models.Model):
-
-    _inherit = 'purchase.order'
-    _name = 'purchase.order.inherited'
-    _description = 'Purchase Order Inherited'
+    _inherit = "purchase.order"
+    _name = "purchase.order.inherited"
+    _description = "Purchase Order Inherited"
 
     # TODO try uncommenting this if test_patched_event_method_inherited
     # TODO starts failing again...

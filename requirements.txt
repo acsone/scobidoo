@@ -1,0 +1,2 @@
+# generated from manifests external_dependencies
+sismic>=1.4.1

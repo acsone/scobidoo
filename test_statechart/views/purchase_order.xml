@@ -1,38 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2016 ACSONE SA/NV
      License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl). -->
-
 <odoo>
 
     <record model="ir.ui.view" id="purchase_order_form_view">
         <field name="model">purchase.order</field>
-        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
           <button name="button_confirm" position="attributes">
             <attribute name="attrs">
               {'invisible': [('sc_button_confirm_allowed', '=', False)]}
             </attribute>
-            <attribute name="states"/>
-            <attribute name="groups"/>
+            <attribute name="states" />
+            <attribute name="groups" />
           </button>
           <button name="button_approve" position="attributes">
             <attribute name="attrs">
               {'invisible': [('sc_button_approve_allowed', '=', False)]}
             </attribute>
-            <attribute name="states"/>
-            <attribute name="groups"/>
+            <attribute name="states" />
+            <attribute name="groups" />
           </button>
           <button name="button_cancel" position="attributes">
             <attribute name="attrs">
               {'invisible': [('sc_button_cancel_allowed', '=', False)]}
             </attribute>
-            <attribute name="states"/>
-            <attribute name="groups"/>
+            <attribute name="states" />
+            <attribute name="groups" />
           </button>
           <button name="button_cancel" position="after">
-            <field name="sc_button_confirm_allowed" invisible="1"/>
-            <field name="sc_button_approve_allowed" invisible="1"/>
-            <field name="sc_button_cancel_allowed" invisible="1"/>
+            <field name="sc_button_confirm_allowed" invisible="1" />
+            <field name="sc_button_approve_allowed" invisible="1" />
+            <field name="sc_button_cancel_allowed" invisible="1" />
           </button>
         </field>
     </record>
