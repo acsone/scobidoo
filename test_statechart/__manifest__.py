@@ -18,4 +18,5 @@
         "security/thing_with_mailthread.xml",
     ],
     "demo": [],
+    "installable": False,
 }
