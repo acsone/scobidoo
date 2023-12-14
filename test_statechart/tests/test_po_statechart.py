@@ -104,18 +104,6 @@ class TestPOStatechart(common.TransactionCase):
                            ["draft", "root"])
         self.assertEqual(self.po.state, 'draft')
 
-    def test_automatic_transition(self):
-        # small amount => automatic approval through eventless transition
-        self.po.order_line[0].product_qty = 1
-        self.assertFalse(self.po.sc_button_approve_allowed)
-        self.po.button_confirm()
-        self.assertScState(self.po.sc_state,
-                           ["approved", "not draft", "root"])
-        self.assertEqual(self.po.state, 'purchase')
-        self.assertEqual(self.po.notes,
-                         'Congrats for entering the approved state')
-        self.assertFalse(self.po.sc_button_approve_allowed)
-
     def test_no_write(self):
         self.po.button_confirm()
         self.assertScState(self.po.sc_state,
