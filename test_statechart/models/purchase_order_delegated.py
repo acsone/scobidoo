@@ -5,14 +5,13 @@ from odoo import fields, models
 
 
 class PurchaseOrderDelegated(models.Model):
-
-    _name = 'purchase.order.delegated'
+    _name = "purchase.order.delegated"
     _description = "Purchase Order Delegated"
 
     po_id = fields.Many2one(
-        comodel_name='purchase.order',
+        comodel_name="purchase.order",
         required=True,
-        ondelete='restrict',
+        ondelete="restrict",
         index=True,
         auto_join=True,
         delegate=True,

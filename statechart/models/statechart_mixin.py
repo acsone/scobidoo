@@ -18,14 +18,11 @@ _logger = logging.getLogger(__name__)
 def _sc_make_event_allowed_field_name(event_name):
     # TODO event names must be valid python identifiers
     #      (that must be tested somewhere long before reaching this point)
-    return 'sc_' + event_name + '_allowed'
+    return "sc_" + event_name + "_allowed"
 
 
 def _sc_is_event_allowed_field_name(field_name):
-    return (
-        field_name.startswith('sc_') and
-        field_name.endswith('_allowed')
-    )
+    return field_name.startswith("sc_") and field_name.endswith("_allowed")
 
 
 def _sc_event_from_event_allowed_field_name(field_name):
@@ -33,13 +30,12 @@ def _sc_event_from_event_allowed_field_name(field_name):
 
 
 class InterpreterField(fields.Field):
-    type = 'sc_interpreter'
+    type = "sc_interpreter"
 
 
 class StatechartMixin(models.AbstractModel):
-
-    _name = 'statechart.mixin'
-    _description = 'Statechart Mixin'
+    _name = "statechart.mixin"
+    _description = "Statechart Mixin"
 
     # TODO if we want this to be configurable through the Odoo UI
     #      this mixin probably must go away and the register_hook
@@ -55,10 +51,8 @@ class StatechartMixin(models.AbstractModel):
         copy=False,
         readonly=True,
     )
-    sc_interpreter = InterpreterField(
-        compute='_compute_sc_interpreter')
-    sc_display_state = fields.Char(
-        compute='_compute_sc_display_state')
+    sc_interpreter = InterpreterField(compute="_compute_sc_interpreter")
+    sc_display_state = fields.Char(compute="_compute_sc_display_state")
     sc_has_allowed_events = fields.Boolean(
         compute="_compute_sc_has_allowed_events",
         search="_search_sc_has_allowed_events",
@@ -74,22 +68,21 @@ class StatechartMixin(models.AbstractModel):
             if not interpreter.executing:
                 rec._sc_execute(interpreter, event)
 
-    @api.depends('sc_state')
+    @api.depends("sc_state")
     def _compute_sc_interpreter(self):
         statechart = self._statechart
         for rec in self:
             _logger.debug(
-                "initializing interpreter for %s "
-                "with statechart %s",
-                rec, statechart.name,
+                "initializing interpreter for %s " "with statechart %s",
+                rec,
+                statechart.name,
             )
             initial_context = {
-                'o': rec,
-                'self': rec,
+                "o": rec,
+                "self": rec,
                 # TODO: more action context
             }
-            interpreter = Interpreter(
-                statechart, initial_context=initial_context)
+            interpreter = Interpreter(statechart, initial_context=initial_context)
             if rec.sc_state:
                 config = json.loads(rec.sc_state)
                 interpreter.restore_configuration(config)
@@ -97,7 +90,7 @@ class StatechartMixin(models.AbstractModel):
                 interpreter.execute_once()
             rec.sc_interpreter = interpreter
 
-    @api.depends('sc_state')
+    @api.depends("sc_state")
     def _compute_sc_display_state(self):
         # TODO
         for rec in self:
@@ -110,17 +103,23 @@ class StatechartMixin(models.AbstractModel):
         if not all([step.transitions for step in steps]):
             # at least one step had no transition => error
             raise NoTransitionError(
-                _("This action is not allowed in the current state "
-                  "or with your access rights.\n\n"
-                  "Technical details of the error: %s\nSteps: %s") %
-                (orig_event, steps,))
+                _(
+                    "This action is not allowed in the current state "
+                    "or with your access rights.\n\n"
+                    "Technical details of the error: %s\nSteps: %s"
+                )
+                % (
+                    orig_event,
+                    steps,
+                )
+            )
         config = interpreter.save_configuration()
         new_sc_state = json.dumps(config)
         try:
             # TODO converting to json to determine if sc_state
             #      has changed is not optimal
             if new_sc_state != self.sc_state:
-                self.write({'sc_state': new_sc_state})
+                self.write({"sc_state": new_sc_state})
         except MissingError:  # pylint: disable=except-pass
             # object has been deleted so don't attempt to set its state
             pass
@@ -143,7 +142,7 @@ class StatechartMixin(models.AbstractModel):
                 raise RuntimeError(msg)
         return None
 
-    @api.depends('sc_state')
+    @api.depends("sc_state")
     def _compute_sc_event_allowed(self):
         # TODO depends() is partial (it does not know the dependencies of
         #      guards): make sure that works in all practical situations
@@ -175,7 +174,7 @@ class StatechartMixin(models.AbstractModel):
 
     @api.model
     def default_get(self, fields_list):
-        """ Get default values for sc_event_allowed fields.
+        """Get default values for sc_event_allowed fields.
 
         To compute this we instanciate a dummy interpreter. This implies
         entering the initial state and executing the associated actions.
@@ -194,7 +193,7 @@ class StatechartMixin(models.AbstractModel):
         return res
 
     def _sc_make_event_method(self, model, event_name):
-        if event_name == 'write':
+        if event_name == "write":
             raise UserError(_("write cannot be a statechart event"))
 
         method = None
@@ -214,14 +213,14 @@ class StatechartMixin(models.AbstractModel):
             if callable(method):
                 _logger.debug(
                     "patching event method %s on %s",
-                    event_name, cls,
+                    event_name,
+                    cls,
                 )
                 cls._patch_method(event_name, partial)
             else:
                 raise UserError(
-                    _("Statechart event %s would mask "
-                      "attribute %s of %s") %
-                    (event_name, method, cls)
+                    _("Statechart event %s would mask " "attribute %s of %s")
+                    % (event_name, method, cls)
                 )
 
     def _sc_make_event_allowed_field(self, model_cls, event_name):
@@ -232,7 +231,7 @@ class StatechartMixin(models.AbstractModel):
         if hasattr(model_cls, field_name):
             return
         field = fields.Boolean(
-            compute='_compute_sc_event_allowed',
+            compute="_compute_sc_event_allowed",
             readonly=True,
             store=False,
         )
@@ -241,7 +240,7 @@ class StatechartMixin(models.AbstractModel):
 
     @api.model
     def _prepare_setup(self):
-        """ Very early, load the statechart, and add the sc_event_allowed
+        """Very early, load the statechart, and add the sc_event_allowed
         fields on the model classes where the developer has declared
         the _statechart_file attribute.
 
@@ -253,7 +252,7 @@ class StatechartMixin(models.AbstractModel):
         """
         res = super(StatechartMixin, self)._prepare_setup()
         for model_cls in type(self).__bases__:
-            if '_statechart_file' not in model_cls.__dict__:
+            if "_statechart_file" not in model_cls.__dict__:
                 _logger.debug(
                     "_prepare_setup: class %s has no _statechart_file.",
                     model_cls,
@@ -272,7 +271,7 @@ class StatechartMixin(models.AbstractModel):
     @api.model
     def _sc_patch(self):
         cls = type(self)
-        if not hasattr(self, '_statechart_file'):
+        if not hasattr(self, "_statechart_file"):
             _logger.debug(
                 "_setup_complete: class %s has no _statechart_file.",
                 cls,
@@ -286,7 +285,7 @@ class StatechartMixin(models.AbstractModel):
             for parent in parents:
                 if parent != self._name:
                     parent_model = self.env[parent]
-                    if hasattr(parent_model, '_sc_patch'):
+                    if hasattr(parent_model, "_sc_patch"):
                         parent_model._sc_patch()
         statechart = parse_statechart_file(self._statechart_file)
         _logger.debug(
@@ -295,7 +294,7 @@ class StatechartMixin(models.AbstractModel):
             cls,
         )
         cls._statechart = statechart
-        if not hasattr(cls, '_statechart_patched'):
+        if not hasattr(cls, "_statechart_patched"):
             cls._statechart_patched = set()
         for event_name in statechart.events_for():
             if event_name not in cls._statechart_patched:
@@ -304,7 +303,7 @@ class StatechartMixin(models.AbstractModel):
 
     @api.model
     def _setup_complete(self):
-        """ Very late, patch the event methods to invoke the statechart.
+        """Very late, patch the event methods to invoke the statechart.
 
         We record a set of event methods already patched, so an inherited
         class can override the statechart with another one adding new events,

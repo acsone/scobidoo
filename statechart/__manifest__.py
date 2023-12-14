@@ -2,23 +2,21 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 {
-    'name': 'Statechart',
-    'description': """
+    "name": "Statechart",
+    "description": """
         Add Statecharts to Odoo models""",
-    'version': '14.0.1.0.0',
-    'license': 'LGPL-3',
-    'author': 'ACSONE SA/NV,Odoo Community Association (OCA)',
-    'website': 'https://github.com/acsone/scobidoo',
-    'depends': [
-        'base',
+    "version": "14.0.1.0.0",
+    "license": "LGPL-3",
+    "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
+    "website": "https://github.com/acsone/scobidoo",
+    "depends": [
+        "base",
     ],
-    'external_dependencies': {
-        'python': [
-            'sismic',
+    "external_dependencies": {
+        "python": [
+            "sismic",
         ],
     },
-    'data': [
-    ],
-    'demo': [
-    ],
+    "data": [],
+    "demo": [],
 }
