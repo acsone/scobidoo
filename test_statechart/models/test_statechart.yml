@@ -1,0 +1,17 @@
+statechart:
+  name: test.statechart
+  root state:
+    name: root
+    initial: draft
+    states:
+      - name: draft
+        transitions:
+          - event: confirm1
+            target: confirmed1
+      - name: confirmed1
+        transitions:
+          - target: confirmed2
+            guard: o.amount < 100
+          - target: confirmed2
+            event: confirm2
+      - name: confirmed2
