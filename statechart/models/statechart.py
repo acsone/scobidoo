@@ -1,11 +1,11 @@
 # Copyright 2016-2018 ACSONE SA/NV
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
-from functools import lru_cache
 import logging
+from functools import lru_cache
 
-from sismic.exceptions import StatechartError
 import sismic.io
+from sismic.exceptions import StatechartError
 
 from odoo import tools
 

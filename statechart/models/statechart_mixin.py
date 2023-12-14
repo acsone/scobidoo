@@ -4,13 +4,13 @@
 import json
 import logging
 
-from odoo import api, fields, models, _
-from odoo.exceptions import UserError, MissingError
+from odoo import _, api, fields, models
+from odoo.exceptions import MissingError, UserError
 
+from ..exceptions import NoTransitionError
 from .event import Event
 from .interpreter import Interpreter
 from .statechart import parse_statechart_file
-from ..exceptions import NoTransitionError
 
 _logger = logging.getLogger(__name__)
 

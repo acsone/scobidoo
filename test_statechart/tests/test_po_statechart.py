@@ -10,6 +10,7 @@ from odoo.exceptions import UserError
 
 # AccountingTestCase runs after register_hook
 from odoo.tests import common
+
 from odoo.addons.statechart.exceptions import NoTransitionError
 
 

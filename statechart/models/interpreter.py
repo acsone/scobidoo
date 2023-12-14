@@ -6,6 +6,7 @@ import sys
 from sismic.exceptions import CodeEvaluationError
 from sismic.interpreter import Interpreter as SismicInterpreter
 from sismic.model import Event
+
 from odoo.exceptions import except_orm
 
 
