@@ -117,7 +117,7 @@ class StatechartMixin(models.AbstractModel):
             # TODO converting to json to determine if sc_state
             #      has changed is not optimal
             if new_sc_state != self.sc_state:
-                self.write({"sc_state": new_sc_state})
+                self.sc_state = new_sc_state
         except MissingError:  # pylint: disable=except-pass
             # object has been deleted so don't attempt to set its state
             pass
