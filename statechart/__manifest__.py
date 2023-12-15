@@ -14,7 +14,7 @@
     ],
     "external_dependencies": {
         "python": [
-            "sismic",
+            "sismic>=1.4.1",
         ],
     },
     "data": [],
