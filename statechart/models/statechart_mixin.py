@@ -241,10 +241,9 @@ class StatechartMixin(models.AbstractModel):
             readonly=True,
             store=False,
         )
-        field.name = field_name
         _logger.debug("adding field %s to %s", field_name, model_cls)
         setattr(model_cls, field_name, field)
-        model_cls._field_definitions.append(field)
+        field.__set_name__(model_cls, field_name)
 
     @api.model
     def _setup_base(self):
