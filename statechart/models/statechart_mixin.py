@@ -106,11 +106,9 @@ class StatechartMixin(models.AbstractModel):
                 _(
                     "This action is not allowed in the current state "
                     "or with your access rights.\n\n"
-                    "Technical details of the error: %s\nSteps: %s"
-                )
-                % (
-                    orig_event,
-                    steps,
+                    "Technical details of the error: %(orig_event)s\nSteps: %(steps)s",
+                    orig_event=orig_event,
+                    steps=steps,
                 )
             )
         config = interpreter.save_configuration()
@@ -135,10 +133,12 @@ class StatechartMixin(models.AbstractModel):
                     return event._return
             else:
                 msg = _(
-                    "Reentrancy error for %s on %s. "
+                    "Reentrancy error for %(event)s on %(rec)s. "
                     "Please use sc_queue() "
-                    "instead of a direct method call. "
-                ) % (event, rec)
+                    "instead of a direct method call.",
+                    event=event,
+                    rec=rec,
+                )
                 raise RuntimeError(msg)
         return None
 
@@ -219,8 +219,13 @@ class StatechartMixin(models.AbstractModel):
                 cls._patch_method(event_name, partial)
             else:
                 raise UserError(
-                    _("Statechart event %s would mask " "attribute %s of %s")
-                    % (event_name, method, cls)
+                    _(
+                        "Statechart event %(event_name)s would mask "
+                        "attribute %(method)s of %(cls)s",
+                        event_name=event_name,
+                        method=method,
+                        cls=cls,
+                    )
                 )
 
     def _sc_make_event_allowed_field(self, model_cls, event_name):
