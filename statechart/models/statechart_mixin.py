@@ -241,11 +241,13 @@ class StatechartMixin(models.AbstractModel):
             readonly=True,
             store=False,
         )
+        field.name = field_name
         _logger.debug("adding field %s to %s", field_name, model_cls)
         setattr(model_cls, field_name, field)
+        model_cls._field_definitions.append(field)
 
     @api.model
-    def _prepare_setup(self):
+    def _setup_base(self):
         """Very early, load the statechart, and add the sc_event_allowed
         fields on the model classes where the developer has declared
         the _statechart_file attribute.
@@ -256,32 +258,31 @@ class StatechartMixin(models.AbstractModel):
         Further steps of the regular setup process will then add these fields
         on children models.
         """
-        res = super()._prepare_setup()
-        for model_cls in type(self).__bases__:
-            if "_statechart_file" not in model_cls.__dict__:
-                _logger.debug(
-                    "_prepare_setup: class %s has no _statechart_file.",
-                    model_cls,
-                )
+        model_cls = type(self)
+        assert not models.is_definition_class(model_cls)
+        for def_cls in model_cls.__bases__:
+            if not models.is_definition_class(def_cls):
                 continue
-            statechart = parse_statechart_file(model_cls._statechart_file)
+            if "_statechart_file" not in def_cls.__dict__:
+                continue
+            _logger.debug(
+                "%s has _statechart_file.",
+                def_cls,
+            )
+            statechart = parse_statechart_file(def_cls._statechart_file)
             _logger.debug(
                 "adding sc_event_allowed fields of statechart %s on %s.",
                 statechart.name,
-                model_cls,
+                def_cls,
             )
             for event_name in statechart.events_for():
-                self._sc_make_event_allowed_field(model_cls, event_name)
-        return res
+                self._sc_make_event_allowed_field(def_cls, event_name)
+        return super()._setup_base()
 
     @api.model
     def _sc_patch(self):
         cls = type(self)
         if not hasattr(self, "_statechart_file"):
-            _logger.debug(
-                "_setup_complete: class %s has no _statechart_file.",
-                cls,
-            )
             return
         if self._inherit:
             if isinstance(self._inherit, str):
