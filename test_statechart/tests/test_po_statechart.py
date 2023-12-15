@@ -97,7 +97,7 @@ class TestPOStatechart(common.TransactionCase):
         self.po.button_confirm()
         self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
         self.assertEqual(self.po.state, "to approve")
-        self.assertEqual(self.po.notes, "Congrats for exiting the draft state")
+        self.assertEqual(self.po.notes, "<p>Congrats for exiting the draft state</p>")
         # do_nothing does nothing ;)
         self.po.do_nothing()
         self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
@@ -225,4 +225,6 @@ class TestPOInheritedStatechart(common.TransactionCase):
         # if amount < 1000, we transition automatically
         # from confirmed to approved
         self.poi.button_confirm()
-        self.assertEqual(self.poi.notes, "Congrats for entering the approved state")
+        self.assertEqual(
+            self.poi.notes, "<p>Congrats for entering the approved state</p>"
+        )
