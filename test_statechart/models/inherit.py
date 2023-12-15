@@ -33,7 +33,7 @@ class Child1(models.Model):
     _inherit = "test.inherit.parent"
 
     def button_parent_method(self):
-        return super(Child1, self).button_parent_method()
+        return super().button_parent_method()
 
 
 class Child2(models.Model):

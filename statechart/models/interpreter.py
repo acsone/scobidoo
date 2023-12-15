@@ -20,7 +20,7 @@ def _root_cause(e):
 
 class Interpreter(SismicInterpreter):
     def __init__(self, *args, **kwargs):
-        super(Interpreter, self).__init__(*args, ignore_contract=True, **kwargs)
+        super().__init__(*args, ignore_contract=True, **kwargs)
         self._in_execute_once = False
 
     @property
@@ -29,7 +29,7 @@ class Interpreter(SismicInterpreter):
 
     def execute(self, max_steps=-1):
         try:
-            return super(Interpreter, self).execute(max_steps)
+            return super().execute(max_steps)
         except CodeEvaluationError as e:
             raise _root_cause(e).with_traceback(sys.exc_info()[2]) from e
 
@@ -39,7 +39,7 @@ class Interpreter(SismicInterpreter):
         try:
             self._in_execute_once = True
             try:
-                return super(Interpreter, self).execute_once()
+                return super().execute_once()
             except CodeEvaluationError as e:
                 raise _root_cause(e).with_traceback(sys.exc_info()[2]) from e
         finally:

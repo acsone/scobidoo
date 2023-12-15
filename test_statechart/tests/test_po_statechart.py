@@ -23,7 +23,7 @@ class TestPOStatechart(common.TransactionCase):
             self.assertEqual(set(config["configuration"]), set(expected_config))
 
     def setUp(self):
-        super(TestPOStatechart, self).setUp()
+        super().setUp()
         # force two step validation
         self.env.user.company_id.po_double_validation = "two_step"
         self.env.user.company_id.po_double_validation_amount = 0
@@ -97,7 +97,7 @@ class TestPOStatechart(common.TransactionCase):
         self.po.button_confirm()
         self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
         self.assertEqual(self.po.state, "to approve")
-        self.assertEqual(self.po.notes, "Congrats for exiting the draft state")
+        self.assertEqual(self.po.notes, "<p>Congrats for exiting the draft state</p>")
         # do_nothing does nothing ;)
         self.po.do_nothing()
         self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
@@ -157,7 +157,7 @@ class TestPOStatechart(common.TransactionCase):
 
 class TestPODelegatedStatechart(common.TransactionCase):
     def setUp(self):
-        super(TestPODelegatedStatechart, self).setUp()
+        super().setUp()
         self.PurchaseOrderDelegated = self.env["purchase.order.delegated"]
         self.partner_id = self.env.ref("base.res_partner_1")
         self.product_id_1 = self.env.ref("product.product_product_8")
@@ -172,7 +172,7 @@ class TestPODelegatedStatechart(common.TransactionCase):
         self.assertTrue(self.pod.sc_do_nothing_allowed)
 
     def test_fields_view_get(self):
-        arch = self.env["purchase.order.delegated"].fields_view_get()["arch"]
+        arch = self.env["purchase.order.delegated"].get_view()["arch"]
         doc = etree.XML(arch)
         field = doc.xpath('//field[@name="sc_do_nothing_allowed"]')
         self.assertTrue(field)
@@ -180,7 +180,7 @@ class TestPODelegatedStatechart(common.TransactionCase):
 
 class TestPOInheritedStatechart(common.TransactionCase):
     def setUp(self):
-        super(TestPOInheritedStatechart, self).setUp()
+        super().setUp()
         # force two step validation, otherwise button_confirm
         # calls button_approve which creates a reentrency error
         self.env.user.company_id.po_double_validation = "two_step"
@@ -225,4 +225,6 @@ class TestPOInheritedStatechart(common.TransactionCase):
         # if amount < 1000, we transition automatically
         # from confirmed to approved
         self.poi.button_confirm()
-        self.assertEqual(self.poi.notes, "Congrats for entering the approved state")
+        self.assertEqual(
+            self.poi.notes, "<p>Congrats for entering the approved state</p>"
+        )

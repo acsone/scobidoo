@@ -106,11 +106,9 @@ class StatechartMixin(models.AbstractModel):
                 _(
                     "This action is not allowed in the current state "
                     "or with your access rights.\n\n"
-                    "Technical details of the error: %s\nSteps: %s"
-                )
-                % (
-                    orig_event,
-                    steps,
+                    "Technical details of the error: %(orig_event)s\nSteps: %(steps)s",
+                    orig_event=orig_event,
+                    steps=steps,
                 )
             )
         config = interpreter.save_configuration()
@@ -119,7 +117,7 @@ class StatechartMixin(models.AbstractModel):
             # TODO converting to json to determine if sc_state
             #      has changed is not optimal
             if new_sc_state != self.sc_state:
-                self.write({"sc_state": new_sc_state})
+                self.sc_state = new_sc_state
         except MissingError:  # pylint: disable=except-pass
             # object has been deleted so don't attempt to set its state
             pass
@@ -135,10 +133,12 @@ class StatechartMixin(models.AbstractModel):
                     return event._return
             else:
                 msg = _(
-                    "Reentrancy error for %s on %s. "
+                    "Reentrancy error for %(event)s on %(rec)s. "
                     "Please use sc_queue() "
-                    "instead of a direct method call. "
-                ) % (event, rec)
+                    "instead of a direct method call.",
+                    event=event,
+                    rec=rec,
+                )
                 raise RuntimeError(msg)
         return None
 
@@ -161,16 +161,17 @@ class StatechartMixin(models.AbstractModel):
                     allowed = True
                 setattr(rec, field_name, allowed)
 
-    @api.model
-    def create(self, vals):
-        rec = super(StatechartMixin, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
         # make sure the interpreter is initialized, because
         # merely entering the root state may have side effects
         # (onentry, etc) and we don't want that to occur
         # more than once
-        config = rec.sc_interpreter.save_configuration()
-        rec.sc_state = json.dumps(config)
-        return rec
+        for rec in res:
+            config = rec.sc_interpreter.save_configuration()
+            rec.sc_state = json.dumps(config)
+        return res
 
     @api.model
     def default_get(self, fields_list):
@@ -180,7 +181,7 @@ class StatechartMixin(models.AbstractModel):
         entering the initial state and executing the associated actions.
         It is therefore important that such actions have no side effects.
         """
-        res = super(StatechartMixin, self).default_get(fields_list)
+        res = super().default_get(fields_list)
         dummy_interpreter = None
         for field in fields_list:
             if _sc_is_event_allowed_field_name(field):
@@ -219,8 +220,13 @@ class StatechartMixin(models.AbstractModel):
                 cls._patch_method(event_name, partial)
             else:
                 raise UserError(
-                    _("Statechart event %s would mask " "attribute %s of %s")
-                    % (event_name, method, cls)
+                    _(
+                        "Statechart event %(event_name)s would mask "
+                        "attribute %(method)s of %(cls)s",
+                        event_name=event_name,
+                        method=method,
+                        cls=cls,
+                    )
                 )
 
     def _sc_make_event_allowed_field(self, model_cls, event_name):
@@ -235,11 +241,13 @@ class StatechartMixin(models.AbstractModel):
             readonly=True,
             store=False,
         )
+        field.name = field_name
         _logger.debug("adding field %s to %s", field_name, model_cls)
         setattr(model_cls, field_name, field)
+        model_cls._field_definitions.append(field)
 
     @api.model
-    def _prepare_setup(self):
+    def _setup_base(self):
         """Very early, load the statechart, and add the sc_event_allowed
         fields on the model classes where the developer has declared
         the _statechart_file attribute.
@@ -250,32 +258,31 @@ class StatechartMixin(models.AbstractModel):
         Further steps of the regular setup process will then add these fields
         on children models.
         """
-        res = super(StatechartMixin, self)._prepare_setup()
-        for model_cls in type(self).__bases__:
-            if "_statechart_file" not in model_cls.__dict__:
-                _logger.debug(
-                    "_prepare_setup: class %s has no _statechart_file.",
-                    model_cls,
-                )
+        model_cls = type(self)
+        assert not models.is_definition_class(model_cls)
+        for def_cls in model_cls.__bases__:
+            if not models.is_definition_class(def_cls):
                 continue
-            statechart = parse_statechart_file(model_cls._statechart_file)
+            if "_statechart_file" not in def_cls.__dict__:
+                continue
+            _logger.debug(
+                "%s has _statechart_file.",
+                def_cls,
+            )
+            statechart = parse_statechart_file(def_cls._statechart_file)
             _logger.debug(
                 "adding sc_event_allowed fields of statechart %s on %s.",
                 statechart.name,
-                model_cls,
+                def_cls,
             )
             for event_name in statechart.events_for():
-                self._sc_make_event_allowed_field(model_cls, event_name)
-        return res
+                self._sc_make_event_allowed_field(def_cls, event_name)
+        return super()._setup_base()
 
     @api.model
     def _sc_patch(self):
         cls = type(self)
         if not hasattr(self, "_statechart_file"):
-            _logger.debug(
-                "_setup_complete: class %s has no _statechart_file.",
-                cls,
-            )
             return
         if self._inherit:
             if isinstance(self._inherit, str):
@@ -309,7 +316,7 @@ class StatechartMixin(models.AbstractModel):
         class can override the statechart with another one adding new events,
         and we will not patch the same method twice.
         """
-        res = super(StatechartMixin, self)._setup_complete()
+        res = super()._setup_complete()
         self._sc_patch()
         return res
 

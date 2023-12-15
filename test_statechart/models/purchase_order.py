@@ -16,4 +16,4 @@ class PurchaseOrder(models.Model):
     def write(self, vals):
         if not vals.get("sc_state"):
             self.sc_queue("check_write", vals)
-        return super(PurchaseOrder, self).write(vals)
+        return super().write(vals)

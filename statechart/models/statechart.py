@@ -2,7 +2,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 import logging
-from functools import lru_cache
+from functools import cache
 
 import sismic.io
 from sismic.exceptions import StatechartError
@@ -22,7 +22,7 @@ def parse_statechart(f):
         raise
 
 
-@lru_cache(maxsize=None)
+@cache
 def parse_statechart_file(filename):
     _logger.debug("loading statechart file %s", filename)
     with tools.file_open(filename, "r") as f:
