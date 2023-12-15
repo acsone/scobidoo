@@ -9,7 +9,7 @@ from odoo.addons.statechart.exceptions import NoTransitionError
 
 class TestInherit(common.TransactionCase):
     def setUp(self):
-        super(TestInherit, self).setUp()
+        super().setUp()
         self.parent = self.env["test.inherit.parent"].create({"name": "parent"})
         self.child1 = self.env["test.inherit.child1"].create({"name": "child1"})
         self.child2 = self.env["test.inherit.child2"].create({"name": "child2"})

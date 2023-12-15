@@ -23,7 +23,7 @@ class TestPOStatechart(common.TransactionCase):
             self.assertEqual(set(config["configuration"]), set(expected_config))
 
     def setUp(self):
-        super(TestPOStatechart, self).setUp()
+        super().setUp()
         # force two step validation
         self.env.user.company_id.po_double_validation = "two_step"
         self.env.user.company_id.po_double_validation_amount = 0
@@ -157,7 +157,7 @@ class TestPOStatechart(common.TransactionCase):
 
 class TestPODelegatedStatechart(common.TransactionCase):
     def setUp(self):
-        super(TestPODelegatedStatechart, self).setUp()
+        super().setUp()
         self.PurchaseOrderDelegated = self.env["purchase.order.delegated"]
         self.partner_id = self.env.ref("base.res_partner_1")
         self.product_id_1 = self.env.ref("product.product_product_8")
@@ -180,7 +180,7 @@ class TestPODelegatedStatechart(common.TransactionCase):
 
 class TestPOInheritedStatechart(common.TransactionCase):
     def setUp(self):
-        super(TestPOInheritedStatechart, self).setUp()
+        super().setUp()
         # force two step validation, otherwise button_confirm
         # calls button_approve which creates a reentrency error
         self.env.user.company_id.po_double_validation = "two_step"

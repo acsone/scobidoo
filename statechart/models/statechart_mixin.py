@@ -163,7 +163,7 @@ class StatechartMixin(models.AbstractModel):
 
     @api.model
     def create(self, vals):
-        rec = super(StatechartMixin, self).create(vals)
+        rec = super().create(vals)
         # make sure the interpreter is initialized, because
         # merely entering the root state may have side effects
         # (onentry, etc) and we don't want that to occur
@@ -180,7 +180,7 @@ class StatechartMixin(models.AbstractModel):
         entering the initial state and executing the associated actions.
         It is therefore important that such actions have no side effects.
         """
-        res = super(StatechartMixin, self).default_get(fields_list)
+        res = super().default_get(fields_list)
         dummy_interpreter = None
         for field in fields_list:
             if _sc_is_event_allowed_field_name(field):
@@ -250,7 +250,7 @@ class StatechartMixin(models.AbstractModel):
         Further steps of the regular setup process will then add these fields
         on children models.
         """
-        res = super(StatechartMixin, self)._prepare_setup()
+        res = super()._prepare_setup()
         for model_cls in type(self).__bases__:
             if "_statechart_file" not in model_cls.__dict__:
                 _logger.debug(
@@ -309,7 +309,7 @@ class StatechartMixin(models.AbstractModel):
         class can override the statechart with another one adding new events,
         and we will not patch the same method twice.
         """
-        res = super(StatechartMixin, self)._setup_complete()
+        res = super()._setup_complete()
         self._sc_patch()
         return res
 
