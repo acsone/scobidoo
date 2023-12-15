@@ -73,7 +73,7 @@ class StatechartMixin(models.AbstractModel):
         statechart = self._statechart
         for rec in self:
             _logger.debug(
-                "initializing interpreter for %s " "with statechart %s",
+                "initializing interpreter for %s with statechart %s",
                 rec,
                 statechart.name,
             )
@@ -241,10 +241,9 @@ class StatechartMixin(models.AbstractModel):
             readonly=True,
             store=False,
         )
-        field.name = field_name
         _logger.debug("adding field %s to %s", field_name, model_cls)
         setattr(model_cls, field_name, field)
-        model_cls._field_definitions.append(field)
+        field.__set_name__(model_cls, field_name)
 
     @api.model
     def _setup_base(self):
