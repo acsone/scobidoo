@@ -172,7 +172,7 @@ class TestPODelegatedStatechart(common.TransactionCase):
         self.assertTrue(self.pod.sc_do_nothing_allowed)
 
     def test_fields_view_get(self):
-        arch = self.env["purchase.order.delegated"].fields_view_get()["arch"]
+        arch = self.env["purchase.order.delegated"].get_view()["arch"]
         doc = etree.XML(arch)
         field = doc.xpath('//field[@name="sc_do_nothing_allowed"]')
         self.assertTrue(field)
