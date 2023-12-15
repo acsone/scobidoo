@@ -73,7 +73,7 @@ class StatechartMixin(models.AbstractModel):
         statechart = self._statechart
         for rec in self:
             _logger.debug(
-                "initializing interpreter for %s " "with statechart %s",
+                "initializing interpreter for %s with statechart %s",
                 rec,
                 statechart.name,
             )
