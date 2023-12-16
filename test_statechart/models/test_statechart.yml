@@ -8,6 +8,8 @@ statechart:
         transitions:
           - event: confirm1
             target: confirmed1
+          - target: confirmed1
+            guard: o.amount < 1
       - name: confirmed1
         transitions:
           - target: confirmed2

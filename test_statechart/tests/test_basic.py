@@ -29,3 +29,9 @@ class TestBasic(common.TransactionCase):
         record.confirm1()
         # small amount, step 2 done automatically
         self.assertScState(record.sc_state, ["confirmed2", "root"])
+
+    def test_automatic_transition_on_create(self):
+        model = self.env["scobidoo.test.model"]
+        record = model.create({"amount": 0.5})
+        # very small amount, step 1 and 2 done automatically
+        self.assertScState(record.sc_state, ["confirmed2", "root"])

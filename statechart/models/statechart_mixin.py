@@ -87,7 +87,7 @@ class StatechartMixin(models.AbstractModel):
                 config = json.loads(rec.sc_state)
                 interpreter.restore_configuration(config)
             else:
-                interpreter.execute_once()
+                interpreter.execute()
             rec.sc_interpreter = interpreter
 
     @api.depends("sc_state")
