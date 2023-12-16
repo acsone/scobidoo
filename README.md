@@ -21,7 +21,13 @@ There is no documentation yet. In the meantime here are the Odoo Experience 2018
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[statechart](statechart/) | 14.0.1.0.0 |  | Add Statecharts to Odoo models
+[statechart_demo](statechart_demo/) | 14.0.1.0.0 |  | Demo workflows for the statechart module
+[test_statechart](test_statechart/) | 14.0.1.0.0 |  | Tests for the statechart module
 
 [//]: # (end addons)
 
