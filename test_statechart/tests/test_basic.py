@@ -15,10 +15,6 @@ class TestBasic(common.TransactionCase):
             self.assertEqual(set(config["configuration"]), set(expected_config))
 
     def test_basic(self):
-        """
-        Test that we can create a model with a statechart and that the
-        statechart is correctly initialized
-        """
         model = self.env["scobidoo.test.model"]
         record = model.create({"amount": 200})
         record.confirm1()
@@ -28,10 +24,6 @@ class TestBasic(common.TransactionCase):
         self.assertScState(record.sc_state, ["confirmed2", "root"])
 
     def test_automatic_transition(self):
-        """
-        Test that we can create a model with a statechart and that the
-        statechart is correctly initialized
-        """
         model = self.env["scobidoo.test.model"]
         record = model.create({"amount": 50})
         record.confirm1()
