@@ -159,7 +159,7 @@ class StatechartMixin(models.AbstractModel):
                     # and the user may receive an error message later
                     # if he tries to do the action
                     allowed = True
-                setattr(rec, field_name, allowed)
+                rec[field_name] = allowed
 
     @api.model_create_multi
     def create(self, vals_list):
