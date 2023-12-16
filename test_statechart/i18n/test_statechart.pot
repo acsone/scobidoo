@@ -1,0 +1,860 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* test_statechart
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__access_warning
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__access_warning
+msgid "Access warning"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__message_needaction
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__message_needaction
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__activity_ids
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__activity_exception_decoration
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__activity_state
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__activity_type_icon
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__amount
+msgid "Amount"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__message_attachment_count
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__message_attachment_count
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__receipt_reminder_email
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__receipt_reminder_email
+msgid ""
+"Automatically send a confirmation email to the vendor X days before the "
+"expected receipt date, asking him to confirm the exact date."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__invoice_count
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__invoice_count
+msgid "Bill Count"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__invoice_status
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__invoice_status
+msgid "Billing Status"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__invoice_ids
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__invoice_ids
+msgid "Bills"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__user_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__user_id
+msgid "Buyer"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__company_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__company_id
+msgid "Company"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__date_approve
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__date_approve
+msgid "Confirmation Date"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__country_code
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__country_code
+msgid "Country code"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__create_uid
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__create_uid
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__create_uid
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__create_uid
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__create_uid
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__create_uid
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__create_date
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__create_date
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__create_date
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__create_date
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__create_date
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__create_date
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__currency_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__currency_rate
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__currency_rate
+msgid "Currency Rate"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__access_url
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__access_url
+msgid "Customer Portal URL"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__date_calendar_start
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__date_calendar_start
+msgid "Date Calendar Start"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__reminder_date_before_receipt
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__reminder_date_before_receipt
+msgid "Days Before Receipt"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__date_planned
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__date_planned
+msgid ""
+"Delivery date promised by vendor. This date is used to determine expected "
+"arrival of products."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__date_order
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__date_order
+msgid ""
+"Depicts the date within which the Quotation should be confirmed and "
+"converted into a purchase order."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__display_name
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__display_name
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__display_name
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__display_name
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__display_name
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__display_name
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__dest_address_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__dest_address_id
+msgid "Dropship Address"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__date_planned
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__date_planned
+msgid "Expected Arrival"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__fiscal_position_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__fiscal_position_id
+msgid "Fiscal Position"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__message_follower_ids
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__message_follower_ids
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__message_partner_ids
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__message_partner_ids
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__activity_type_icon
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__has_message
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__has_message
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__id
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__id
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__id
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__id
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__id
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__id
+msgid "ID"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__activity_exception_icon
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__activity_exception_icon
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__message_needaction
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__message_needaction
+#: model:ir.model.fields,help:test_statechart.field_thing_with_mailthread__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__message_has_error
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__message_has_sms_error
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__message_has_error
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__message_has_sms_error
+#: model:ir.model.fields,help:test_statechart.field_thing_with_mailthread__message_has_error
+#: model:ir.model.fields,help:test_statechart.field_thing_with_mailthread__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__incoterm_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__incoterm_id
+msgid "Incoterm"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__incoterm_id
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__incoterm_id
+msgid ""
+"International Commercial Terms are a series of predefined commercial terms "
+"used in international transactions."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__message_is_follower
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__message_is_follower
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated____last_update
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited____last_update
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model____last_update
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1____last_update
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2____last_update
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent____last_update
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__write_uid
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__write_uid
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__write_uid
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__write_uid
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__write_uid
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__write_uid
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__write_date
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__write_date
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__write_date
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__write_date
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__write_date
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__write_date
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__message_main_attachment_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__message_main_attachment_id
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__message_has_error
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__message_has_error
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__message_ids
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__message_ids
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__my_activity_date_deadline
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__name
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__name
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_grand_parent__name
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__name
+msgid "Name"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_has_allowed_events
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_has_allowed_events
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_has_allowed_events
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__sc_has_allowed_events
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__sc_has_allowed_events
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__sc_has_allowed_events
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_grand_parent__sc_has_allowed_events
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__sc_has_allowed_events
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__sc_has_allowed_events
+msgid "Need action?"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__activity_date_deadline
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__activity_summary
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__activity_type_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__message_needaction_counter
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__message_needaction_counter
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__reminder_date_before_receipt
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__reminder_date_before_receipt
+msgid "Number of days to send reminder email before the promised receipt date"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__message_has_error_counter
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__message_has_error_counter
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__message_needaction_counter
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__message_needaction_counter
+#: model:ir.model.fields,help:test_statechart.field_thing_with_mailthread__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__message_has_error_counter
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__message_has_error_counter
+#: model:ir.model.fields,help:test_statechart.field_thing_with_mailthread__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__date_order
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__date_order
+msgid "Order Deadline"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__order_line
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__order_line
+msgid "Order Lines"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__name
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__name
+msgid "Order Reference"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__payment_term_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__payment_term_id
+msgid "Payment Terms"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__po_id
+msgid "Po"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__access_url
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__access_url
+msgid "Portal Access URL"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__priority
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__priority
+msgid "Priority"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__product_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__product_id
+msgid "Product"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model,name:test_statechart.model_purchase_order
+msgid "Purchase Order"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model,name:test_statechart.model_purchase_order_delegated
+msgid "Purchase Order Delegated"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model,name:test_statechart.model_purchase_order_inherited
+msgid "Purchase Order Inherited"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__dest_address_id
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__dest_address_id
+msgid ""
+"Put an address if you want to deliver directly from the vendor to the "
+"customer. Otherwise, keep empty to deliver to your own company."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__currency_rate
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__currency_rate
+msgid "Ratio between the purchase order currency and the company currency"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__receipt_reminder_email
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__receipt_reminder_email
+msgid "Receipt Reminder Email"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__mail_reception_confirmed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__mail_reception_confirmed
+msgid "Reception Confirmed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__origin
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__origin
+msgid ""
+"Reference of the document that generated this purchase order request (e.g. a"
+" sales order)"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__partner_ref
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__partner_ref
+msgid ""
+"Reference of the sales order or bid sent by the vendor. It's used to do the "
+"matching when you receive the products as this reference is usually written "
+"on the delivery order sent by your vendor."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__mail_reminder_confirmed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__mail_reminder_confirmed
+msgid "Reminder Confirmed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__activity_user_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__message_has_sms_error
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__message_has_sms_error
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_button_approve_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_button_approve_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_button_approve_allowed
+msgid "Sc Button Approve Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_button_cancel_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_button_cancel_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_button_cancel_allowed
+msgid "Sc Button Cancel Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__sc_button_child2_allowed
+msgid "Sc Button Child2 Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_button_confirm_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_button_confirm_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_button_confirm_allowed
+msgid "Sc Button Confirm Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_button_draft_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_button_draft_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_button_draft_allowed
+msgid "Sc Button Draft Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__sc_button_parent_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__sc_button_parent_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__sc_button_parent_allowed
+msgid "Sc Button Parent Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__sc_button_parent_method_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__sc_button_parent_method_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__sc_button_parent_method_allowed
+msgid "Sc Button Parent Method Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__sc_button_parent_override_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__sc_button_parent_override_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__sc_button_parent_override_allowed
+msgid "Sc Button Parent Override Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_check_write_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_check_write_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_check_write_allowed
+msgid "Sc Check Write Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_compute_something_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_compute_something_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_compute_something_allowed
+msgid "Sc Compute Something Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__sc_confirm1_allowed
+msgid "Sc Confirm1 Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__sc_confirm2_allowed
+msgid "Sc Confirm2 Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_display_state
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_display_state
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_display_state
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__sc_display_state
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__sc_display_state
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__sc_display_state
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_grand_parent__sc_display_state
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__sc_display_state
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__sc_display_state
+msgid "Sc Display State"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_do_nothing_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_do_nothing_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_do_nothing_allowed
+msgid "Sc Do Nothing Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_interpreter
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_interpreter
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_interpreter
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__sc_interpreter
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__sc_interpreter
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__sc_interpreter
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_grand_parent__sc_interpreter
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__sc_interpreter
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__sc_interpreter
+msgid "Sc Interpreter"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_raise_user_error_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_raise_user_error_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_raise_user_error_allowed
+msgid "Sc Raise User Error Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_state
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_state
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_state
+#: model:ir.model.fields,field_description:test_statechart.field_scobidoo_test_model__sc_state
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child1__sc_state
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_child2__sc_state
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_grand_parent__sc_state
+#: model:ir.model.fields,field_description:test_statechart.field_test_inherit_parent__sc_state
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__sc_state
+msgid "Sc State"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order__sc_unlink_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__sc_unlink_allowed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__sc_unlink_allowed
+msgid "Sc Unlink Allowed"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model,name:test_statechart.model_scobidoo_test_model
+msgid "Scobidoo Test Model"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__access_token
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__access_token
+msgid "Security Token"
+msgstr ""
+
+#. module: test_statechart
+#. odoo-python
+#: code:addons/test_statechart/models/purchase_order.py:0
+#, python-format
+msgid "Some error"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__origin
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__origin
+msgid "Source Document"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__state
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__state
+msgid "Status"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__activity_state
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__tax_country_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__tax_country_id
+msgid "Tax Country"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__tax_totals
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__tax_totals
+msgid "Tax Totals"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__amount_tax
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__amount_tax
+msgid "Taxes"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__tax_country_id
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__tax_country_id
+msgid ""
+"Technical field to filter the available taxes depending on the fiscal "
+"country and fiscal position."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__notes
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__notes
+msgid "Terms and Conditions"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model,name:test_statechart.model_test_inherit_child1
+msgid "Test Inherit Child1"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model,name:test_statechart.model_test_inherit_child2
+msgid "Test Inherit Child2"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model,name:test_statechart.model_test_inherit_grand_parent
+msgid "Test Inherit Grand Parent"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model,name:test_statechart.model_test_inherit_parent
+msgid "Test Inherit Parent"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__country_code
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__country_code
+msgid ""
+"The ISO country code in two chars. \n"
+"You can use this field for quick search."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model,name:test_statechart.model_thing_with_mailthread
+msgid "Thing with mail thread"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__amount_total
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__amount_total
+msgid "Total"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__mail_reception_confirmed
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__mail_reception_confirmed
+msgid "True if PO reception is confirmed by the vendor."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__mail_reminder_confirmed
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__mail_reminder_confirmed
+msgid "True if the reminder email is confirmed by the vendor."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__activity_exception_decoration
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__amount_untaxed
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__amount_untaxed
+msgid "Untaxed Amount"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__partner_id
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__partner_id
+msgid "Vendor"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__partner_ref
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__partner_ref
+msgid "Vendor Reference"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__website_message_ids
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__website_message_ids
+#: model:ir.model.fields,field_description:test_statechart.field_thing_with_mailthread__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__website_message_ids
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__website_message_ids
+#: model:ir.model.fields,help:test_statechart.field_thing_with_mailthread__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: test_statechart
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_delegated__partner_id
+#: model:ir.model.fields,help:test_statechart.field_purchase_order_inherited__partner_id
+msgid "You can find a vendor by its Name, TIN, Email or Internal Reference."
+msgstr ""

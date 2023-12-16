@@ -1,0 +1,54 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* statechart_demo
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: statechart_demo
+#: model:ir.model,name:statechart_demo.model_res_partner
+msgid "Contact"
+msgstr ""
+
+#. module: statechart_demo
+#: model:ir.model.fields,field_description:statechart_demo.field_res_partner__sc_has_allowed_events
+msgid "Need action?"
+msgstr ""
+
+#. module: statechart_demo
+#: model:ir.model.fields,field_description:statechart_demo.field_res_partner__sc_display_state
+msgid "Sc Display State"
+msgstr ""
+
+#. module: statechart_demo
+#: model:ir.model.fields,field_description:statechart_demo.field_res_partner__sc_interpreter
+msgid "Sc Interpreter"
+msgstr ""
+
+#. module: statechart_demo
+#: model:ir.model.fields,field_description:statechart_demo.field_res_partner__sc_state
+msgid "Sc State"
+msgstr ""
+
+#. module: statechart_demo
+#: model_terms:ir.ui.view,arch_db:statechart_demo.view_partner_form
+msgid "Validate"
+msgstr ""
+
+#. module: statechart_demo
+#: model_terms:ir.ui.view,arch_db:statechart_demo.view_partner_form
+msgid "Validate (track 1)"
+msgstr ""
+
+#. module: statechart_demo
+#: model_terms:ir.ui.view,arch_db:statechart_demo.view_partner_form
+msgid "Validate (track 2)"
+msgstr ""

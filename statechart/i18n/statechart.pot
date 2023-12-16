@@ -4,13 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 9.0e\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-19 14:04+0000\n"
-"PO-Revision-Date: 2018-03-19 14:04+0000\n"
-"Last-Translator: <>\n"
+"Last-Translator: \n"
 "Language-Team: \n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -61,18 +58,13 @@ msgstr ""
 #. module: statechart
 #. odoo-python
 #: code:addons/statechart/models/statechart_mixin.py:0
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "This action is not allowed in the current state or with your access rights.\n"
 "\n"
 "Technical details of the error: %(orig_event)s\n"
 "Steps: %(steps)s"
 msgstr ""
-"Cette action n'est pas autorisée dans l'état actuel ou avec vos droits "
-"d'accès.\n"
-"\n"
-"Détails techniques de l'erreur: %(orig_event)s\n"
-"Étapes: %(steps)s"
 
 #. module: statechart
 #. odoo-python
