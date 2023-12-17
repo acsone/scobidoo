@@ -1,45 +1,43 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data>
-        <record id="view_partner_form" model="ir.ui.view">
-            <field name="name">res.partner.form</field>
-            <field name="model">res.partner</field>
-            <field name="inherit_id" ref="base.view_partner_form" />
-            <field name="arch" type="xml">
-                <xpath expr="//sheet" position="before">
-                    <header>
-                        <button
-                            name="track_1_validate"
-                            type="object"
-                            string="Validate (track 1)"
-                            attrs="{'invisible': [('sc_track_1_validate_allowed', '=', False)]}"
-                            class="btn-primary"
-                        />
-                        <button
-                            name="track_2_validate"
-                            type="object"
-                            string="Validate (track 2)"
-                            attrs="{'invisible': [('sc_track_2_validate_allowed', '=', False)]}"
-                            class="btn-primary"
-                        />
-                        <button
-                            name="validate"
-                            type="object"
-                            string="Validate"
-                            attrs="{'invisible': [('sc_validate_allowed', '=', False)]}"
-                            class="btn-primary"
-                        />
-                        <field name="sc_state" />
-                    </header>
-                </xpath>
-                <xpath expr="/form" position="inside">
-                    <group name="sc_invisible_fields" invisible="1">
-                        <field name="sc_track_1_validate_allowed" />
-                        <field name="sc_track_2_validate_allowed" />
-                        <field name="sc_validate_allowed" />
-                    </group>
-                </xpath>
-            </field>
-        </record>
-    </data>
+    <record id="view_partner_form" model="ir.ui.view">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button
+                        name="track_1_validate"
+                        type="object"
+                        string="Validate (track 1)"
+                        attrs="{'invisible': [('sc_track_1_validate_allowed', '=', False)]}"
+                        class="btn-primary"
+                    />
+                    <button
+                        name="track_2_validate"
+                        type="object"
+                        string="Validate (track 2)"
+                        attrs="{'invisible': [('sc_track_2_validate_allowed', '=', False)]}"
+                        class="btn-primary"
+                    />
+                    <button
+                        name="validate"
+                        type="object"
+                        string="Validate"
+                        attrs="{'invisible': [('sc_validate_allowed', '=', False)]}"
+                        class="btn-primary"
+                    />
+                    <field name="sc_state" />
+                </header>
+            </xpath>
+            <xpath expr="/form" position="inside">
+                <group name="sc_invisible_fields" invisible="1">
+                    <field name="sc_track_1_validate_allowed" />
+                    <field name="sc_track_2_validate_allowed" />
+                    <field name="sc_validate_allowed" />
+                </group>
+            </xpath>
+        </field>
+    </record>
 </odoo>
