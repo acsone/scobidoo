@@ -19,5 +19,10 @@
     },
     "data": [],
     "demo": [],
+    "assets": {
+        "web.assets_backend": [
+            "statechart/static/src/core/errors/error_dialogs.esm.js",
+        ],
+    },
     "installable": True,
 }
