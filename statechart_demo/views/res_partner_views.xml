@@ -11,21 +11,21 @@
                         name="track_1_validate"
                         type="object"
                         string="Validate (track 1)"
-                        invisible="sc_track_1_validate_allowed"
+                        invisible="not sc_track_1_validate_allowed"
                         class="btn-primary"
                     />
                     <button
                         name="track_2_validate"
                         type="object"
                         string="Validate (track 2)"
-                        invisible="sc_track_2_validate_allowed"
+                        invisible="not sc_track_2_validate_allowed"
                         class="btn-primary"
                     />
                     <button
                         name="validate"
                         type="object"
                         string="Validate"
-                        invisible="sc_validate_allowed"
+                        invisible="not sc_validate_allowed"
                         class="btn-primary"
                     />
                     <field name="sc_state" />

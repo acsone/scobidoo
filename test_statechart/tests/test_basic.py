@@ -3,10 +3,10 @@
 
 import json
 
-from odoo.tests import common
+from odoo.addons.base.tests.common import BaseCommon
 
 
-class TestBasic(common.TransactionCase):
+class TestBasic(BaseCommon):
     def assertScState(self, sc_state, expected_config):
         if not expected_config:
             self.assertFalse(sc_state)

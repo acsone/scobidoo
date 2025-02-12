@@ -7,11 +7,11 @@ from sismic.exceptions import CodeEvaluationError
 from sismic.interpreter import Interpreter as SismicInterpreter
 from sismic.model import Event
 
-from odoo.exceptions import except_orm
+from odoo.exceptions import UserError
 
 
 def _root_cause(e):
-    if isinstance(e, except_orm):
+    if isinstance(e, UserError):
         return e
     if not hasattr(e, "__cause__") or not e.__cause__:
         return e
