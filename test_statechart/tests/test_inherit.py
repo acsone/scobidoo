@@ -2,12 +2,11 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 # AccountingTestCase runs after register_hook
-from odoo.tests import common
-
+from odoo.addons.base.tests.common import BaseCommon
 from odoo.addons.statechart.exceptions import NoTransitionError
 
 
-class TestInherit(common.TransactionCase):
+class TestInherit(BaseCommon):
     def setUp(self):
         super().setUp()
         self.parent = self.env["test.inherit.parent"].create({"name": "parent"})

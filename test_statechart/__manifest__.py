@@ -4,7 +4,7 @@
 {
     "name": "Test Statechart",
     "summary": """Tests for the statechart module""",
-    "version": "16.0.1.0.0",
+    "version": "18.0.1.0.0",
     "license": "LGPL-3",
     "author": "ACSONE SA/NV",
     "website": "https://github.com/acsone/scobidoo",
@@ -13,6 +13,7 @@
         "statechart",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "views/purchase_order.xml",
         "security/purchase_order_delegated.xml",
         "security/thing_with_mailthread.xml",
