@@ -9,12 +9,11 @@ from odoo import fields
 from odoo.exceptions import UserError
 
 # AccountingTestCase runs after register_hook
-from odoo.tests import common
-
+from odoo.addons.base.tests.common import BaseCommon
 from odoo.addons.statechart.exceptions import NoTransitionError
 
 
-class TestPOStatechart(common.TransactionCase):
+class TestPOStatechart(BaseCommon):
     def assertScState(self, sc_state, expected_config):
         if not expected_config:
             self.assertFalse(sc_state)
@@ -155,7 +154,7 @@ class TestPOStatechart(common.TransactionCase):
         self.assertFalse(defaults.get("sc_button_cancel_allowed"))
 
 
-class TestPODelegatedStatechart(common.TransactionCase):
+class TestPODelegatedStatechart(BaseCommon):
     def setUp(self):
         super().setUp()
         self.PurchaseOrderDelegated = self.env["purchase.order.delegated"]
@@ -178,7 +177,7 @@ class TestPODelegatedStatechart(common.TransactionCase):
         self.assertTrue(field)
 
 
-class TestPOInheritedStatechart(common.TransactionCase):
+class TestPOInheritedStatechart(BaseCommon):
     def setUp(self):
         super().setUp()
         # force two step validation, otherwise button_confirm

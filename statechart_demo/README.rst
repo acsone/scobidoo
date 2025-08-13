@@ -17,7 +17,7 @@ Statechart Demo
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-acsone%2Fscobidoo-lightgray.png?logo=github
-    :target: https://github.com/acsone/scobidoo/tree/16.0/statechart_demo
+    :target: https://github.com/acsone/scobidoo/tree/18.0/statechart_demo
     :alt: acsone/scobidoo
 
 |badge1| |badge2| |badge3|
@@ -28,7 +28,7 @@ Demonstration of parallel states on the ``res.partner`` model.
 
 |Parallel states|
 
-.. |Parallel states| image:: https://raw.githubusercontent.com/acsone/scobidoo/16.0/statechart_demo/models/res_partner_statechart.png
+.. |Parallel states| image:: https://raw.githubusercontent.com/acsone/scobidoo/18.0/statechart_demo/models/res_partner_statechart.png
 
 **Table of contents**
 
@@ -41,7 +41,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/acsone/scobidoo/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/acsone/scobidoo/issues/new?body=module:%20statechart_demo%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/acsone/scobidoo/issues/new?body=module:%20statechart_demo%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -56,6 +56,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `acsone/scobidoo <https://github.com/acsone/scobidoo/tree/16.0/statechart_demo>`_ project on GitHub.
+This module is part of the `acsone/scobidoo <https://github.com/acsone/scobidoo/tree/18.0/statechart_demo>`_ project on GitHub.
 
 You are welcome to contribute.
