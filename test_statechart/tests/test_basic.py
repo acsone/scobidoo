@@ -35,3 +35,34 @@ class TestBasic(BaseCommon):
         record = model.create({"amount": 0.5})
         # very small amount, step 1 and 2 done automatically
         self.assertScState(record.sc_state, ["confirmed2", "root"])
+
+    def test_get_sc_sc_has_allowed_events(self):
+        """
+        Test that we can ignore certain events based on a context
+        key (ignore_for_has_allowed_events)
+        """
+        model = self.env["scobidoo.test.model"]
+        record = model.create({"amount": 200})
+        record.confirm1()
+        self.assertScState(record.sc_state, ["confirmed1", "root"])
+
+        # 2 events are allowed: confirmed2 and cancel
+        self.assertEqual(record.sc_has_allowed_events, True)
+
+        # 1 event is allowed: confirmed2
+        record.invalidate_recordset()
+        self.assertEqual(
+            record.with_context(
+                ignore_for_has_allowed_events=["cancel"]
+            ).sc_has_allowed_events,
+            True,
+        )
+
+        # no event allowed
+        record.invalidate_recordset()
+        self.assertEqual(
+            record.with_context(
+                ignore_for_has_allowed_events=["cancel", "confirm2"]
+            ).sc_has_allowed_events,
+            False,
+        )
