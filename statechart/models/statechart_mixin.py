@@ -15,6 +15,16 @@ from .statechart import parse_statechart_file
 _logger = logging.getLogger(__name__)
 
 
+def _patch_method(cls, name, method):
+    """This method was part of the Model class in Odoo 16 and earlier."""
+    origin = getattr(cls, name)
+    method.origin = origin
+    # propagate decorators from origin to method, and apply api decorator
+    wrapped = api.propagate(origin, method)
+    wrapped.origin = origin
+    setattr(cls, name, wrapped)
+
+
 def _sc_make_event_allowed_field_name(event_name):
     # TODO event names must be valid python identifiers
     #      (that must be tested somewhere long before reaching this point)
@@ -217,7 +227,7 @@ class StatechartMixin(models.AbstractModel):
                     event_name,
                     cls,
                 )
-                cls._patch_method(event_name, partial)
+                _patch_method(cls, event_name, partial)
             else:
                 raise UserError(
                     _(
