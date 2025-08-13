@@ -36,7 +36,7 @@ class TestBasic(common.TransactionCase):
         # very small amount, step 1 and 2 done automatically
         self.assertScState(record.sc_state, ["confirmed2", "root"])
 
-    def test_get_sc_event_allowed_field_names(self):
+    def test_get_sc_sc_has_allowed_events(self):
         """
         Test that we can ignore certain events based on a context
         key (ignore_for_has_allowed_events)
