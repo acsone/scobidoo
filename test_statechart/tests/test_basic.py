@@ -50,7 +50,7 @@ class TestBasic(common.TransactionCase):
         self.assertEqual(record.sc_has_allowed_events, True)
 
         # 1 event is allowed: confirmed2
-        record.invalidate_cache()
+        record.invalidate_recordset()
         self.assertEqual(
             record.with_context(
                 ignore_for_has_allowed_events=["cancel"]
@@ -59,7 +59,7 @@ class TestBasic(common.TransactionCase):
         )
 
         # no event allowed
-        record.invalidate_cache()
+        record.invalidate_recordset()
         self.assertEqual(
             record.with_context(
                 ignore_for_has_allowed_events=["cancel", "confirm2"]
