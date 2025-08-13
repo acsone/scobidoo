@@ -1,12 +1,15 @@
-on:
-  push:
-    branches:
-      - 18.0
-
 name: release
+
+on:
+  workflow_run:
+    workflows: ["tests"]
+    branches: ["16.0"]
+    types: [completed]
 
 jobs:
   pypi:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
     name: upload release to PyPI
     runs-on: ubuntu-latest
     environment: pypi
