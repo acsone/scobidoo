@@ -314,15 +314,16 @@ class StatechartMixin(models.AbstractModel):
         return res
 
     @api.model
-    def _get_sc_event_allowed_field_names(self):
-        event_names = self._statechart.events_for()
+    def _get_sc_event_allowed_field_names(self, events_to_ignore=None):
+        event_names = set(self._statechart.events_for()) - set(events_to_ignore or [])
         return [
             _sc_make_event_allowed_field_name(event_name) for event_name in event_names
         ]
 
     @api.depends("sc_state")
     def _compute_sc_has_allowed_events(self):
-        sc_fields = self._get_sc_event_allowed_field_names()
+        events_to_ignore = self.env.context.get("ignore_for_has_allowed_events")
+        sc_fields = self._get_sc_event_allowed_field_names(events_to_ignore)
         for rec in self:
             rec.sc_has_allowed_events = any([rec[f] for f in sc_fields])
 
