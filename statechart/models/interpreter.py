@@ -7,16 +7,6 @@ from sismic.exceptions import CodeEvaluationError
 from sismic.interpreter import Interpreter as SismicInterpreter
 from sismic.model import Event
 
-from odoo.exceptions import UserError
-
-
-def _root_cause(e):
-    if isinstance(e, UserError):
-        return e
-    if not hasattr(e, "__cause__") or not e.__cause__:
-        return e
-    return _root_cause(e.__cause__)
-
 
 class Interpreter(SismicInterpreter):
     def __init__(self, *args, **kwargs):
@@ -31,7 +21,7 @@ class Interpreter(SismicInterpreter):
         try:
             return super().execute(max_steps)
         except CodeEvaluationError as e:
-            raise _root_cause(e).with_traceback(sys.exc_info()[2]) from e
+            raise (e.__cause__ or e).with_traceback(sys.exc_info()[2]) from e
 
     def execute_once(self):
         if self._in_execute_once:
@@ -41,7 +31,7 @@ class Interpreter(SismicInterpreter):
             try:
                 return super().execute_once()
             except CodeEvaluationError as e:
-                raise _root_cause(e).with_traceback(sys.exc_info()[2]) from e
+                raise (e.__cause__ or e).with_traceback(sys.exc_info()[2]) from e
         finally:
             self._in_execute_once = False
 
