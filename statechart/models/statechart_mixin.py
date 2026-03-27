@@ -4,7 +4,7 @@
 import json
 import logging
 
-from odoo import _, api, fields, models
+from odoo import _, api, fields, models, tools
 from odoo.exceptions import MissingError, UserError
 
 from ..exceptions import NoTransitionError
@@ -288,6 +288,7 @@ class StatechartMixin(models.AbstractModel):
                 self._sc_make_event_allowed_field(def_cls, event_name)
         return super()._setup_base()
 
+    @tools.mute_logger("odoo.tests.common")
     @api.model
     def _sc_patch(self):
         cls = type(self)
