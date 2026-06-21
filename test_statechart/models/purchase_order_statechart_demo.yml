@@ -27,7 +27,7 @@ statechart:
           assert hasattr(o.button_confirm, 'origin'), "entering initial state while sc methods are not patched"
         on exit: |
           # we can do actions upon exiting a state
-          o.notes = 'Congrats for exiting the draft state'
+          o.note = 'Congrats for exiting the draft state'
         transitions:
           - event: button_confirm
             target: confirmed
@@ -41,7 +41,7 @@ statechart:
             guard: |
               # and put some guard on the write methods, eg to
               # allow writeing selected fields only depending on state
-              not (set(event.args[0].keys()) - set(['state', 'sc_state', 'notes', 'group_id', 'date_approve']))
+              not (set(event.args[0].keys()) - set(['state', 'sc_state', 'note', 'group_id', 'date_approve']))
         states:
           - name: confirmed
             transitions:
@@ -68,4 +68,4 @@ statechart:
           - name: approved
             on entry: |
               # we can do actions upon entering a state
-              o.notes = 'Congrats for entering the approved state'
+              o.note = 'Congrats for entering the approved state'

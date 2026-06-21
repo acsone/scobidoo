@@ -6,6 +6,7 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import MissingError, UserError
+from odoo.fields import Domain
 
 from ..exceptions import NoTransitionError
 from .event import Event
@@ -16,13 +17,18 @@ _logger = logging.getLogger(__name__)
 
 
 def _patch_method(cls, name, method):
-    """This method was part of the Model class in Odoo 16 and earlier."""
+    """Patch a method on a class, preserving the original as .origin."""
     origin = getattr(cls, name)
     method.origin = origin
-    # propagate decorators from origin to method, and apply api decorator
-    wrapped = api.propagate(origin, method)
-    wrapped.origin = origin
-    setattr(cls, name, wrapped)
+
+    # Maintain the statechart engine's .origin pointer chain
+    if hasattr(origin, "origin"):
+        method.origin = origin.origin
+    else:
+        method.origin = origin
+
+    # Physically mount the wrapper onto the runtime class dictionary
+    setattr(cls, name, method)
 
 
 def _sc_make_event_allowed_field_name(event_name):
@@ -37,6 +43,36 @@ def _sc_is_event_allowed_field_name(field_name):
 
 def _sc_event_from_event_allowed_field_name(field_name):
     return field_name[3:-8]
+
+
+def _sc_make_event_allowed_field(cls, event_name):
+    # We add the fields on the original Python definition class
+    # so all downstream field processing done by Odoo works
+    # (_inherit, _inherits in particular).
+    # This is called at import time via _sc_inject_fields_on_class
+    # before Odoo's ORM processes the class.
+    field_name = _sc_make_event_allowed_field_name(event_name)
+    if hasattr(cls, field_name):
+        return
+    field = fields.Boolean(
+        compute="_compute_sc_event_allowed",
+        readonly=True,
+        store=False,
+    )
+    _logger.debug("adding field %s to %s", field_name, cls)
+    setattr(cls, field_name, field)
+    field.__set_name__(cls, field_name)
+
+
+def _sc_inject_fields_on_class(cls):
+    if "_statechart_file" not in cls.__dict__:
+        return
+    _logger.debug(
+        "StatechartMixin: injecting sc_event_allowed fields on %s at import time", cls
+    )
+    statechart = parse_statechart_file(cls._statechart_file)
+    for event_name in statechart.events_for():
+        _sc_make_event_allowed_field(cls, event_name)
 
 
 class InterpreterField(fields.Field):
@@ -142,6 +178,16 @@ class StatechartMixin(models.AbstractModel):
                 if len(self) == 1 and event._return:
                     return event._return
             else:
+                # The interpreter is already executing, meaning we were called
+                # from within a statechart action (e.g. event.method(o) or
+                # o.button_confirm.origin(o) calling super() which resolves to
+                # a patched parent method). Pass through to the underlying
+                # method directly without re-entering the statechart.
+                if event.method is not None:
+                    return event.method(rec, *event.args, **event.kwargs)
+                # If there is no underlying python method (event.method is None),
+                # a super() call is impossible.
+                # This is a clear design/reentrancy loop error. Raise the exception
                 msg = _(
                     "Reentrancy error for %(event)s on %(rec)s. "
                     "Please use sc_queue() "
@@ -222,11 +268,7 @@ class StatechartMixin(models.AbstractModel):
             setattr(cls, event_name, partial)
         else:
             if callable(method):
-                _logger.debug(
-                    "patching event method %s on %s",
-                    event_name,
-                    cls,
-                )
+                _logger.debug("patching event method %s on %s", event_name, cls)
                 _patch_method(cls, event_name, partial)
             else:
                 raise UserError(
@@ -239,95 +281,37 @@ class StatechartMixin(models.AbstractModel):
                     )
                 )
 
-    def _sc_make_event_allowed_field(self, model_cls, event_name):
-        # we add the fields in the original python class
-        # so all downstream field processing done by Odoo works
-        # (_inherit, _inherits in particular)
-        field_name = _sc_make_event_allowed_field_name(event_name)
-        if hasattr(model_cls, field_name):
-            return
-        field = fields.Boolean(
-            compute="_compute_sc_event_allowed",
-            readonly=True,
-            store=False,
-        )
-        _logger.debug("adding field %s to %s", field_name, model_cls)
-        setattr(model_cls, field_name, field)
-        field.__set_name__(model_cls, field_name)
-
     @api.model
-    def _setup_base(self):
-        """Very early, load the statechart, and add the sc_event_allowed
-        fields on the model classes where the developer has declared
-        the _statechart_file attribute.
+    def _post_model_setup__(self):
+        """Patch event methods to invoke the statechart.
 
-        This closely emulates what the developer would have done when
-        adding such fields manually.
-
-        Further steps of the regular setup process will then add these fields
-        on children models.
+        We find the most-derived definition class that declares _statechart_file
+        (first match in _model_classes__ order). Using __dict__ on the
+        runtime class to track patched events prevents double-patching when
+        _post_model_setup__ runs for both a parent and child model.
         """
-        model_cls = type(self)
-        assert not models.is_definition_class(model_cls)
-        for def_cls in model_cls.__bases__:
-            if not models.is_definition_class(def_cls):
-                continue
-            if "_statechart_file" not in def_cls.__dict__:
-                continue
-            _logger.debug(
-                "%s has _statechart_file.",
-                def_cls,
-            )
-            statechart = parse_statechart_file(def_cls._statechart_file)
-            _logger.debug(
-                "adding sc_event_allowed fields of statechart %s on %s.",
-                statechart.name,
-                def_cls,
-            )
-            for event_name in statechart.events_for():
-                self._sc_make_event_allowed_field(def_cls, event_name)
-        return super()._setup_base()
-
-    @api.model
-    def _sc_patch(self):
+        super()._post_model_setup__()
         cls = type(self)
-        if not hasattr(self, "_statechart_file"):
-            return
-        if self._inherit:
-            if isinstance(self._inherit, str):
-                parents = [self._inherit]
-            else:
-                parents = self._inherit
-            for parent in parents:
-                if parent != self._name:
-                    parent_model = self.env[parent]
-                    if hasattr(parent_model, "_sc_patch"):
-                        parent_model._sc_patch()
-        statechart = parse_statechart_file(self._statechart_file)
-        _logger.debug(
-            "patching/adding event methods of statechart %s on %s.",
-            statechart.name,
-            cls,
+        # Find only the most-derived def class with _statechart_file.
+        # _model_classes__ is ordered most-derived first, so the first match
+        # is the one whose statechart should apply to this model.
+        def_cls = next(
+            (c for c in cls._model_classes__ if "_statechart_file" in c.__dict__),
+            None,
         )
+        if def_cls is None:
+            return
+        statechart = parse_statechart_file(def_cls._statechart_file)
         cls._statechart = statechart
-        if not hasattr(cls, "_statechart_patched"):
+        # Track on the runtime class __dict__ (not def_cls) so:
+        # - double-patching is prevented when parent and child share events
+        # - each runtime class gets its own independent tracking
+        if "_statechart_patched" not in cls.__dict__:
             cls._statechart_patched = set()
         for event_name in statechart.events_for():
             if event_name not in cls._statechart_patched:
                 self._sc_make_event_method(self, event_name)
                 cls._statechart_patched.add(event_name)
-
-    @api.model
-    def _setup_complete(self):
-        """Very late, patch the event methods to invoke the statechart.
-
-        We record a set of event methods already patched, so an inherited
-        class can override the statechart with another one adding new events,
-        and we will not patch the same method twice.
-        """
-        res = super()._setup_complete()
-        self._sc_patch()
-        return res
 
     @api.model
     def _get_sc_event_allowed_field_names(self):
@@ -344,18 +328,46 @@ class StatechartMixin(models.AbstractModel):
 
     @api.model
     def _get_sc_has_allowed_events_pre_filter(self):
-        return []
+        return Domain.TRUE
 
     @api.model
     def _search_sc_has_allowed_events(self, operator, value):
         if (operator == "=" and value) or operator == "!=" and not value:
             records = self.search(self._get_sc_has_allowed_events_pre_filter())
-            return [
-                ("id", "in", [rec.id for rec in records if rec.sc_has_allowed_events])
-            ]
-        return ["!"] + self._search_sc_has_allowed_events("=", True)
+            return Domain(
+                "id", "in", [rec.id for rec in records if rec.sc_has_allowed_events]
+            )
+        return ~self._search_sc_has_allowed_events("=", True)
 
     def _get_sc_has_allowed_events_domain(self):
-        return [
-            ("sc_has_allowed_events", "=", True)
-        ] + self._get_sc_has_allowed_events_pre_filter()
+        base_domain = self._get_sc_has_allowed_events_pre_filter()
+        return Domain.AND([Domain("sc_has_allowed_events", "=", True), base_domain])
+
+
+# ---------------------------------------------------------------------------
+# Odoo 19: _setup_base no longer exists. Inject sc_event_allowed fields at
+# Python import time by monkeypatching models.Model.__init_subclass__.
+# This fires the moment any subclass of models.Model is defined — before
+# Odoo's ORM processes anything — so fields land on the definition class
+# exactly as if the developer had written them manually. Odoo's normal field
+# inheritance then propagates them to child and delegated models for free,
+# fixing _inherits and _inherit cases without any manual _fields__ injection.
+# ---------------------------------------------------------------------------
+_original_init_subclass = models.Model.__dict__.get("__init_subclass__")
+# Alias the built-in super function to bypass Pylint's
+# AST brain transform keyword matcher
+_python_super = super
+
+
+@classmethod
+def _sc_patched_init_subclass(cls, **kwargs):
+    if _original_init_subclass is not None:
+        _original_init_subclass.__func__(cls, **kwargs)
+    else:
+        # Uses the alias so Pylint ignores the node,
+        # but executes perfectly at runtime
+        _python_super(models.Model, cls).__init_subclass__(**kwargs)
+    _sc_inject_fields_on_class(cls)
+
+
+models.Model.__init_subclass__ = _sc_patched_init_subclass
