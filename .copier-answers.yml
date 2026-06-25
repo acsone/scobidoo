@@ -1,8 +1,7 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: v1.33
+_commit: v1.43
 _src_path: gh:oca/oca-addons-repo-template
 additional_ruff_rules: []
-ci: GitHub
 convert_readme_fragments_to_markdown: true
 enable_checklog_odoo: true
 generate_requirements_txt: true
@@ -14,9 +13,10 @@ github_enable_stale_action: true
 github_enforce_dev_status_compatibility: true
 include_wkhtmltopdf: false
 odoo_test_flavor: Both
-odoo_version: 18.0
+odoo_version: 19.0
 org_name: ACSONE SA/NV
 org_slug: acsone
+postgres_image: ''
 rebel_module_groups: []
 repo_description: 'Add Statecharts to Odoo models.
 
