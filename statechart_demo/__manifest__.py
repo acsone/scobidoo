@@ -15,5 +15,5 @@
     "data": [
         "views/res_partner_views.xml",
     ],
-    "installable": True,
+    "installable": False,
 }

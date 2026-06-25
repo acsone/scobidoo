@@ -24,5 +24,5 @@
             "statechart/static/src/core/errors/error_dialogs.esm.js",
         ],
     },
-    "installable": True,
+    "installable": False,
 }
