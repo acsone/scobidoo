@@ -759,8 +759,8 @@ msgid ""
 msgstr ""
 
 #. module: test_statechart
-#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__notes
-#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__notes
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_delegated__note
+#: model:ir.model.fields,field_description:test_statechart.field_purchase_order_inherited__note
 msgid "Terms and Conditions"
 msgstr ""
 

@@ -25,9 +25,9 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[statechart](statechart/) | 16.0.1.0.0 |  | Add Statecharts to Odoo models
-[statechart_demo](statechart_demo/) | 16.0.1.0.0 |  | Demo workflows for the statechart module
-[test_statechart](test_statechart/) | 16.0.1.0.0 |  | Tests for the statechart module
+[statechart](statechart/) | 19.0.1.0.0 |  | Add Statecharts to Odoo models
+[statechart_demo](statechart_demo/) | 19.0.1.0.0 |  | Demo workflows for the statechart module
+[test_statechart](test_statechart/) | 19.0.1.0.0 |  | Tests for the statechart module
 
 [//]: # (end addons)
 

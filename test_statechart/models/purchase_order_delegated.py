@@ -7,12 +7,13 @@ from odoo import fields, models
 class PurchaseOrderDelegated(models.Model):
     _name = "purchase.order.delegated"
     _description = "Purchase Order Delegated"
+    _inherits = {"purchase.order": "po_id"}
 
     po_id = fields.Many2one(
         comodel_name="purchase.order",
         required=True,
         ondelete="restrict",
         index=True,
-        auto_join=True,
+        bypass_search_access=True,
         delegate=True,
     )

@@ -2,6 +2,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 
 import json
+from unittest.mock import PropertyMock, patch
 
 from lxml import etree
 
@@ -32,7 +33,7 @@ class TestPOStatechart(BaseCommon):
         self.assertEqual(self.env.user.company_id.po_double_validation_amount, 0)
         self.env.user.write(
             {
-                "groups_id": [
+                "group_ids": [
                     (3, self.env.ref("purchase.group_purchase_manager").id, False)
                 ],
             }
@@ -40,8 +41,20 @@ class TestPOStatechart(BaseCommon):
         self.assertFalse(self.env.user.has_group("purchase.group_purchase_manager"))
         # create a PO
         self.PurchaseOrder = self.env["purchase.order"]
-        self.partner_id = self.env.ref("base.res_partner_1")
-        self.product_id_1 = self.env.ref("product.product_product_8")
+        self.partner_id = self.env["res.partner"].create(
+            {
+                "name": "Demo Partner",
+                "is_company": True,
+            }
+        )
+        self.product_id_1 = self.env["product.product"].create(
+            {
+                "name": "Demo Product",
+                "standard_price": 1299,
+                "list_price": 1799,
+                "uom_id": self.env.ref("uom.product_uom_unit").id,
+            }
+        )
         self.po = self.PurchaseOrder.create(
             {
                 "partner_id": self.partner_id.id,
@@ -53,7 +66,7 @@ class TestPOStatechart(BaseCommon):
                             "name": self.product_id_1.name,
                             "product_id": self.product_id_1.id,
                             "product_qty": 5.0,
-                            "product_uom": self.product_id_1.uom_po_id.id,
+                            "product_uom_id": self.product_id_1.uom_id.id,
                             "price_unit": 500.0,
                             "date_planned": fields.Date.today(),
                         },
@@ -72,7 +85,7 @@ class TestPOStatechart(BaseCommon):
                             "name": self.product_id_1.name,
                             "product_id": self.product_id_1.id,
                             "product_qty": 5.0,
-                            "product_uom": self.product_id_1.uom_po_id.id,
+                            "product_uom_id": self.product_id_1.uom_id.id,
                             "price_unit": 500.0,
                             "date_planned": fields.Date.today(),
                         },
@@ -96,7 +109,7 @@ class TestPOStatechart(BaseCommon):
         self.po.button_confirm()
         self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
         self.assertEqual(self.po.state, "to approve")
-        self.assertEqual(self.po.notes, "<p>Congrats for exiting the draft state</p>")
+        self.assertEqual(self.po.note, "<p>Congrats for exiting the draft state</p>")
         # do_nothing does nothing ;)
         self.po.do_nothing()
         self.assertScState(self.po.sc_state, ["confirmed", "not draft", "root"])
@@ -153,13 +166,73 @@ class TestPOStatechart(BaseCommon):
         self.assertTrue(defaults.get("sc_button_confirm_allowed"))
         self.assertFalse(defaults.get("sc_button_cancel_allowed"))
 
+    def test_statechart_origin_propagation_integrated(self):
+        """Proves that _patch_method correctly mounts the '.origin' attribute,
+        and that it points back to the true unpatched base business function.
+        """
+        po_model = getattr(
+            self, "PurchaseOrder", getattr(self, "PurchaseOrderInherited", None)
+        )
+        po_record = getattr(self, "po", getattr(self, "poi", None))
+
+        patched_method = getattr(po_model, "button_confirm", None)
+        self.assertIsNotNone(
+            patched_method,
+            "Setup fail: 'button_confirm' method was not compiled on the model class.",
+        )
+
+        # Assert that our framework's critical tracking trace is present
+        self.assertTrue(
+            hasattr(patched_method, "origin"),
+            "_patch_method failed to mount the '.origin' attribute on the wrapper!",
+        )
+
+        # Move PO out of draft state to test the origin channel bypass
+        po_record.button_confirm()
+
+        # This call must execute seamlessly without triggering any statechart loop:
+        try:
+            patched_method.origin(po_record)
+        except Exception as e:
+            self.fail(f"Calling .origin() raised an unexpected exception: {e}")
+
+    def test_statechart_reentrancy_detection(self):
+        """Proves that calling an actionless event method directly while the statechart
+        is executing correctly throws a reentrancy RuntimeError.
+        """
+        po_record = getattr(self, "po", getattr(self, "poi", None))
+        interpreter = po_record.sc_interpreter
+
+        with patch.object(
+            type(interpreter), "executing", new_callable=PropertyMock
+        ) as mock_executing:
+            mock_executing.return_value = True
+
+            with self.assertRaises(RuntimeError) as context:
+                po_record.do_nothing()
+
+            self.assertIn("Reentrancy error", str(context.exception))
+            self.assertIn("Please use sc_queue() instead", str(context.exception))
+
 
 class TestPODelegatedStatechart(BaseCommon):
     def setUp(self):
         super().setUp()
         self.PurchaseOrderDelegated = self.env["purchase.order.delegated"]
-        self.partner_id = self.env.ref("base.res_partner_1")
-        self.product_id_1 = self.env.ref("product.product_product_8")
+        self.partner_id = self.env["res.partner"].create(
+            {
+                "name": "Demo Partner",
+                "is_company": True,
+            }
+        )
+        self.product_id_1 = self.env["product.product"].create(
+            {
+                "name": "Demo Product",
+                "standard_price": 1299,
+                "list_price": 1799,
+                "uom_id": self.env.ref("uom.product_uom_unit").id,
+            }
+        )
         self.pod = self.PurchaseOrderDelegated.create(
             {
                 "partner_id": self.partner_id.id,
@@ -190,7 +263,7 @@ class TestPOInheritedStatechart(BaseCommon):
         self.assertEqual(self.env.user.company_id.po_double_validation_amount, 0)
         self.env.user.write(
             {
-                "groups_id": [
+                "group_ids": [
                     (3, self.env.ref("purchase.group_purchase_manager").id, False)
                 ],
             }
@@ -198,8 +271,20 @@ class TestPOInheritedStatechart(BaseCommon):
         self.assertFalse(self.env.user.has_group("purchase.group_purchase_manager"))
         # create a dummy PO
         self.PurchaseOrderInherited = self.env["purchase.order.inherited"]
-        self.partner_id = self.env.ref("base.res_partner_1")
-        self.product_id_1 = self.env.ref("product.product_product_8")
+        self.partner_id = self.env["res.partner"].create(
+            {
+                "name": "Demo Partner",
+                "is_company": True,
+            }
+        )
+        self.product_id_1 = self.env["product.product"].create(
+            {
+                "name": "Demo Product",
+                "standard_price": 1299,
+                "list_price": 1799,
+                "uom_id": self.env.ref("uom.product_uom_unit").id,
+            }
+        )
         self.poi = self.PurchaseOrderInherited.create(
             {
                 "partner_id": self.partner_id.id,
@@ -218,12 +303,12 @@ class TestPOInheritedStatechart(BaseCommon):
         # sanity checks
         self.assertEqual(self.poi.amount_total, 0)
         self.assertNotIn(
-            self.env.ref("purchase.group_purchase_manager"), self.env.user.groups_id
+            self.env.ref("purchase.group_purchase_manager"), self.env.user.group_ids
         )
         # check we actually go through the statechart:
         # if amount < 1000, we transition automatically
         # from confirmed to approved
         self.poi.button_confirm()
         self.assertEqual(
-            self.poi.notes, "<p>Congrats for entering the approved state</p>"
+            self.poi.note, "<p>Congrats for entering the approved state</p>"
         )
